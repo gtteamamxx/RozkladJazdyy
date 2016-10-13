@@ -91,6 +91,8 @@ namespace RozkladJazdy
         public delegate void eventRefresh();
         public delegate void eventAddedfav(int type = -1, object obiekt = null, bool delete = false);
 
+
+        //from so
         public Platform DetectPlatform()
         {
             if (ApiInformation.IsTypePresent("Windows.Phone.UI.Input.HardwareButtons"))

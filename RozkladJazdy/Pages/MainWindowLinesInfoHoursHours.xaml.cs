@@ -81,20 +81,6 @@ namespace RozkladJazdy.Pages
             
         }
         public bool isClosest(int hour, int minutes, int achour, int acminutes)
-        {
-            if(hour == achour)
-            {
-                if (minutes < acminutes)
-                    return false;
-
-                return true;
-            }
-            else if(hour > achour)
-            {
-                return true;
-            }
-
-            return false;
-        }
+          =>  (hour == achour) ? (minutes < acminutes) ? false : true : (hour > achour) ? true : false;
     }
 }
