@@ -82,11 +82,7 @@ namespace RozkladJazdy.Model
             get
             {
                 if (_pfm == 2)
-
-
-
-
-                    3;
+                    return 3;
                 return _pfm;
             }
             set
