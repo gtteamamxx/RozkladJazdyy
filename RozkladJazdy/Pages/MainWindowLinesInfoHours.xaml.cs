@@ -55,7 +55,7 @@ namespace RozkladJazdy.Pages
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             if (selectedLinia != null)
-                MainPage.gui.setTitle = "Rozkład jazdy -> Linia: " + selectedLinia.name;
+                MainPage.gui.setPageTitle = "Rozkład jazdy -> Linia: " + selectedLinia.name;
         }
 
         public MainWindowLinesInfoHours()
@@ -73,12 +73,12 @@ namespace RozkladJazdy.Pages
             trasa = selectedLinia.rozklad[MainWindowLinesList.selectedRozklad == -1 ? 0 : 
                 MainWindowLinesList.selectedRozklad].track[przystanek.track_id];
 
-            if (MainPage.gui.PrzystankiTrasa != przystanek.track_id)
-                MainPage.gui.clearPrzystanki();
+            if (MainPage.gui.stops_track != przystanek.track_id)
+                MainPage.gui.clearStopListStops();
 
-            MainPage.gui.PrzystankiTrasa = przystanek.track_id;
-            MainPage.gui.setTitle = "Rozkład jazdy -> Linia: " + selectedLinia.name;
-            MainPage.gui.setKierunek("Kierunek: " + trasa.name);
+            MainPage.gui.stops_track = przystanek.track_id;
+            MainPage.gui.setPageTitle = "Rozkład jazdy -> Linia: " + selectedLinia.name;
+            MainPage.gui.setStopListDestName("Kierunek: " + trasa.name);
 
             MainWindowLinesInfoHOursKierunek.Text = "Kierunek: " + trasa.name;
 
@@ -93,7 +93,7 @@ namespace RozkladJazdy.Pages
 
         private void MainWindowLinesInfoHours_Loaded(object sender, RoutedEventArgs e)
         {
-            MainPage.gui.setFavSubText = "przystanek";
+            MainPage.gui.setFavouriteSubText = "przystanek";
             //check if stop is in favourtie
             if (MainPage.isFavourite(HTMLServices.przystankinames[MainWindowLinesInfo.selectedPrzystanek.nid]))
                 MainPage.gui.setFavouriteButtonColor = Colors.Black;
@@ -196,13 +196,13 @@ namespace RozkladJazdy.Pages
 
                     MainWindowLinesINfoHoursProgressRing.Visibility = Visibility.Collapsed;
 
-                    if (!MainPage.gui.isPrzystanki())
+                    if (!MainPage.gui.isAnyStopInList())
                     {
-                        MainPage.gui.setPrzystanki(trasa.stops);
-                        MainPage.gui.setIndex = MainPage.gui.getItemIndex(przystanek);
+                        MainPage.gui.setStopListStops(trasa.stops);
+                        MainPage.gui.setStopListActualIndex = MainPage.gui.getStopListActualIndex(przystanek);
                     }
                     else
-                        MainPage.gui.setIndex = MainPage.gui.getItemIndex(przystanek);
+                        MainPage.gui.setStopListActualIndex = MainPage.gui.getStopListActualIndex(przystanek);
                 };
 
                 worker1.RunWorkerAsync();
@@ -260,10 +260,10 @@ namespace RozkladJazdy.Pages
                 gr.SelectedIndex = -1;
             }
 
-            if (!MainPage.gui.PaneOpen)
-                MainPage.gui.PaneOpen = true;
+            if (!MainPage.gui.isStopListPaneOpen)
+                MainPage.gui.isStopListPaneOpen = true;
 
-            MainPage.gui.setIndex = MainPage.gui.getItemIndex(przystanek);
+            MainPage.gui.setStopListActualIndex = MainPage.gui.getStopListActualIndex(przystanek);
 
             /* selectedHour = e.ClickedItem.ToString();
 
@@ -305,14 +305,14 @@ namespace RozkladJazdy.Pages
 
         private void MainWindowLinesInfoHOursLinia_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            MainPage.gui.setPage = typeof(MainWindowLinesInfo);
+            MainPage.gui.setViewPage = typeof(MainWindowLinesInfo);
             navigated_from = true;
         }
 
         private void MainWindowLinesInfoHOursPrzystanek_Tapped(object sender, TappedRoutedEventArgs e)
         {
             navigated_from = true;
-            MainPage.gui.setPage = typeof(MainWindowStopList);
+            MainPage.gui.setViewPage = typeof(MainWindowStopList);
             MainWindowStopList.preparefromfav(HTMLServices.przystankinames.ElementAt(MainWindowLinesInfo.selectedPrzystanek.nid));
         }
     }

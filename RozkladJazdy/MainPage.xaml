@@ -21,15 +21,15 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Button Name="MainPageRelativePanelButton" Click="MainPageRelativePanelButton_Click" BorderBrush="DarkGray" BorderThickness="1"
+            <Button Name="MainPageTopPanelMenuButton" Click="MainPageTopPanelMenuButton_Click" BorderBrush="DarkGray" BorderThickness="1"
                     RelativePanel.AlignLeftWithPanel="True" Background="Transparent" FontSize="25" Foreground="Black" FontFamily="Segoe MDL2 Assets" Width="70" Height="71" 
                     Content="&#xE700;"></Button>
 
             <Grid Background="White" Grid.Column="1" BorderBrush="DarkGray" BorderThickness="0,0,0,1">
                 <StackPanel Orientation="Horizontal">
                     <Button VerticalAlignment="Bottom" Canvas.ZIndex="2" HorizontalAlignment="Left"
-                        Name="MainPageRelativePanelBackButton"
-                        Click="MainPageRelativePanelBackButton_Click" 
+                        Name="MainPageTopPanelBackButton"
+                        Click="MainPageTopPanelBackButton_Click" 
                         Visibility="Collapsed" FontSize="25" 
                         FontFamily="Segoe MDL2 Assets" 
                         Content="&#xE0A6;" 
@@ -38,21 +38,21 @@
                         Width="70"
                         Height="70" />
 
-                    <TextBlock Name="MainPageRelativePanelTextBlock" HorizontalAlignment="Left" VerticalAlignment="Center"  Foreground="Black" FontWeight="Bold" FontSize="15" Margin="20, 0"/>
+                    <TextBlock Name="MainPageTopPanelTitle" HorizontalAlignment="Left" VerticalAlignment="Center"  Foreground="Black" FontWeight="Bold" FontSize="15" Margin="20, 0"/>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal"  HorizontalAlignment="Right">
                     <Grid>
-                        <Button Name="FavouriteButton" Click="FavouriteButton_Click" Visibility="Collapsed" VerticalAlignment="Top" VerticalContentAlignment="Top" FontSize="40" FontFamily="Segoe MDL2 Assets" Content="&#xE082;" Background="White" Foreground="Black" Width="70" Height="70" />
-                        <TextBlock Name="FavouriteText" HorizontalAlignment="Center" Text="linia" Visibility="Collapsed" VerticalAlignment="Bottom" />
+                        <Button Name="MainPageTopPanelFavouriteButton" Click="MainPageTopPanelFavouriteButton_Click" Visibility="Collapsed" VerticalAlignment="Top" VerticalContentAlignment="Top" FontSize="40" FontFamily="Segoe MDL2 Assets" Content="&#xE082;" Background="White" Foreground="Black" Width="70" Height="70" />
+                        <TextBlock Name="MainPageTopPanelFavouriteButtonTypeText" HorizontalAlignment="Center" Text="linia" Visibility="Collapsed" VerticalAlignment="Bottom" />
                     </Grid>
-                    <Button Name="MainPageRelativePanelRefreshButton" Click="MainPageRelativePanelRefreshButton_Click" Visibility="Collapsed" FontSize="25" FontFamily="Segoe MDL2 Assets" Content="&#xE1CD;" Background="White" Foreground="Black" Width="70" Height="70" />
-                    <Button Visibility="Collapsed" Name="Button" Click="Button_Click" Width="70" Height="70" FontSize="25" Foreground="Black" FontFamily="Segoe MDL2 Assets" Background="White" Content="&#xE174;"/>
+                    <Button Name="MainPageTopPanelRefreshButton" Click="MainPageTopPanelRefreshButton_Click" Visibility="Collapsed" FontSize="25" FontFamily="Segoe MDL2 Assets" Content="&#xE1CD;" Background="White" Foreground="Black" Width="70" Height="70" />
+                    <Button Visibility="Collapsed" Name="MainPageTopPanelStopsButton" Click="MainPageTopPanelStopsButton_Click" Width="70" Height="70" FontSize="25" Foreground="Black" FontFamily="Segoe MDL2 Assets" Background="White" Content="&#xE174;"/>
                 </StackPanel>
             </Grid>
         </Grid>
 
-        <SplitView Canvas.ZIndex="7" VerticalAlignment="Top" CompactPaneLength="0" OpenPaneLength="310" HorizontalAlignment="Right" Grid.Row="1" Name="SplitView" Height="300" DisplayMode="CompactOverlay">
+        <SplitView Canvas.ZIndex="7" VerticalAlignment="Top" CompactPaneLength="0" OpenPaneLength="310" HorizontalAlignment="Right" Grid.Row="1" Name="MainPageStopsSplitView" Height="300" DisplayMode="CompactOverlay">
             <SplitView.Pane>
                 <Grid Background="LightGray">
                     <ListView SelectionMode="None" ScrollViewer.VerticalScrollBarVisibility="Disabled">
@@ -65,11 +65,11 @@
                                     </Grid.RowDefinitions>
 
                                     <StackPanel Margin="20" BorderBrush="Gray" BorderThickness="0,0,0,1">
-                                        <TextBlock HorizontalAlignment="Center" Foreground="Blue" TextWrapping="Wrap" Name="TextBlockKierunek" />
+                                        <TextBlock Name="MainPageStopListDestText" HorizontalAlignment="Center" Foreground="Blue" TextWrapping="Wrap" />
                                     </StackPanel>
 
-                                    <ListView Grid.Row="1" Name="ListViews" ItemsSource="{x:Bind przystanki}"
-                                              IsItemClickEnabled="True" ItemClick="ListViews_ItemClick">
+                                    <ListView Grid.Row="1" Name="MainPageStopListStopsList" ItemsSource="{x:Bind stops}"
+                                              IsItemClickEnabled="True" ItemClick="MainPageStopListStopsList_Click">
                                         <ListView.ItemTemplate>
                                             <DataTemplate x:DataType="data:Przystanek">
                                                 <local:MainWindowLinesInfoThird/>
@@ -84,13 +84,13 @@
             </SplitView.Pane>
         </SplitView>
 
-        <Grid Opacity="0" Visibility="Collapsed" Name="InfoGrid" Background="#FF787878" Grid.Row="1" Canvas.ZIndex="15" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,75" CornerRadius="10">
-            <TextBlock Margin="5" TextWrapping="Wrap" Name="InfoText" />
+        <Grid Opacity="0" Visibility="Collapsed" Name="MainPageInfoGrid" Background="#FF787878" Grid.Row="1" Canvas.ZIndex="15" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,75" CornerRadius="10">
+            <TextBlock Margin="5" TextWrapping="Wrap" Name="MainPageInfoText" />
         </Grid>
 
         <SplitView Grid.Row="1" Name="MainPageSplitView" OpenPaneLength="250" CompactPaneLength="70" DisplayMode="Inline">
             <SplitView.Pane>
-                <ListView Name="MainPageListView" Background="White" ItemClick="ListView_ItemClick" IsItemClickEnabled="True">
+                <ListView Name="MainPageMenuList" Background="White" ItemClick="MainPageMenuList_Click" IsItemClickEnabled="True">
                     <ListView.Items>
                         <ListViewItem BorderThickness="0,1,0,1" BorderBrush="DarkGray">
                             <StackPanel Orientation="Horizontal" Margin="10">
@@ -109,7 +109,7 @@
                 </ListView>
             </SplitView.Pane>
             <SplitView.Content>
-                <Frame Name="MainPageMyFrame"/>
+                <Frame Name="MainPageFrame"/>
             </SplitView.Content>
         </SplitView>
     </Grid>

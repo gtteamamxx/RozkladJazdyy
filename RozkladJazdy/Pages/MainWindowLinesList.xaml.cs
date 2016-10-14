@@ -44,7 +44,7 @@ namespace RozkladJazdy.Pages
         {
             this.InitializeComponent();
 
-            MainPage.OnRefreshRozklady += () =>
+            MainPage.OnTimeTableRefesh += () =>
             {
                 Linie.Clear();
                 LinieTramwaje.Clear();
@@ -79,9 +79,9 @@ namespace RozkladJazdy.Pages
             var liczba_rozkladow = SQLServices.getData<Rozklad>(0, "SELECT id FROM Rozklad where id_linia = ?", selectedLine.id).Count();
 
             if (liczba_rozkladow > 1)
-                MainPage.gui.setPage = typeof(MainWindowLinesRozkladDzien);
+                MainPage.gui.setViewPage = typeof(MainWindowLinesRozkladDzien);
             else
-                MainPage.gui.setPage = typeof(MainWindowLinesInfo);
+                MainPage.gui.setViewPage = typeof(MainWindowLinesInfo);
 
             MainPage.gui.setRefreshButtonVisibility = Visibility.Collapsed;
         }
@@ -267,7 +267,7 @@ namespace RozkladJazdy.Pages
         {
             MainPage.gui.setFavouriteButtonVisibility = Visibility.Collapsed;
             this.SizeChanged += Page_SizeChanged;
-            MainPage.gui.setTitle = "Rozkład jazdy -> Lista linii";
+            MainPage.gui.setPageTitle = "Rozkład jazdy -> Lista linii";
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)

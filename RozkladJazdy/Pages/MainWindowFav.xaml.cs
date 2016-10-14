@@ -41,7 +41,7 @@ namespace RozkladJazdy.Pages
 
             MainWindowStopList.OnLoaded += () => refresh();
 
-            MainPage.OnAddedFav += (typ, obiekt, delete) =>
+            MainPage.OnAddedFavouriteStop += (typ, obiekt, delete) =>
             {
                 if (typ == 0) // linia
                 {
@@ -67,7 +67,7 @@ namespace RozkladJazdy.Pages
             ulubionelinie.Clear();
             ulubioneprzystanki.Clear();
 
-            foreach (var a in MainPage.ulubione)
+            foreach (var a in MainPage.favourite_stops)
                 if (a.type == 0) // linia
                     ulubionelinie.Add(a);
                 else
@@ -85,7 +85,7 @@ namespace RozkladJazdy.Pages
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            MainPage.gui.setTitle = "Rozkład jazdy -> Ulubione";
+            MainPage.gui.setPageTitle = "Rozkład jazdy -> Ulubione";
             MainPage.gui.setRefreshButtonVisibility = Visibility.Visible;
             MainPage.gui.setFavouriteButtonVisibility = Visibility.Collapsed;
         }
@@ -111,15 +111,15 @@ namespace RozkladJazdy.Pages
 
                 if (liczba_rozkladow > 1)
                 {
-                    MainPage.gui.setPage = typeof(MainWindowLinesRozkladDzien);
+                    MainPage.gui.setViewPage = typeof(MainWindowLinesRozkladDzien);
                     return;
                 }
 
-                MainPage.gui.setPage = typeof(MainWindowLinesInfo);
+                MainPage.gui.setViewPage = typeof(MainWindowLinesInfo);
             }
             else // przystanek
             {
-                MainPage.gui.setPage = typeof(MainWindowStopList);
+                MainPage.gui.setViewPage = typeof(MainWindowStopList);
                 MainWindowStopList.preparefromfav(HTMLServices.przystankinames.ElementAt(item.id));   
             }
         }

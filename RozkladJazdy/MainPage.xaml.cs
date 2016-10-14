@@ -35,71 +35,41 @@ namespace RozkladJazdy
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        private int favouritecolor = 0;
-        public ObservableCollection<Przystanek> przystanki = new ObservableCollection<Przystanek>();
-        public Type setPage { get { return MainPageMyFrame.CurrentSourcePageType; } set { MainPageMyFrame.Navigate(value); } }
-        public string setTitle { get { return MainPageRelativePanelTextBlock.Text; } set { MainPageRelativePanelTextBlock.Text = value; } }
-        public string setFavSubText { get { return FavouriteText.Text; } set { FavouriteText.Text = value; } }
+        private int _favColor = 0;
+        public ObservableCollection<Przystanek> stops = new ObservableCollection<Przystanek>();
 
-        public Visibility setBackButtonVisibility
-        {
-            get { return MainPageRelativePanelBackButton.Visibility; }
-            set
-            {
-                if (DetectPlatform() == Platform.WindowsPhone)
-                    return;
-                MainPageRelativePanelBackButton.Visibility = value;
-            }
-        }
-        public Visibility setRefreshButtonVisibility { get { return MainPageRelativePanelRefreshButton.Visibility; } set { MainPageRelativePanelRefreshButton.Visibility = value; } }
-        public Visibility setFavouriteButtonVisibility { get { return FavouriteButton.Visibility; } set { FavouriteButton.Visibility = value; FavouriteText.Visibility = value; } }
-        public Visibility setPrzystankiButtonVisibility { get { return Button.Visibility; } set { Button.Visibility = value; } }
-        public SplitViewDisplayMode setSplitViewDisplayMode { get { return MainPageSplitView.DisplayMode; } set { MainPageSplitView.DisplayMode = value; } }
-        public Color setFavouriteButtonColor
-        {
-            set
-            {
-                favouritecolor = value == Colors.LightGray ? 0 : 1;
-                FavouriteButton.Foreground = new SolidColorBrush(value);
-            }
-        }
-        public Color getFavouriteButtonColor => favouritecolor == 0 ? Colors.LightGray : Colors.Black;
-        public int setIndex { get { return ListViews.SelectedIndex; } set { ListViews.SelectedIndex = value; } }
-        public int getItemIndex(Przystanek pr) => ListViews.Items.IndexOf(pr);
-        public string setKierunek(string value) => TextBlockKierunek.Text = value;
-        public bool PaneOpen { get { return SplitView.IsPaneOpen; } set { SplitView.IsPaneOpen = value; } }
-        public void setPrzystanki(List<Przystanek> pr)
-        {
-            przystanki.Clear();
-            //MainWindowLinesInfoHours.temphour = new int[] { 0, 0 };
-            //MainWindowLinesInfoHours.lista_test.Clear();
-           // MainWindowLinesInfoHours.lista_test2.Clear();
-            foreach (Przystanek p in pr)
-                przystanki.Add(p);
-        }
-        public void clearPrzystanki() => przystanki.Clear();
-        public bool isPrzystanki() { return przystanki.Count > 0 ? true : false; }
-        public int PrzystankiTrasa { get; set; }
-        private static DoubleAnimation animation;
+        public Type setViewPage { get { return MainPageFrame.CurrentSourcePageType; } set { MainPageFrame.Navigate(value); } }
+        public string setPageTitle { get { return MainPageTopPanelTitle.Text; } set { MainPageTopPanelTitle.Text = value; } }
+        public string setFavouriteSubText { get { return MainPageTopPanelFavouriteButtonTypeText.Text; } set { MainPageTopPanelFavouriteButtonTypeText.Text = value; } }
+
+        public Visibility setBackButtonVisibility { get { return MainPageTopPanelBackButton.Visibility; } set { if (DetectPlatform() == Platform.WindowsPhone) return; MainPageTopPanelBackButton.Visibility = value; }}
+        public Visibility setRefreshButtonVisibility { get { return MainPageTopPanelRefreshButton.Visibility; } set { MainPageTopPanelRefreshButton.Visibility = value; } }
+        public Visibility setFavouriteButtonVisibility { get { return MainPageTopPanelFavouriteButton.Visibility; } set { MainPageTopPanelFavouriteButton.Visibility = value; MainPageTopPanelFavouriteButton.Visibility = value; } }
+        public Visibility setStopButtonVisibility { get { return MainPageTopPanelStopsButton.Visibility; } set { MainPageTopPanelStopsButton.Visibility = value; } }
+        public SplitViewDisplayMode setMenuSplitViewDisplayMode { get { return MainPageSplitView.DisplayMode; } set { MainPageSplitView.DisplayMode = value; } }
+
+        public Color setFavouriteButtonColor { set { _favColor = value == Colors.LightGray ? 0 : 1; MainPageTopPanelFavouriteButton.Foreground = new SolidColorBrush(value); } }
+        public Color getFavouriteButtonColor => _favColor == 0 ? Colors.LightGray : Colors.Black;
+
+        public int setStopListActualIndex { get { return MainPageStopListStopsList.SelectedIndex; } set { MainPageStopListStopsList.SelectedIndex = value; } }
+        public int getStopListActualIndex(Przystanek pr) => MainPageStopListStopsList.Items.IndexOf(pr);
+
+        public string setStopListDestName(string value) => MainPageStopListDestText.Text = value;
+        public bool isStopListPaneOpen { get { return MainPageStopsSplitView.IsPaneOpen; } set { MainPageStopsSplitView.IsPaneOpen = value; } }
+
+        public void setStopListStops(List<Przystanek> st) { stops.Clear(); foreach (Przystanek p in st) stops.Add(p); }
+        public void clearStopListStops() => stops.Clear();
+        public bool isAnyStopInList() { return stops.Count > 0 ? true : false; }
+        public int stops_track { get; set; }
+
         public static bool isAdmin = false;
-        //public static List<Przystanek> getPrzystanki => gui.przystanki.ToList();
-        public static ObservableCollection<Ulubiony> ulubione = new ObservableCollection<Ulubiony>();
+        public static ObservableCollection<Ulubiony> favourite_stops = new ObservableCollection<Ulubiony>();
         
-        public static eventAddedfav OnAddedFav;
-        public static eventRefresh OnRefreshRozklady;
+        public static eventAddedfav OnAddedFavouriteStop;
+        public static eventRefresh OnTimeTableRefesh;
 
         public delegate void eventRefresh();
-        public delegate void eventAddedfav(int type = -1, object obiekt = null, bool delete = false);
-
-
-        //from so
-        public Platform DetectPlatform()
-        {
-            if (ApiInformation.IsTypePresent("Windows.Phone.UI.Input.HardwareButtons"))
-                return Platform.WindowsPhone;
-            else
-                return Platform.Windows;
-        }
+        public delegate void eventAddedfav(int _type = -1, object _object = null, bool _delete = false);
 
         public static MainPage gui;
         public MainPage()
@@ -107,10 +77,10 @@ namespace RozkladJazdy
             this.InitializeComponent();
             gui = this;
 
-            MainPageListView.SelectedIndex = 0;
+            MainPageMenuList.SelectedIndex = 0;
 
-            MainPageMyFrame.Navigate(typeof(MainWindow));
-            MainPageRelativePanelTextBlock.Text = "Rozkład jazdy";
+            MainPageFrame.Navigate(typeof(MainWindow));
+            MainPageTopPanelTitle.Text = "Rozkład jazdy";
 
             //mobile
             if (DetectPlatform() == Platform.WindowsPhone)
@@ -122,183 +92,183 @@ namespace RozkladJazdy
             }// pc
             else
             {
-                
                 ApplicationView.GetForCurrentView().TitleBar.BackgroundColor = Colors.White;
                 ApplicationView.GetForCurrentView().TitleBar.ForegroundColor = Colors.Red;
             }
 
-            var view = SystemNavigationManager.GetForCurrentView();
-            view.AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
+            var currentView = SystemNavigationManager.GetForCurrentView();
+            currentView.AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
 
-            view.BackRequested += (s, e) =>
-            {
-                bool a = false;
-                goBack(ref a);
+            currentView.BackRequested += BackButtonPressed;
 
-                if (!a)
-                    e.Handled = true;
-            };
-
-            MainPageMyFrame.Navigated += (sender, e) =>
+            MainPageFrame.Navigated += (sender, e) =>
             {
                 if (e.SourcePageType == typeof(MainWindowLinesInfoHours))
-                    Button.Visibility = Visibility.Visible;
+                    MainPageTopPanelStopsButton.Visibility = Visibility.Visible;
             };
 
-            ListViews.SelectionChanged += (s, f) =>
+            MainPageStopListStopsList.SelectionChanged += (sender, e) =>
             {
-                if (ListViews.SelectedItem != null)
-                    ListViews.ScrollIntoView(ListViews.SelectedItem);
+                var list = (sender as ListView);
+                if (list.SelectedItem != null)
+                    list.ScrollIntoView(list.SelectedItem);
             };
 
             ApplicationView.GetForCurrentView().SetPreferredMinSize(new Size(360, 500));
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-            => SplitView.IsPaneOpen = !SplitView.IsPaneOpen;
-
-        private void MainPageRelativePanelButton_Click(object sender, RoutedEventArgs e)
-            => MainPageSplitView.IsPaneOpen = !MainPageSplitView.IsPaneOpen;
-
-        private void ListView_ItemClick(object sender, ItemClickEventArgs e)
+        private void BackButtonPressed(object sender, BackRequestedEventArgs e)
         {
-            var textblock = ((e.ClickedItem as StackPanel).Children[1] as TextBlock);
+            bool isExit = false;
+            goBack(ref isExit);
 
-            if (textblock.Text.Contains("Roz") && MainWindow.isLoaded == false && MainWindow.refresh == false) // rozklad jazdy
+            if (!isExit)
+                e.Handled = true;
+        }
+
+        //from so
+        public Platform DetectPlatform() => (ApiInformation.IsTypePresent("Windows.Phone.UI.Input.HardwareButtons")) ? Platform.WindowsPhone : Platform.Windows;
+
+        private void MainPageTopPanelStopsButton_Click(object sender, RoutedEventArgs e) => MainPageStopsSplitView.IsPaneOpen = !MainPageStopsSplitView.IsPaneOpen;
+
+        private void MainPageTopPanelMenuButton_Click(object sender, RoutedEventArgs e) => MainPageSplitView.IsPaneOpen = !MainPageSplitView.IsPaneOpen;
+
+        private void MainPageMenuList_Click(object sender, ItemClickEventArgs e)
+        {
+            var clickedItemName = ((e.ClickedItem as StackPanel).Children[1] as TextBlock);
+
+            if (clickedItemName.Text.Contains("Roz") && MainWindow.isLoaded == false && MainWindow.refresh == false) // rozklad jazdy
             {
-                MainPageMyFrame.Navigate(typeof(MainWindow));
-                MainPageRelativePanelTextBlock.Text = "Rozkład jazdy";
+                MainPageFrame.Navigate(typeof(MainWindow));
+                MainPageTopPanelTitle.Text = "Rozkład jazdy";
             }
-            else if (textblock.Text.Contains("Roz") && MainWindow.isLoaded == true && MainWindow.refresh == false)
+            else if (clickedItemName.Text.Contains("Roz") && MainWindow.isLoaded == true && MainWindow.refresh == false)
             {
-                MainPageMyFrame.Navigate(typeof(MainWindowSelect));
-                MainPageRelativePanelTextBlock.Text = "Rozkład jazdy";
+                MainPageFrame.Navigate(typeof(MainWindowSelect));
+                MainPageTopPanelTitle.Text = "Rozkład jazdy";
             }
-            else if (textblock.Text.Contains("unika") && MainWindow.isLoaded == true && MainWindow.refresh == false)
+            else if (clickedItemName.Text.Contains("unika") && MainWindow.isLoaded == true && MainWindow.refresh == false)
             {
-                MainPageMyFrame.Navigate(typeof(Comunicates));
-                MainPageRelativePanelTextBlock.Text = "Komunikaty BETA";
+                MainPageFrame.Navigate(typeof(Comunicates));
+                MainPageTopPanelTitle.Text = "Komunikaty BETA";
             }
         }
 
-        private void MainPageRelativePanelBackButton_Click(object sender, RoutedEventArgs e)
-        {
-            bool a = new bool();
-            goBack(ref a);
-
-            // jesli exit, to spytaj czy na pewno
-        }
+        private void MainPageTopPanelBackButton_Click(object sender, RoutedEventArgs e)
+            => BackButtonPressed(null, null);
 
         private void goBack(ref bool exit)
         {
-            if (MainPageMyFrame.SourcePageType == typeof(MainWindowLinesInfoHours))
+            if (MainPageFrame.SourcePageType == typeof(MainWindowLinesInfoHours))
             {
                 MainWindowLinesInfoHours.was = null;
                 MainWindowLinesInfoHours.hour = 0;
                 //MainWindowLinesInfoHours.selectedHour = "";
 
-                Button.Visibility = Visibility.Collapsed;
+                MainPageTopPanelStopsButton.Visibility = Visibility.Collapsed;
 
                 if (MainWindowStopList.navigated_from == true)
                 {
-                    if (!clicked)
-                        MainPageMyFrame.GoBack();
+                    if (!isStopClicked)
+                        MainPageFrame.GoBack();
                     else
                     {
-                        MainPageMyFrame.Navigate(typeof(MainWindowStopList));
-                        clicked = false;
+                        MainPageFrame.Navigate(typeof(MainWindowStopList));
+                        isStopClicked = false;
                     }
                 }
                 else
-                    MainPageMyFrame.Navigate(typeof(MainWindowLinesInfo));
+                    MainPageFrame.Navigate(typeof(MainWindowLinesInfo));
 
             }
-            else if (MainPageMyFrame.SourcePageType == typeof(MainWindowLinesInfo))
+            else if (MainPageFrame.SourcePageType == typeof(MainWindowLinesInfo))
             {
-                przystanki.Clear();
-                gui.PrzystankiTrasa = -1;
+                stops.Clear();
+                gui.stops_track = -1;
 
                 if (MainWindowLinesInfoHours.navigated_from == true)
                 {
                     MainWindowLinesInfoHours.navigated_from = false;
-                    MainPageMyFrame.GoBack();
+                    MainPageFrame.GoBack();
                     return;
                 }
 
                 if (MainWindowFav.navigated_from == true)
                 {
                     MainWindowFav.navigated_from = false;
-                    MainPageMyFrame.GoBack();
+                    MainPageFrame.GoBack();
                     return;
                 }
 
                 if (MainWindowStopList.navigated_from == true)
                 {
                     MainPage.gui.setRefreshButtonVisibility = Visibility.Visible;
-                    MainPageMyFrame.GoBack();
+                    MainPageFrame.GoBack();
                     return;
                 }
 
                 if (MainWindowLinesList.selectedLine.rozklad.Count == 1)
-                        MainPageMyFrame.Navigate(typeof(MainWindowLinesList));
+                        MainPageFrame.Navigate(typeof(MainWindowLinesList));
                 else
                 {
-                    MainPageRelativePanelRefreshButton.Visibility = Visibility.Collapsed;
-                    MainPageMyFrame.Navigate(typeof(MainWindowLinesRozkladDzien));
+                    MainPageTopPanelRefreshButton.Visibility = Visibility.Collapsed;
+                    MainPageFrame.Navigate(typeof(MainWindowLinesRozkladDzien));
                 }
             }
-            else if (MainPageMyFrame.SourcePageType == typeof(MainWindowLinesRozkladDzien))
+            else if (MainPageFrame.SourcePageType == typeof(MainWindowLinesRozkladDzien))
             {
                 if (MainWindowFav.navigated_from == true)
                 {
                     MainWindowFav.navigated_from = false;
-                    MainPageMyFrame.GoBack();
+                    MainPageFrame.GoBack();
                     return;
                 }
 
-                MainPageRelativePanelRefreshButton.Visibility = Visibility.Visible;
+                MainPageTopPanelRefreshButton.Visibility = Visibility.Visible;
 
                 if (MainWindowStopList.navigated_from == true)
-                    MainPageMyFrame.GoBack();
+                    MainPageFrame.GoBack();
                 else
-                    MainPageMyFrame.Navigate(typeof(MainWindowLinesList));
+                    MainPageFrame.Navigate(typeof(MainWindowLinesList));
             }
-            else if (MainPageMyFrame.SourcePageType == typeof(MainWindowLinesList)
-                || MainPageMyFrame.SourcePageType == typeof(MainWindowStopList)
-                || MainPageMyFrame.SourcePageType == typeof(MainWindowFav))
+            else if (MainPageFrame.SourcePageType == typeof(MainWindowLinesList)
+                || MainPageFrame.SourcePageType == typeof(MainWindowStopList)
+                || MainPageFrame.SourcePageType == typeof(MainWindowFav))
             {
 
                 if (MainWindowLinesInfoHours.navigated_from == true)
                 {
                     MainWindowLinesInfoHours.navigated_from = false;
-                    MainPageMyFrame.GoBack();
+                    MainPageFrame.GoBack();
                     return;
                 }
 
                 if (MainWindowFav.navigated_from == true)
                 {
                     MainWindowFav.navigated_from = false;
-                    MainPageMyFrame.GoBack();
+                    MainPageFrame.GoBack();
                     return;
                 }
 
-                MainPageRelativePanelBackButton.Visibility = Visibility.Collapsed;
-                MainPageRelativePanelTextBlock.Text = "Rozkład jazdy";
-                MainPageMyFrame.Navigate(typeof(MainWindowSelect));
+                MainPageTopPanelBackButton.Visibility = Visibility.Collapsed;
+                MainPageTopPanelTitle.Text = "Rozkład jazdy";
+                MainPageFrame.Navigate(typeof(MainWindowSelect));
             }
             else
                 exit = true;
         }
+
+        private static DoubleAnimation animation;
         public static void showInfo(string message)
         {
-            if (gui.InfoGrid.Visibility == Visibility.Visible)
+            if (gui.MainPageInfoGrid.Visibility == Visibility.Visible)
             {
                 animation.Duration = TimeSpan.FromSeconds(2);
-                gui.InfoText.Text = message;
+                gui.MainPageInfoText.Text = message;
                 return;
             }
 
-            gui.InfoGrid.Visibility = Visibility.Visible;
+            gui.MainPageInfoGrid.Visibility = Visibility.Visible;
 
             animation = new DoubleAnimation();
             animation.To = 1;
@@ -310,97 +280,93 @@ namespace RozkladJazdy
             Storyboard sb = new Storyboard();
             sb.Children.Add(animation);
 
-            Storyboard.SetTarget(sb, gui.InfoGrid);
+            Storyboard.SetTarget(sb, gui.MainPageInfoGrid);
             Storyboard.SetTargetProperty(sb, "Opacity");
 
-            gui.InfoText.Text = message;
-            gui.InfoText.Foreground = new SolidColorBrush(Colors.White);
+            gui.MainPageInfoText.Text = message;
+            gui.MainPageInfoText.Foreground = new SolidColorBrush(Colors.White);
             sb.Begin();
 
-            sb.Completed += (s, e) => gui.InfoGrid.Visibility = Visibility.Collapsed;
-
+            sb.Completed += (s, e) => gui.MainPageInfoGrid.Visibility = Visibility.Collapsed;
         }
 
-        private void MainPageRelativePanelRefreshButton_Click(object sender, RoutedEventArgs e) => MainWindow.refreshList();
+        private void MainPageTopPanelRefreshButton_Click(object sender, RoutedEventArgs e) => MainWindow.refreshList();
 
-        private bool clicked = false;
-        private void ListViews_ItemClick(object sender, ItemClickEventArgs e)
+        private bool isStopClicked = false;
+        private void MainPageStopListStopsList_Click(object sender, ItemClickEventArgs e)
         {
             MainWindowLinesInfo.selectedPrzystanek = e.ClickedItem as Przystanek;
-            MainPageMyFrame.Navigate(typeof(MainWindowLinesInfoHours));
-            clicked = true;
+            MainPageFrame.Navigate(typeof(MainWindowLinesInfoHours));
+            isStopClicked = true;
         }
 
-        private void FavouriteButton_Click(object sender, RoutedEventArgs e)
+        private void MainPageTopPanelFavouriteButton_Click(object sender, RoutedEventArgs e)
         {
-            bool added = false;
+            bool addToFavourite = false;
             int type = 0;
             string name = "";
 
             if (MainPage.gui.getFavouriteButtonColor == Colors.LightGray)
-                added = true;
+                addToFavourite = true;
 
-            if (MainPageMyFrame.SourcePageType == typeof(MainWindowLinesInfo))
+            if (MainPageFrame.SourcePageType == typeof(MainWindowLinesInfo))
             {
-                if (added)
-                    ulubione.Add(new Ulubiony() { type = 0, id = MainWindow.Lines.IndexOf(MainWindowLinesList.selectedLine), name = MainWindowLinesList.selectedLine.name });
+                if (addToFavourite)
+                    favourite_stops.Add(new Ulubiony() { type = 0, id = MainWindow.Lines.IndexOf(MainWindowLinesList.selectedLine), name = MainWindowLinesList.selectedLine.name });
                 else
-                    ulubione.Remove(ulubione.Where(p => p.type == 0 && p.name == MainWindowLinesList.selectedLine.name).ToList().First());
+                    favourite_stops.Remove(favourite_stops.Where(p => p.type == 0 && p.name == MainWindowLinesList.selectedLine.name).ToList().First());
 
                 name = MainWindowLinesList.selectedLine.name;
             }
-            else if (MainPageMyFrame.SourcePageType == typeof(MainWindowLinesInfoHours))
+            else if (MainPageFrame.SourcePageType == typeof(MainWindowLinesInfoHours))
             {
-                if (added)
-                    ulubione.Add(new Ulubiony() { type = 1, id = MainWindowLinesInfo.selectedPrzystanek.nid, name = MainWindowLinesInfo.selectedPrzystanek.getName() });
+                if (addToFavourite)
+                    favourite_stops.Add(new Ulubiony() { type = 1, id = MainWindowLinesInfo.selectedPrzystanek.nid, name = MainWindowLinesInfo.selectedPrzystanek.getName() });
                 else
-                    ulubione.Remove(ulubione.Where(p => p.type == 1 && p.name == MainWindowLinesInfo.selectedPrzystanek.getName()).ToList().First());
+                    favourite_stops.Remove(favourite_stops.Where(p => p.type == 1 && p.name == MainWindowLinesInfo.selectedPrzystanek.getName()).ToList().First());
 
                 type = 1;
                 name = MainWindowLinesInfo.selectedPrzystanek.getName();
             }
-            else if (MainPageMyFrame.SourcePageType == typeof(MainWindowStopList))
+            else if (MainPageFrame.SourcePageType == typeof(MainWindowStopList))
             {
-                if (added)
-                    ulubione.Add(new Ulubiony() { type = 1, id = MainWindowStopList.selectedPrzystanek.id, name = MainWindowStopList.selectedPrzystanek.name });
+                if (addToFavourite)
+                    favourite_stops.Add(new Ulubiony() { type = 1, id = MainWindowStopList.selectedPrzystanek.id, name = MainWindowStopList.selectedPrzystanek.name });
                 else
-                    ulubione.Remove(ulubione.Where(p => p.type == 1 && p.name == MainWindowStopList.selectedPrzystanek.name).ToList().First());
+                    favourite_stops.Remove(favourite_stops.Where(p => p.type == 1 && p.name == MainWindowStopList.selectedPrzystanek.name).ToList().First());
 
                 type = 1;
                 name = MainWindowStopList.selectedPrzystanek.name;
             }
 
-            if (added)
+            if (addToFavourite)
             {
                 MainPage.gui.setFavouriteButtonColor = Colors.Black;
 
-                var txt = string.Format("{0} {1}\"{2}\" zosta{3} dodan{4} do ulubionych", type == 0 ? "Linia" : "Przystanek", type == 0 ? "nr " : "", name, type == 0 ? "ła" : "ł", type == 0 ? "a" : "y");
-                showInfo(txt);
+                var infoMessage = string.Format("{0} {1}\"{2}\" zosta{3} dodan{4} do ulubionych", type == 0 ? "Linia" : "Przystanek", type == 0 ? "nr " : "", name, type == 0 ? "ła" : "ł", type == 0 ? "a" : "y");
+                showInfo(infoMessage);
             }
             else
             {
                 MainPage.gui.setFavouriteButtonColor = Colors.LightGray;
 
-                var txt = string.Format("{0} {1}\"{2}\" zosta{3} usunięt{4} z ulubionych", type == 0 ? "Linia" : "Przystanek", type == 0 ? "nr " : "", name, type == 0 ? "ła" : "ł", type == 0 ? "a" : "y");
-                showInfo(txt);
+                var infoMessage = string.Format("{0} {1}\"{2}\" zosta{3} usunięt{4} z ulubionych", type == 0 ? "Linia" : "Przystanek", type == 0 ? "nr " : "", name, type == 0 ? "ła" : "ł", type == 0 ? "a" : "y");
+                showInfo(infoMessage);
             }
 
-            object b;
+            object objectToAdd;
 
-            if (added)
-                b = ulubione.Last();
+            if (addToFavourite)
+                objectToAdd = favourite_stops.Last() as Ulubiony;
             else
-                b = name;
+                objectToAdd = name as string;
 
-            OnAddedFav?.Invoke(type, b, !added);
+            OnAddedFavouriteStop?.Invoke(type, objectToAdd, !addToFavourite);
 
-            if (added)
-                SQLServices.addToDataBase<Ulubiony>(1, b as Ulubiony);
+            if (addToFavourite)
+                SQLServices.addToDataBase<Ulubiony>(1, objectToAdd as Ulubiony);
             else
-            {
-                var cmd = SQLServices.getConnection(1).CreateCommand("DELETE FROM Ulubiony WHERE name = ?", b as string);
-                cmd.ExecuteNonQuery();
-            }
+                SQLServices.getConnection(1).CreateCommand("DELETE FROM Ulubiony WHERE name = ?", objectToAdd as string).ExecuteNonQuery();
         }
         public static bool IsInternetConnection()
         {
@@ -412,24 +378,23 @@ namespace RozkladJazdy
         {
             if (item.GetType() == typeof(NazwaPrzystanku))
             {
-                var przystanek = item as NazwaPrzystanku;
+                var stop = item as NazwaPrzystanku;
 
-                foreach (var a in ulubione)
-                    if (a.type == 1)
-                        if (a.name == przystanek.name)
+                foreach (var a in favourite_stops)
+                    if (a.type == 1 && a.name == stop.name)
                             return true;
             }
             else if (item.GetType() == typeof(Linia))
             {
-                var linia = item as Linia;
+                var line = item as Linia;
 
-                foreach (var a in ulubione)
-                    if (a.type == 0)
-                        if (a.name == linia.name)
+                foreach (var a in favourite_stops) 
+                    if (a.type == 0 && a.name == line.name)
                             return true;
             }
 
             return false;
         }
+
     }
 }

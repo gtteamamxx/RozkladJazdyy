@@ -27,8 +27,7 @@ namespace RozkladJazdy.Model
         public HTMLServices()
         {
             list = new List<Linia>();
-
-            MainPage.OnRefreshRozklady += () => list.Clear();
+            MainPage.OnTimeTableRefesh += () => list.Clear();
         }
 
         public static void getLinesInfo(bool update = false)

@@ -67,7 +67,7 @@ namespace RozkladJazdy.Pages
                 ListView1.SelectionMode = ListViewSelectionMode.Single;
                 ResultText.Text = "Przystanków: " + lista.Count().ToString();
 
-                MainPage.gui.setFavSubText = "przystanek";
+                MainPage.gui.setFavouriteSubText = "przystanek";
                 if (!string.IsNullOrEmpty(tempPrzystankiNames.name))
                     ListView1.SelectedIndex = lista.IndexOf(tempPrzystankiNames);
             }; 
@@ -292,19 +292,19 @@ namespace RozkladJazdy.Pages
                 MainWindowLinesInfo.selectedPrzystanek = new Przystanek();
                 MainWindowLinesInfo.selectedPrzystanek = przid;
 
-                MainPage.gui.setPage = typeof(MainWindowLinesInfoHours);
+                MainPage.gui.setViewPage = typeof(MainWindowLinesInfoHours);
                 return;
             }
             else if(rozkladid == -1)
             {
                 if (SQLServices.getData<Rozklad>(0, "SELECT * FROM Rozklad WHERE id_linia = ?", lineid).Count() > 1)
                 {
-                    MainPage.gui.setPage = typeof(MainWindowLinesRozkladDzien);
+                    MainPage.gui.setViewPage = typeof(MainWindowLinesRozkladDzien);
                     return;
                 }
             }
 
-            MainPage.gui.setPage = typeof(MainWindowLinesInfo);
+            MainPage.gui.setViewPage = typeof(MainWindowLinesInfo);
         }
 
         //rozklad
@@ -451,7 +451,7 @@ namespace RozkladJazdy.Pages
             else
                 MainPage.gui.setFavouriteButtonColor = Colors.LightGray;
 
-            MainPage.gui.setTitle = "Rozkład jazdy -> Lista przystanków";
+            MainPage.gui.setPageTitle = "Rozkład jazdy -> Lista przystanków";
 
             reset(new object());
             this.SizeChanged += MainWindowStopList_SizeChanged;

@@ -27,11 +27,7 @@ namespace RozkladJazdy.Pages
         {
             this.InitializeComponent();
 
-            this.DataContextChanged += (sender, e) =>
-            {
-                if (e.NewValue != null)
-                    changeText(e.NewValue as string);
-            };
+            this.DataContextChanged += (sender, e) => { if (e.NewValue != null) changeText(e.NewValue as string); };
         }
 
         public void changeText(string text)

@@ -36,7 +36,7 @@ namespace RozkladJazdy.Pages
         {
             this.InitializeComponent();
 
-            MainPage.gui.setTitle = "Rozkład jazdy";
+            MainPage.gui.setPageTitle = "Rozkład jazdy";
             MainPage.gui.setRefreshButtonVisibility = Visibility.Visible;
 
             this.Loaded += (sender, e) =>
@@ -52,7 +52,7 @@ namespace RozkladJazdy.Pages
                     HTMLServices.godzinynames = SQLServices.getData<NazwaGodziny>(0, "SELECT * FROM NazwaGodziny");
 
                     //wczytaj ulubione
-                    MainPage.ulubione = new ObservableCollection<Ulubiony>();
+                    MainPage.favourite_stops = new ObservableCollection<Ulubiony>();
 
                     var num = SQLServices.getData<Ulubiony>(1, "SELECT * FROM sqlite_master WHERE name LIKE '%Ulubiony%'");
 
@@ -63,7 +63,7 @@ namespace RozkladJazdy.Pages
                         num = SQLServices.getData<Ulubiony>(1, "SELECT * FROM Ulubiony");
 
                         foreach (var a in num)
-                            MainPage.ulubione.Add(a);
+                            MainPage.favourite_stops.Add(a);
                     }
 
                     temp_lista = SQLServices.getAllFromDataBase<PrzystanekListaPrzystanków>();
@@ -88,7 +88,7 @@ namespace RozkladJazdy.Pages
         {
             if (!loaded) return;
 
-            MainPage.gui.setPage = typeof(MainWindowFav);
+            MainPage.gui.setViewPage = typeof(MainWindowFav);
             MainPage.gui.setBackButtonVisibility = Visibility.Visible;
         }
         //stops
@@ -97,9 +97,9 @@ namespace RozkladJazdy.Pages
             if (!loaded) return;
 
             if (MainWindowFav.loaded == null)
-                MainPage.gui.setPage = typeof(MainWindowFav); // this same, cache if not exist;
+                MainPage.gui.setViewPage = typeof(MainWindowFav); // this same, cache if not exist;
 
-            MainPage.gui.setPage = typeof(MainWindowStopList);
+            MainPage.gui.setViewPage = typeof(MainWindowStopList);
 
             MainPage.gui.setBackButtonVisibility = Visibility.Visible;
         }
@@ -108,25 +108,25 @@ namespace RozkladJazdy.Pages
         {
             if (!loaded) return;
 
-            MainPage.gui.setPage = typeof(MainWindowLinesList);
+            MainPage.gui.setViewPage = typeof(MainWindowLinesList);
             MainPage.gui.setBackButtonVisibility = Visibility.Visible;
         }
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             MainWindowStopList.navigated_from = false;
 
-            MainPage.gui.setSplitViewDisplayMode = SplitViewDisplayMode.Overlay;
+            MainPage.gui.setMenuSplitViewDisplayMode = SplitViewDisplayMode.Overlay;
             MainPage.gui.setRefreshButtonVisibility = Visibility.Visible;
             MainPage.gui.setFavouriteButtonVisibility = Visibility.Collapsed;
-            MainPage.gui.setPrzystankiButtonVisibility = Visibility.Collapsed;
+            MainPage.gui.setStopButtonVisibility = Visibility.Collapsed;
             MainPage.gui.setBackButtonVisibility = Visibility.Collapsed;
 
-            MainPage.gui.setTitle = "Rozkład jazdy";
+            MainPage.gui.setPageTitle = "Rozkład jazdy";
             MainWindowLinesInfo.selectedRozkladIndex = -1;
             MainWindowLinesList.selectedRozklad = new int();
         }
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e) 
-            =>    MainPage.gui.setSplitViewDisplayMode = SplitViewDisplayMode.Inline;
+            =>    MainPage.gui.setMenuSplitViewDisplayMode = SplitViewDisplayMode.Inline;
 
         //Admin privvilages
         private int num = 0;

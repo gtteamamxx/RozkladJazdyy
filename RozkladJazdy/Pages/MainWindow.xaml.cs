@@ -114,7 +114,7 @@ namespace RozkladJazdy.Pages
                 {
                     offine = true;
 
-                    MainPage.gui.setPage = typeof(MainWindowSelect);
+                    MainPage.gui.setViewPage = typeof(MainWindowSelect);
 
                     statusdo = true;
                     refresh = false;
@@ -227,7 +227,7 @@ namespace RozkladJazdy.Pages
         }
         public static void refreshList()
         {
-            MainPage.gui.setPage = MainWindow.gui.GetType();
+            MainPage.gui.setViewPage = MainWindow.gui.GetType();
 
             isLoaded = null;
             offine = false;
@@ -236,8 +236,8 @@ namespace RozkladJazdy.Pages
             Lines.Clear();
             MainPage.gui.setRefreshButtonVisibility = Visibility.Collapsed;
             MainPage.gui.setFavouriteButtonVisibility = Visibility.Collapsed;
-            MainPage.OnRefreshRozklady?.Invoke();
-            MainPage.gui.clearPrzystanki();
+            MainPage.OnTimeTableRefesh?.Invoke();
+            MainPage.gui.clearStopListStops();
 
             gui.MainWindowButton_Click(new object(), new RoutedEventArgs());
         }
@@ -245,7 +245,7 @@ namespace RozkladJazdy.Pages
         {
             if (isLoaded == true)
             {
-                MainPage.gui.setPage = typeof(MainWindowSelect);
+                MainPage.gui.setViewPage = typeof(MainWindowSelect);
                 return;
             }
 

@@ -48,7 +48,7 @@ namespace RozkladJazdy.Pages
         {
             this.InitializeComponent();
 
-            MainPage.OnRefreshRozklady += Refresh;
+            MainPage.OnTimeTableRefesh += Refresh;
 
             gui = this;
 
@@ -82,7 +82,7 @@ namespace RozkladJazdy.Pages
         }
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            MainPage.gui.setFavSubText = "linia";
+            MainPage.gui.setFavouriteSubText = "linia";
             //check if Line is in favourite then set color
             MainPage.gui.setFavouriteButtonVisibility = Visibility.Visible;
 
@@ -261,10 +261,10 @@ namespace RozkladJazdy.Pages
 
             MainWindowFav.navigated_from = false;
 
-            if (MainPage.gui.PrzystankiTrasa == 2)
-                MainPage.gui.clearPrzystanki();
+            if (MainPage.gui.stops_track == 2)
+                MainPage.gui.clearStopListStops();
 
-            MainPage.gui.setPage = typeof(MainWindowLinesInfoHours);
+            MainPage.gui.setViewPage = typeof(MainWindowLinesInfoHours);
 
             if (MainWindowLinesInfoListView2.Visibility != Visibility.Collapsed)
             {
@@ -289,10 +289,10 @@ namespace RozkladJazdy.Pages
 
             MainWindowFav.navigated_from = false;
 
-            if (MainPage.gui.PrzystankiTrasa == 1)
-                MainPage.gui.clearPrzystanki();
+            if (MainPage.gui.stops_track == 1)
+                MainPage.gui.clearStopListStops();
 
-            MainPage.gui.setPage = typeof(MainWindowLinesInfoHours);
+            MainPage.gui.setViewPage = typeof(MainWindowLinesInfoHours);
 
             var items = MainWindowLinesInfoListView1.Items.Where(d => (d as Przystanek).getName() == przystanek.getName()).ToList();
 
@@ -314,7 +314,7 @@ namespace RozkladJazdy.Pages
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            MainPage.gui.setTitle = "Rozkład jazdy -> Linia: " + MainWindowLinesList.selectedLine.name;
+            MainPage.gui.setPageTitle = "Rozkład jazdy -> Linia: " + MainWindowLinesList.selectedLine.name;
             this.SizeChanged += Page_SizeChanged;
         }
 

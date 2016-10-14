@@ -39,11 +39,11 @@ namespace RozkladJazdy.Pages
         private void ListView_ItemClick(object sender, ItemClickEventArgs e)
         {
             MainWindowLinesList.selectedRozklad = (sender as ListView).Items.IndexOf(e.ClickedItem as Rozklad);
-            MainPage.gui.setPage = typeof(MainWindowLinesInfo);
+            MainPage.gui.setViewPage = typeof(MainWindowLinesInfo);
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e) =>
-            MainPage.gui.setTitle = "Rozkład jazdy -> Rozklady dla linii ";
+            MainPage.gui.setPageTitle = "Rozkład jazdy -> Rozklady dla linii ";
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {

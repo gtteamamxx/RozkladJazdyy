@@ -22,10 +22,7 @@ namespace RozkladJazdy.Model
         public int id { get; set; }
 
         public static int aid = 0;
-        public Literka()
-        {
-            id = aid++;
-        }
+        public Literka() { id = aid++; }
         public int id_przystanku { get; set; }
         public string info { get; set; }
     }
@@ -37,10 +34,7 @@ namespace RozkladJazdy.Model
         public int id { get; set; }
 
         public static int aid = 0;
-        public Rozklad()
-        {
-            id = aid++;
-        }
+        public Rozklad() { id = aid++; }
         public int id_linia { get; set; }
         public string url { get; set; }
         public string text { get; set; }
@@ -60,10 +54,7 @@ namespace RozkladJazdy.Model
         public int id_linia { get; set; }
         public int id_rozklad { get; set; }
         public string name { get; set; }
-        public Trasa()
-        {
-            id = aid++;
-        }
+        public Trasa() { id = aid++; }
         [Ignore]
         public List<Przystanek> stops { get; set; }
     }
@@ -77,22 +68,12 @@ namespace RozkladJazdy.Model
         public string url { get; set; }
 
         private uint _pfm;
-        public uint pfm
-        {
-            get
-            {
-                if (_pfm == 2)
-                    return 3;
-                return _pfm;
-            }
-            set
-            {
-                _pfm = value;
-            }
-        }
+        public uint pfm { get { return (_pfm == 2) ? 3 : _pfm; } set {_pfm = value; } }
 
         public string info { get; set; }
+
         public override string ToString() => name;
+
         public string getPfmText(uint pfm)
         {
             var returnString = string.Empty;
@@ -144,10 +125,7 @@ namespace RozkladJazdy.Model
         [Indexed]
         public int id { get; set; }
         public static int aid = 0;
-        public NazwaPrzystanku()
-        {
-            id = aid++;
-        }
+        public NazwaPrzystanku() { id = aid++; }
         public string name { get; set; }
     }
     public class Przystanek
@@ -177,12 +155,8 @@ namespace RozkladJazdy.Model
         [AutoIncrement]
         [Indexed]
         public int id { get; set; }
-
         public static int aid = 0;
-        public NazwaGodziny()
-        {
-            id = aid++;
-        }
+        public NazwaGodziny() { id = aid++; }
         public string name { get; set; }
     }
     public class Godzina
@@ -196,10 +170,7 @@ namespace RozkladJazdy.Model
         public string godziny_full { get; set; }
         public int id_przystanek { get; set; }
         public static int aid = 0;
-        public Godzina()
-        {
-            id = aid++;
-        }
+        public Godzina() { id = aid++; }
         public override string ToString() => getName();
     }
     public class PrzystanekListaPrzystanków
