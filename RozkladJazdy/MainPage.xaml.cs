@@ -137,17 +137,17 @@ namespace RozkladJazdy
         {
             var clickedItemName = ((e.ClickedItem as StackPanel).Children[1] as TextBlock);
 
-            if (clickedItemName.Text.Contains("Roz") && MainWindow.isLoaded == false && MainWindow.refresh == false) // rozklad jazdy
+            if (clickedItemName.Text.Contains("Roz") && MainWindow.isPageLoaded == false && MainWindow.isTimetableRefreshing == false) // rozklad jazdy
             {
                 MainPageFrame.Navigate(typeof(MainWindow));
                 MainPageTopPanelTitle.Text = "Rozkład jazdy";
             }
-            else if (clickedItemName.Text.Contains("Roz") && MainWindow.isLoaded == true && MainWindow.refresh == false)
+            else if (clickedItemName.Text.Contains("Roz") && MainWindow.isPageLoaded == true && MainWindow.isTimetableRefreshing == false)
             {
                 MainPageFrame.Navigate(typeof(MainWindowSelect));
                 MainPageTopPanelTitle.Text = "Rozkład jazdy";
             }
-            else if (clickedItemName.Text.Contains("unika") && MainWindow.isLoaded == true && MainWindow.refresh == false)
+            else if (clickedItemName.Text.Contains("unika") && MainWindow.isPageLoaded == true && MainWindow.isTimetableRefreshing == false)
             {
                 MainPageFrame.Navigate(typeof(Comunicates));
                 MainPageTopPanelTitle.Text = "Komunikaty BETA";
@@ -312,7 +312,7 @@ namespace RozkladJazdy
             if (MainPageFrame.SourcePageType == typeof(MainWindowLinesInfo))
             {
                 if (addToFavourite)
-                    favourite_stops.Add(new Ulubiony() { type = 0, id = MainWindow.Lines.IndexOf(MainWindowLinesList.selectedLine), name = MainWindowLinesList.selectedLine.name });
+                    favourite_stops.Add(new Ulubiony() { type = 0, id = MainWindow.lines.IndexOf(MainWindowLinesList.selectedLine), name = MainWindowLinesList.selectedLine.name });
                 else
                     favourite_stops.Remove(favourite_stops.Where(p => p.type == 0 && p.name == MainWindowLinesList.selectedLine.name).ToList().First());
 

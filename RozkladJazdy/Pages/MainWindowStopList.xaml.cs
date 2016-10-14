@@ -176,8 +176,8 @@ namespace RozkladJazdy.Pages
                     var rid = filteredlist[i].rozklad_id;
                     var tid = filteredlist[i].trasa_id;
 
-                    var kier = SQLServices.getData<Trasa>(0, "SELECT name FROM Trasa WHERE (id_linia = ? AND id_rozklad = ?) LIMIT 2", lid, rid)[tid].name;////MainWindow.Lines[lid].rozklad[rid].track[tid].name;
-                    var name = MainWindow.Lines[lid].name;
+                    var kier = SQLServices.getData<Trasa>(0, "SELECT name FROM Trasa WHERE (id_linia = ? AND id_rozklad = ?) LIMIT 2", lid, rid)[tid].name;////MainWindow.lines[lid].rozklad[rid].track[tid].name;
+                    var name = MainWindow.lines[lid].name;
 
                     bool state = false;
 
@@ -232,7 +232,7 @@ namespace RozkladJazdy.Pages
                     l.Add(new PrzystanekListaPrzystanków4() { name = kier, rozk_id = rid, track_id = tid, line_id = lid });
 
                     m.roz_id = rid;
-                    m.name = SQLServices.getData<Rozklad>(0, "SELECT text FROM Rozklad WHERE id_linia = ?", lid)[rid].text;// MainWindow.Lines[lid].rozklad[rid].text;
+                    m.name = SQLServices.getData<Rozklad>(0, "SELECT text FROM Rozklad WHERE id_linia = ?", lid)[rid].text;// MainWindow.lines[lid].rozklad[rid].text;
                     m.kierunki = l;
                     m.line_id = lid;
 
@@ -274,10 +274,10 @@ namespace RozkladJazdy.Pages
         }
         private void changePage(int lineid, int rozkladid = -1, Przystanek przid = null)
         {
-            if(MainWindowLinesList.selectedLine == null || (MainWindowLinesList.selectedLine != null && MainWindow.Lines.IndexOf(MainWindowLinesList.selectedLine) != lineid))
+            if(MainWindowLinesList.selectedLine == null || (MainWindowLinesList.selectedLine != null && MainWindow.lines.IndexOf(MainWindowLinesList.selectedLine) != lineid))
             {
                 MainWindowLinesList.selectedLine = new Linia();
-                MainWindowLinesList.selectedLine = MainWindow.Lines[lineid];
+                MainWindowLinesList.selectedLine = MainWindow.lines[lineid];
             }
 
             MainWindowLinesList.selectedRozklad = new int();
@@ -337,11 +337,11 @@ namespace RozkladJazdy.Pages
 
             worker.DoWork += (s, f) =>
             {
-                var a = MainWindow.Lines[linia];
+                var a = MainWindow.lines[linia];
                 var b = SQLServices.getData<Rozklad>(0, "SELECT * FROM Rozklad WHERE id_linia = ?", linia);//a.rozklad[rozklad];
 
                 MainWindowLinesList.selectedLine = new Linia();
-                MainWindowLinesList.selectedLine = MainWindow.Lines[linia];
+                MainWindowLinesList.selectedLine = MainWindow.lines[linia];
 
                 MainWindowLinesList.selectedLine.rozklad = new List<Rozklad>();
                 MainWindowLinesList.selectedLine.rozklad = b;

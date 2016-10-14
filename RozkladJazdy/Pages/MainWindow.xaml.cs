@@ -31,60 +31,63 @@ namespace RozkladJazdy.Pages
     /// </summary>
     public sealed partial class MainWindow : Page
     {
-        public static List<Linia> Lines;
-        public static bool? isLoaded = null;
-        public static bool offine = false;
-        public static bool refresh = false;
+        public static List<Linia> lines;
+        public static bool? isPageLoaded = null;
+        public static bool isTimetableRefreshing = false;
         public static MainWindow gui;
-        StorageFolder localFolder = ApplicationData.Current.LocalFolder;
+
+        private bool loadOffineLines = false;
+
+        StorageFolder application_folder = ApplicationData.Current.LocalFolder;
 
         public MainWindow()
         {
             this.InitializeComponent();
-            Lines = new List<Linia>();
+            lines = new List<Linia>();
             gui = this;
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            if ((refresh || statusdo == true) && sender != null)
+            if ((isTimetableRefreshing || loadOffineLines == true) && sender != null)
                 return;
 
-            var files = await localFolder.GetFilesAsync();
+            var local_files = await application_folder.GetFilesAsync();
 
-            foreach (var a in files)
-                if (a.Name.Contains("temp"))
-                    await a.DeleteAsync();
+            foreach (StorageFile file in local_files)
+                if (file.Name.Contains("temp"))
+                    await file.DeleteAsync();
 
-            BackgroundWorker wor = new BackgroundWorker();
-            wor.WorkerReportsProgress = true;
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.WorkerReportsProgress = true;
 
             MainWindowTextBlock.Text = "Wczytywanie rozkładu jazdy...";
-            MainWindowProgressRing.Visibility = Visibility.Visible;
-            MainWindowButton.Visibility = Visibility.Collapsed;
-            MainWindowProgressBar.Visibility = Visibility.Collapsed;
+            MainWindowStatusProgressRing.Visibility = Visibility.Visible;
+            MainWindowAcceptButton.Visibility = Visibility.Collapsed;
+            MainWindowDownloadProgressBar.Visibility = Visibility.Collapsed;
 
-            wor.DoWork += (s, f) =>
+            worker.DoWork += (s, f) =>
             {
                 try
                 {
-                    if (File.Exists(string.Format(@"{0}\\{1}", localFolder.Path, "RozkladJazdy.sqlite")))
+                    if (File.Exists(string.Format(@"{0}\\{1}", application_folder.Path, "RozkladJazdy.sqlite")))
                     {
                         new SQLServices();
 
-                        bool table_exist = SQLServices.getData<Linia>(0, "SELECT * FROM sqlite_master WHERE name LIKE 'Linia'").Count() > 0 ? true : false;
+                        bool isTableExist = SQLServices.getData<Linia>(0, "SELECT * FROM sqlite_master WHERE name LIKE 'Linia'").Count() > 0 ? true : false;
 
-                        if (!table_exist) return;
+                        if (!isTableExist) return;
 
-                        var list = SQLServices.getData<Linia>(0, "SELECT * FROM Linia");
+                        var lines_list = SQLServices.getData<Linia>(0, "SELECT * FROM Linia");
 
-                        foreach (Linia a in list)
+                        foreach (Linia line in lines_list)
                         {
-                            int num = (int)(0.5f + ((100f * list.IndexOf(a)) / list.Count()));
+                            int num = (int)(0.5f + ((100f * lines_list.IndexOf(line)) / lines_list.Count()));
 
-                            if ((a.pfm & 4) == 4) list[list.IndexOf(a)].name = a.name.Insert(0, "T");
+                            if ((line.pfm & 4) == 4)
+                                lines_list[lines_list.IndexOf(line)].name = line.name.Insert(0, "T");
 
-                            wor.ReportProgress(num, a);
+                            worker.ReportProgress(num, line);
                         }
 
                     }
@@ -94,33 +97,31 @@ namespace RozkladJazdy.Pages
                     //blad  todo
                 }
             };
-            wor.ProgressChanged += (s, f) =>
+            worker.ProgressChanged += (s, f) =>
             {
-                MainWindowProgressBar.Value = f.ProgressPercentage;
+                MainWindowDownloadProgressBar.Value = f.ProgressPercentage;
                 MainWindowTextBlock.Text = "[" + f.ProgressPercentage + "%]" + " Dodawanie linii: " + (f.UserState as Linia).name;
 
-                Lines.Add(f.UserState as Linia);
+                lines.Add(f.UserState as Linia);
 
             };
-            wor.RunWorkerCompleted += (s, f) =>
+            worker.RunWorkerCompleted += (s, f) =>
             {
-                if (Lines.Count() == 0)
+                if (lines.Count() == 0)
                 {
                     MainWindowTextBlock.Text = "Do przeglądania rozkładu jazdy potrzebna jest wersja offine, chcesz ją teraz pobrać?";
-                    MainWindowButton.Visibility = Visibility.Visible;
-                    MainWindowProgressRing.Visibility = Visibility.Collapsed;
+                    MainWindowAcceptButton.Visibility = Visibility.Visible;
+                    MainWindowStatusProgressRing.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
-                    offine = true;
-
                     MainPage.gui.setViewPage = typeof(MainWindowSelect);
 
-                    statusdo = true;
-                    refresh = false;
+                    loadOffineLines = true;
+                    isTimetableRefreshing = false;
                 }
             };
-            wor.RunWorkerAsync();
+            worker.RunWorkerAsync();
         }
 
         BackgroundDownloader downloader = new BackgroundDownloader();
@@ -128,23 +129,22 @@ namespace RozkladJazdy.Pages
         CancellationTokenSource backgroundDownloader = new CancellationTokenSource();
         StorageFile file;
 
-        int pr;
-        bool statusdo = false;
-
+        int file_to_download;
+       
         public async Task getfile(int filee)
         {
             string filename = "", url = "";
 
             if (filee == 1)
             {
-                pr = 1;
+                file_to_download = 1;
                 filename = "rozklad_temp.sqlite";
                 url = "http://www.ball3d.pl/mroczek/RozkladJazdy.sqlite";
             }
 
             try
             {
-                file = AsyncHelpers.RunSync<StorageFile>(async () => await localFolder.CreateFileAsync(filename, CreationCollisionOption.ReplaceExisting));
+                file = AsyncHelpers.RunSync<StorageFile>(async () => await application_folder.CreateFileAsync(filename, CreationCollisionOption.ReplaceExisting));
             }
             catch { }
 
@@ -165,11 +165,11 @@ namespace RozkladJazdy.Pages
                         {
                             if ((await file.GetBasicPropertiesAsync()).Size < 10 * 1024 * 1024) // if size < 10 mb
                             {
-                                statusdo = true;
+                                loadOffineLines = true;
                                 return;
                             }
 
-                            var files = await localFolder.GetFilesAsync();
+                            var files = await application_folder.GetFilesAsync();
 
                             if (SQLServices.getConnection() != null)
                                 SQLServices.closeConnection();
@@ -182,10 +182,10 @@ namespace RozkladJazdy.Pages
                         }
                         catch
                         {
-                            statusdo = true;
+                            loadOffineLines = true;
                             return;
                         }
-                        statusdo = false;
+                        loadOffineLines = false;
 
                         Page_Loaded(null, new RoutedEventArgs());
                     }
@@ -197,7 +197,7 @@ namespace RozkladJazdy.Pages
                 {
                     downloadOperation = null;
                     file = null;
-                    statusdo = true;
+                    loadOffineLines = true;
                 }
             }
             catch
@@ -205,45 +205,48 @@ namespace RozkladJazdy.Pages
                 ;
             }
         }
-        private ulong ttemp;
+        private ulong bytes_received_temp;
         private void progresschanged(DownloadOperation downloadOperation)
         {
             int progress = (int)(100 * ((double)downloadOperation.Progress.BytesReceived / (double)downloadOperation.Progress.TotalBytesToReceive));
-            string txt = String.Format("Pobrano {0} z {1} kb. - {2}%. (plik {3}/1) | {4} kb/s", downloadOperation.Progress.BytesReceived / 1024, downloadOperation.Progress.TotalBytesToReceive / 1024, progress, pr, (downloadOperation.Progress.BytesReceived - ttemp) / 1024);
 
-            ttemp = downloadOperation.Progress.BytesReceived;
+            string message = String.Format("Pobrano {0} z {1} kb. - {2}%. (plik {3}/1) | {4} kb/s", 
+                downloadOperation.Progress.BytesReceived / 1024, 
+                downloadOperation.Progress.TotalBytesToReceive / 1024, progress, file_to_download, 
+                (downloadOperation.Progress.BytesReceived - bytes_received_temp) / 1024);
 
-            MainWindowProgressBar.Value = progress;
-            MainWindowTextBlock.Text = txt;
+            bytes_received_temp = downloadOperation.Progress.BytesReceived;
+
+            MainWindowDownloadProgressBar.Value = progress;
+            MainWindowTextBlock.Text = message;
 
             if (downloadOperation.Progress.BytesReceived == downloadOperation.Progress.TotalBytesToReceive)
             {
                 if (downloadOperation.Progress.BytesReceived == 0)
                     throw new Exception();
 
-                if (pr != 3)
-                    ttemp = 0;
+                if (file_to_download != 1)
+                    bytes_received_temp = 0;
             }
         }
         public static void refreshList()
         {
             MainPage.gui.setViewPage = MainWindow.gui.GetType();
 
-            isLoaded = null;
-            offine = false;
-            refresh = true;
+            isPageLoaded = null;
+            isTimetableRefreshing = true;
 
-            Lines.Clear();
+            lines.Clear();
             MainPage.gui.setRefreshButtonVisibility = Visibility.Collapsed;
             MainPage.gui.setFavouriteButtonVisibility = Visibility.Collapsed;
             MainPage.OnTimeTableRefesh?.Invoke();
             MainPage.gui.clearStopListStops();
 
-            gui.MainWindowButton_Click(new object(), new RoutedEventArgs());
+            gui.MainWindowAcceptButton_Click(null, null);
         }
-        public async void MainWindowButton_Click(object sender, RoutedEventArgs e)
+        public async void MainWindowAcceptButton_Click(object sender, RoutedEventArgs e)
         {
-            if (isLoaded == true)
+            if (isPageLoaded == true)
             {
                 MainPage.gui.setViewPage = typeof(MainWindowSelect);
                 return;
@@ -252,25 +255,25 @@ namespace RozkladJazdy.Pages
             if (!MainPage.IsInternetConnection())
             {
                 gui.MainWindowTextBlock.Text = "Wygląda na to, że nie jesteś podłączony do internetu. Sprawdź połączenie i spróbuj ponownie";
-                MainWindowProgressRing.Visibility = Visibility.Collapsed;
-                MainWindowButton.Visibility = Visibility.Visible;
-                MainWindowProgressBar.Visibility = Visibility.Collapsed;
+                MainWindowStatusProgressRing.Visibility = Visibility.Collapsed;
+                MainWindowAcceptButton.Visibility = Visibility.Visible;
+                MainWindowDownloadProgressBar.Visibility = Visibility.Collapsed;
                 return;
             }
 
             MainWindowTextBlock.Text = "Wczytywanie...";
 
-            MainWindowProgressRing.Visibility = Visibility.Visible;
-            MainWindowButton.Visibility = Visibility.Collapsed;
-            MainWindowProgressBar.Visibility = Visibility.Visible;
+            MainWindowStatusProgressRing.Visibility = Visibility.Visible;
+            MainWindowAcceptButton.Visibility = Visibility.Collapsed;
+            MainWindowDownloadProgressBar.Visibility = Visibility.Visible;
 
-            isLoaded = false;
+            isPageLoaded = false;
 
             if (MainPage.isAdmin == false)
             {
                 await getfile(1);
 
-                if (statusdo == false)
+                if (loadOffineLines == false)
                     return;
             }
 
@@ -281,60 +284,58 @@ namespace RozkladJazdy.Pages
 
             HTMLServices.OnGetLinesDetailProgressChange += (percent, state, update) =>
             {
-                MainWindowProgressBar.Value = percent;
+                MainWindowDownloadProgressBar.Value = percent;
                 MainWindowTextBlock.Text = "[" + percent + "%]" + " " + (update==true?"Aktualizowanie":"Dodawanie") + " linii: " + state.ToString();
             };
-            HTMLServices.OnGetLinesBackgroundFinish += async (a, update) =>
+            HTMLServices.OnGetLinesBackgroundFinish += async (new_lines, update) =>
             {
+                foreach (StorageFile file in await application_folder.GetFilesAsync())
+                    if (file.Name.ToLower().Contains("rozklad") && !file.Name.Contains("temp") && !file.Name.ToLower().Contains("fav"))
+                        await file.DeleteAsync();
 
-                foreach (StorageFile fille in await localFolder.GetFilesAsync())
-                    if (fille.Name.ToLower().Contains("rozklad") && !fille.Name.Contains("temp") && !fille.Name.ToLower().Contains("fav"))
-                        await fille.DeleteAsync();
-                Lines = a;
+                lines = new_lines;
 
-                MainWindowTextBlock.Text = "Pomyślnie dodano: " + Lines.Count() + " linii. Trwa zapisywanie rozkładu.. proszę czkeać";
+                MainWindowTextBlock.Text = "Pomyślnie dodano: " + lines.Count() + " linii. Trwa zapisywanie rozkładu.. proszę czkeać";
 
-                BackgroundWorker wor = new BackgroundWorker();
+                BackgroundWorker worker = new BackgroundWorker();
 
-                var str = string.Empty;
-
-                wor.DoWork += (s, f) =>
+                worker.DoWork += (s, f) =>
                 {
-                    var plp = new List<PrzystanekListaPrzystanków>();
+                    var stoplist_list= new List<PrzystanekListaPrzystanków>();
 
                     for (int j = 0; j < HTMLServices.przystankinames.Count(); j++)
                     {
-                        for (int i = 0; i < Lines.Count(); i++)
+                        for (int i = 0; i < lines.Count(); i++)
                         {
-                            for (int k = 0; k < Lines[i].rozklad.Count(); k++)
+                            for (int k = 0; k < lines[i].rozklad.Count(); k++)
                             {
-                                if (Lines[i].rozklad[k].track != null)
+                                if (lines[i].rozklad[k].track != null)
                                 {
-                                    for (int b = 0; b < Lines[i].rozklad[k].track.Count(); b++)
+                                    for (int b = 0; b < lines[i].rozklad[k].track.Count(); b++)
                                     {
-                                        for (int c = 0; c < Lines[i].rozklad[k].track[b].stops.Count(); c++)
+                                        for (int c = 0; c < lines[i].rozklad[k].track[b].stops.Count(); c++)
                                         {
-                                            if (Lines[i].rozklad[k].track[b].stops[c].nid == HTMLServices.przystankinames[j].id)
+                                            if (lines[i].rozklad[k].track[b].stops[c].nid == HTMLServices.przystankinames[j].id)
                                             {
-                                                bool ct = false;
-                                                foreach (var pp in plp)
+                                                bool isBreak = false;
+                                                foreach (PrzystanekListaPrzystanków pp in stoplist_list)
                                                 {
                                                     if (pp.linia_id == i && pp.rozklad_id == k && pp.przystanek_id == j && pp.trasa_id ==
-                                                        Lines[i].rozklad[k].track[b].stops[c].track_id)
+                                                        lines[i].rozklad[k].track[b].stops[c].track_id)
                                                     {
-                                                        ct = true;
+                                                        isBreak = true;
                                                         break;
                                                     }
                                                 }
-                                                if (ct) break;
+                                                if (isBreak) break;
 
-                                                plp.Add(new PrzystanekListaPrzystanków()
+                                                stoplist_list.Add(new PrzystanekListaPrzystanków()
                                                 {
                                                     linia_id = i,
                                                     przystanek_id = j,
                                                     przystanek_id2 = c,
                                                     rozklad_id = k,
-                                                    trasa_id = Lines[i].rozklad[k].track[b].stops[c].track_id
+                                                    trasa_id = lines[i].rozklad[k].track[b].stops[c].track_id
                                                 });
                                             }
                                         }
@@ -349,30 +350,30 @@ namespace RozkladJazdy.Pages
 
                     SQLServices.createDatabases();
 
-                    SQLServices.addAllToDataBase<Linia>(Lines);
+                    SQLServices.addAllToDataBase<Linia>(lines);
                     SQLServices.addAllToDataBase<NazwaPrzystanku>(HTMLServices.przystankinames);
                     SQLServices.addAllToDataBase<NazwaGodziny>(HTMLServices.godzinynames);
                     SQLServices.addAllToDataBase<Literka>(HTMLServices.literkiinfo);
-                    SQLServices.addAllToDataBase<PrzystanekListaPrzystanków>(plp);
+                    SQLServices.addAllToDataBase<PrzystanekListaPrzystanków>(stoplist_list);
 
                     List<Przystanek> przystanki = new List<Przystanek>();
                     List<Rozklad> rozklady = new List<Rozklad>();
                     List<Trasa> trasy = new List<Trasa>();
                     List<Godzina> godziny = new List<Godzina>();
 
-                    foreach (var l in MainWindow.Lines)
-                        foreach (var r in l.rozklad)
+                    foreach (Linia l in lines)
+                        foreach (Rozklad r in l.rozklad)
                         {
                             rozklady.Add(r);
 
                             if (r.track != null)
-                                foreach (var t in r.track)
+                                foreach (Trasa t in r.track)
                                 {
                                     trasy.Add(t);
-                                    foreach (var d in t.stops)
+                                    foreach (Przystanek d in t.stops)
                                     {
                                         przystanki.Add(d);
-                                        foreach (var g in d.godziny)
+                                        foreach (Godzina g in d.godziny)
                                             godziny.Add(g);
                                     }
                                 }
@@ -384,32 +385,33 @@ namespace RozkladJazdy.Pages
                     SQLServices.addAllToDataBase<Godzina>(godziny);
                 };
 
-                wor.RunWorkerCompleted += (s, f) =>
+                worker.RunWorkerCompleted += (s, f) =>
                 {
-                    MainWindowTextBlock.Text = "Pomyślnie dodano: " + Lines.Count() + " linii. Kliknij przycisk poniżej aby przejść do rozkładu";
-                    MainWindowButton.Visibility = Visibility.Visible;
-                    isLoaded = true;
+                    MainWindowTextBlock.Text = "Pomyślnie dodano: " + lines.Count() + " linii. Kliknij przycisk poniżej aby przejść do rozkładu";
+                    MainWindowAcceptButton.Visibility = Visibility.Visible;
+                    isPageLoaded = true;
                 };
 
-                wor.RunWorkerAsync();
 
                 Color color = Colors.LightGreen;
                 color.A = 21;
 
                 MainWindowStackPanel.Background = new SolidColorBrush(color);
-                MainWindowProgressBar.Visibility = Visibility.Collapsed;
-                MainWindowProgressRing.Visibility = Visibility.Collapsed;
+                MainWindowDownloadProgressBar.Visibility = Visibility.Collapsed;
+                MainWindowStatusProgressRing.Visibility = Visibility.Collapsed;
+
+                worker.RunWorkerAsync();
             };
         }
 
-        private int temp_num = 0;
+        private int click_num = 0;
         private void MainWindowTextBlock_Tapped(object sender, TappedRoutedEventArgs e)
         {
             if (MainPage.isAdmin == false)
             {
-                temp_num++;
+                click_num++;
 
-                if (temp_num == 10)
+                if (click_num == 10)
                 {
                     MainPage.isAdmin = true;
                     MainPage.showInfo("Okeeej, już jesteś adminem :)");

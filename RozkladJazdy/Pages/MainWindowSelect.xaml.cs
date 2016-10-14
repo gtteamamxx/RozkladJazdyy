@@ -73,7 +73,7 @@ namespace RozkladJazdy.Pages
                 {
                     ResultStackPanel.Visibility = Visibility.Collapsed;
                     loaded = true;
-                    MainWindow.isLoaded = true;
+                    MainWindow.isPageLoaded = true;
                 };
                 
                 if(loaded == false)

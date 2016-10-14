@@ -179,13 +179,13 @@ namespace RozkladJazdy.Pages
                 loaded = true;
 
                 MainPage.gui.setRefreshButtonVisibility = Visibility.Visible;
-                MainWindow.refresh = false;
+                MainWindow.isTimetableRefreshing = false;
 
             };
 
-            if (!loaded || (!loaded && MainWindow.isLoaded == true))
+            if (!loaded || (!loaded && MainWindow.isPageLoaded == true))
             {
-                Linie = MainWindow.Lines;
+                Linie = MainWindow.lines;
                 worker.RunWorkerAsync();
             }
         }

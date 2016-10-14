@@ -105,7 +105,7 @@ namespace RozkladJazdy.Pages
 
                 MainPage.gui.setRefreshButtonVisibility = Visibility.Collapsed;
 
-                MainWindowLinesList.selectedLine = MainWindow.Lines[item.id];
+                MainWindowLinesList.selectedLine = MainWindow.lines[item.id];
 
                 var liczba_rozkladow = SQLServices.getData<Rozklad>(0, "SELECT id FROM Rozklad where id_linia = ?", MainWindowLinesList.selectedLine.id).Count();
 
