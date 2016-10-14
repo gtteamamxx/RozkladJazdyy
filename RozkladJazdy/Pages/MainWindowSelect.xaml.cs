@@ -71,28 +71,19 @@ namespace RozkladJazdy.Pages
 
                 work.RunWorkerCompleted += (se, esf) =>
                 {
-                    ResultStackPanel.Visibility = Visibility.Collapsed;
+                    MainWindowSelectResultStackPanel.Visibility = Visibility.Collapsed;
                     loaded = true;
                     MainWindow.isPageLoaded = true;
                 };
                 
                 if(loaded == false)
                     work.RunWorkerAsync();
-
             };
 
         }
 
-        // favorite
-        private void Button3_Click(object sender, RoutedEventArgs e)
-        {
-            if (!loaded) return;
-
-            MainPage.gui.setViewPage = typeof(MainWindowFav);
-            MainPage.gui.setBackButtonVisibility = Visibility.Visible;
-        }
         //stops
-        private void Button1_Click(object sender, RoutedEventArgs e)
+        private void StopButton_Click(object sender, RoutedEventArgs e)
         {
             if (!loaded) return;
 
@@ -103,8 +94,16 @@ namespace RozkladJazdy.Pages
 
             MainPage.gui.setBackButtonVisibility = Visibility.Visible;
         }
+        // favorite
+        private void FavouriteButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!loaded) return;
+
+            MainPage.gui.setViewPage = typeof(MainWindowFav);
+            MainPage.gui.setBackButtonVisibility = Visibility.Visible;
+        }
         // linie
-        private void Button2_Click(object sender, RoutedEventArgs e)
+        private void LinesButton_Click(object sender, RoutedEventArgs e)
         {
             if (!loaded) return;
 
@@ -113,7 +112,7 @@ namespace RozkladJazdy.Pages
         }
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            MainWindowStopList.navigated_from = false;
+            MainWindowStopList.isNavigatedFromThisPage = false;
 
             MainPage.gui.setMenuSplitViewDisplayMode = SplitViewDisplayMode.Overlay;
             MainPage.gui.setRefreshButtonVisibility = Visibility.Visible;

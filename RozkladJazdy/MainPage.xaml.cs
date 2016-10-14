@@ -167,7 +167,7 @@ namespace RozkladJazdy
 
                 MainPageTopPanelStopsButton.Visibility = Visibility.Collapsed;
 
-                if (MainWindowStopList.navigated_from == true)
+                if (MainWindowStopList.isNavigatedFromThisPage == true)
                 {
                     if (!isStopClicked)
                         MainPageFrame.GoBack();
@@ -200,7 +200,7 @@ namespace RozkladJazdy
                     return;
                 }
 
-                if (MainWindowStopList.navigated_from == true)
+                if (MainWindowStopList.isNavigatedFromThisPage == true)
                 {
                     MainPage.gui.setRefreshButtonVisibility = Visibility.Visible;
                     MainPageFrame.GoBack();
@@ -226,7 +226,7 @@ namespace RozkladJazdy
 
                 MainPageTopPanelRefreshButton.Visibility = Visibility.Visible;
 
-                if (MainWindowStopList.navigated_from == true)
+                if (MainWindowStopList.isNavigatedFromThisPage == true)
                     MainPageFrame.GoBack();
                 else
                     MainPageFrame.Navigate(typeof(MainWindowLinesList));
@@ -331,12 +331,12 @@ namespace RozkladJazdy
             else if (MainPageFrame.SourcePageType == typeof(MainWindowStopList))
             {
                 if (addToFavourite)
-                    favourite_stops.Add(new Ulubiony() { type = 1, id = MainWindowStopList.selectedPrzystanek.id, name = MainWindowStopList.selectedPrzystanek.name });
+                    favourite_stops.Add(new Ulubiony() { type = 1, id = MainWindowStopList.selected_stop.id, name = MainWindowStopList.selected_stop.name });
                 else
-                    favourite_stops.Remove(favourite_stops.Where(p => p.type == 1 && p.name == MainWindowStopList.selectedPrzystanek.name).ToList().First());
+                    favourite_stops.Remove(favourite_stops.Where(p => p.type == 1 && p.name == MainWindowStopList.selected_stop.name).ToList().First());
 
                 type = 1;
-                name = MainWindowStopList.selectedPrzystanek.name;
+                name = MainWindowStopList.selected_stop.name;
             }
 
             if (addToFavourite)

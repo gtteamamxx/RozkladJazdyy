@@ -21,21 +21,20 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-
         <StackPanel Background="DarkGray" Grid.ColumnSpan="2">
-            <AutoSuggestBox Name="SearchBox" QueryIcon="Zoom" TextChanged="SearchBox_TextChanged" Height="40" PlaceholderText="Wyszukaj przystanek..."/>
+            <AutoSuggestBox QueryIcon="Zoom" TextChanged="MainWindowStopListAutoSuggestBox_TextChanged" Height="40" PlaceholderText="Wyszukaj przystanek..."/>
         </StackPanel>
         
-        <ProgressRing Grid.Row="1" x:Name="ProgressRing1" VerticalAlignment="Center" HorizontalAlignment="Center" Width="100" Height="100" IsActive="True" />
-        <ProgressRing Grid.Row="1" Grid.Column="1" Visibility="Collapsed" x:Name="ProgressRing2" VerticalAlignment="Center" HorizontalAlignment="Center" Width="100" Height="100" IsActive="True" />
+        <ProgressRing Grid.Row="1" Name="MainWindowStopListStatusProgressRingStopList" VerticalAlignment="Center" HorizontalAlignment="Center" Width="100" Height="100" IsActive="True" />
+        <ProgressRing Grid.Row="1" Grid.Column="1" Visibility="Collapsed" x:Name="MainWindowStopListStatusProgressRingLinesList" VerticalAlignment="Center" HorizontalAlignment="Center" Width="100" Height="100" IsActive="True" />
 
-        <TextBlock VerticalAlignment="Bottom" Foreground="Gray" x:Name="ResultText" Margin="75,0,0,45" Grid.Row="1" TextWrapping="Wrap" />
+        <TextBlock VerticalAlignment="Bottom" Foreground="Gray" x:Name="MainWindowStopListSearchResultText" Margin="75,0,0,45" Grid.Row="1" TextWrapping="Wrap" />
 
-        <TextBlock Grid.Row="1" Name="BrakWynikowTextBlock" Foreground="Black" Margin="10" Visibility="Collapsed" TextWrapping="Wrap" Text="Brak wyników do podanej frazy" />
+        <TextBlock Grid.Row="1" Name="MainWindowStopListNoStopsText" Foreground="Black" Margin="10" Visibility="Collapsed" TextWrapping="Wrap" Text="Brak wyników do podanej frazy" />
         
         <ListView Visibility="Collapsed" HorizontalAlignment="Center" Grid.ColumnSpan="2" Grid.Row="1" 
-                  x:Name="ListViewSearchable" ItemsSource="{x:Bind lista_searchable}" 
-                  IsItemClickEnabled="True" ItemClick="ListViewSearchable_ItemClick"  Margin="0,0,0,75">
+                  Name="MainWindowStopListSearchStopList" ItemsSource="{x:Bind searched_stop_list}" 
+                  IsItemClickEnabled="True" ItemClick="MainWindowStopListSearchStopList_ItemClick"  Margin="0,0,0,75">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="data:NazwaPrzystanku">
                     <TextBlock Text="{x:Bind name}" HorizontalAlignment="Center" TextWrapping="Wrap" />
@@ -44,8 +43,8 @@
         </ListView>
 
         <ListView Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" SelectionMode="None" 
-                  x:Name="ListView1" ItemsSource="{x:Bind lista}" IsItemClickEnabled="True" 
-                  ItemClick="ListView_ItemClick" Margin="0,0,0,75">
+                  x:Name="MainWindowStopListStopsList" ItemsSource="{x:Bind stop_list}" IsItemClickEnabled="True" 
+                  ItemClick="MainWindowStopListStopsList_ItemClick" Margin="0,0,0,75">
             
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="data:NazwaPrzystanku">
@@ -55,7 +54,8 @@
             
         </ListView>
 
-        <ListView Name="ResultListView" Visibility="Collapsed" Grid.Row="1" Grid.Column="1" ItemsSource="{x:Bind lista3}" IsItemClickEnabled="True" ItemClick="ListView_ItemClick_1">
+        <ListView Name="MainWindowStopListLinesList" Visibility="Collapsed" Grid.Row="1" Grid.Column="1" ItemsSource="{x:Bind clicked_lines_list}" 
+                  IsItemClickEnabled="True" ItemClick="MainWindowStopListLinesList_ItemClick">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="data:PrzystanekListaPrzystanków2">
                     <StackPanel BorderBrush="Gray" BorderThickness="0,0,0,.2">
@@ -64,7 +64,8 @@
                             <Run Text="{x:Bind nazwa_lini}" />
                         </TextBlock>
 
-                        <ListView ItemsSource="{x:Bind rozklady}" IsItemClickEnabled="true" ItemClick="ListView_ItemClick_2">
+                        <ListView ItemsSource="{x:Bind rozklady}" 
+                                  IsItemClickEnabled="true" ItemClick="MainWindowStopListLinesList_Schedule_ItemClick">
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="data:PrzystanekListaPrzystanków3">
                                     <StackPanel>
@@ -73,7 +74,8 @@
                                                             <Run Text="{x:Bind name}" />
                                         </TextBlock>
 
-                                        <ListView ItemsSource="{x:Bind kierunki}" IsItemClickEnabled="True" ItemClick="ListView_ItemClick_3">
+                                        <ListView ItemsSource="{x:Bind kierunki}" 
+                                                  IsItemClickEnabled="True" ItemClick="MainWindowStopListLinesList_Stop_ItemClick">
                                             <ListView.ItemTemplate>
                                                 <DataTemplate x:DataType="data:PrzystanekListaPrzystanków4">
                                                     <TextBlock Margin="10,0" Foreground="Blue" TextWrapping="Wrap">

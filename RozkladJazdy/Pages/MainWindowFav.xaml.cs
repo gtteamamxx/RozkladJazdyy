@@ -39,7 +39,7 @@ namespace RozkladJazdy.Pages
             favourite_lines = new ObservableCollection<Ulubiony>();
             favourite_stops = new ObservableCollection<Ulubiony>();
 
-            MainWindowStopList.OnLoaded += () => RefreshFavouriteList();
+            MainWindowStopList.OnPageLoaded += () => RefreshFavouriteList();
 
             MainPage.OnAddedFavouriteStop += (type, _object, delete) =>
             {

@@ -28,20 +28,20 @@ namespace RozkladJazdy.Pages
     /// </summary>
     public sealed partial class MainWindowStopList : Page
     {
-        private List<NazwaPrzystanku> lista => HTMLServices.przystankinames.OrderBy(p => p.name).ToList();
-        private ObservableCollection<NazwaPrzystanku> lista_searchable = new ObservableCollection<NazwaPrzystanku>();
-        private List<PrzystanekListaPrzystanków> lista2;
-        private NazwaPrzystanku tempPrzystankiNames = new NazwaPrzystanku();
-        private ObservableCollection<PrzystanekListaPrzystanków2> lista3;
+        private List<NazwaPrzystanku> stop_list => HTMLServices.przystankinames.OrderBy(p => p.name).ToList();
+        private ObservableCollection<NazwaPrzystanku> searched_stop_list = new ObservableCollection<NazwaPrzystanku>();
+        private List<PrzystanekListaPrzystanków> lines_list;
+        private NazwaPrzystanku stop_name_temp = new NazwaPrzystanku();
+        private ObservableCollection<PrzystanekListaPrzystanków2> clicked_lines_list;
 
         public delegate void eventLoaded();
 
         private static MainWindowStopList gui;
 
-        public static bool loaded = false;
-        public static bool navigated_from = false;
-        public static NazwaPrzystanku selectedPrzystanek;
-        public static event eventLoaded OnLoaded;
+        public static bool isPageLoaded = false;
+        public static bool isNavigatedFromThisPage = false;
+        public static NazwaPrzystanku selected_stop;
+        public static event eventLoaded OnPageLoaded;
 
         public MainWindowStopList()
         {
@@ -49,101 +49,101 @@ namespace RozkladJazdy.Pages
 
             gui = this;
 
-            lista2 = new List<PrzystanekListaPrzystanków>();
-            lista3 = new ObservableCollection<PrzystanekListaPrzystanków2>();
-            selectedPrzystanek = new NazwaPrzystanku();
+            lines_list = new List<PrzystanekListaPrzystanków>();
+            clicked_lines_list = new ObservableCollection<PrzystanekListaPrzystanków2>();
+            selected_stop = new NazwaPrzystanku();
 
-            lista2 = MainWindowSelect.temp_lista;
+            lines_list = MainWindowSelect.temp_lista;
 
-            ListView1.SelectionChanged += (se, fe) => (se as ListView).ScrollIntoView(tempPrzystankiNames);
+            MainWindowStopListStopsList.SelectionChanged += (se, fe) => (se as ListView).ScrollIntoView(stop_name_temp);
 
             this.Loaded += (s, f) =>
             {
                 MainWindowSelect.temp_lista = null;
 
-                ProgressRing1.Visibility = Visibility.Collapsed;
-                loaded = true;
-                OnLoaded?.Invoke();
-                ListView1.SelectionMode = ListViewSelectionMode.Single;
-                ResultText.Text = "Przystanków: " + lista.Count().ToString();
+                MainWindowStopListStatusProgressRingLinesList.Visibility = Visibility.Collapsed;
+                isPageLoaded = true;
+                OnPageLoaded?.Invoke();
+                MainWindowStopListStopsList.SelectionMode = ListViewSelectionMode.Single;
+                MainWindowStopListSearchResultText.Text = "Przystanków: " + stop_list.Count().ToString();
 
                 MainPage.gui.setFavouriteSubText = "przystanek";
-                if (!string.IsNullOrEmpty(tempPrzystankiNames.name))
-                    ListView1.SelectedIndex = lista.IndexOf(tempPrzystankiNames);
+                if (!string.IsNullOrEmpty(stop_name_temp.name))
+                    MainWindowStopListStopsList.SelectedIndex = stop_list.IndexOf(stop_name_temp);
             }; 
         }
 
         private void MainWindowStopList_SizeChanged(object sender, SizeChangedEventArgs e) => changesize(sender, e.NewSize.Width);
 
-        public void changesize(object obiekt, double widths = 0.00, bool ms = false)
+        public void changesize(object _object, double _width = 0.00, bool autosuggestbox = false)
         {
-            var width = obiekt == null ? this.Width : widths;
+            var width = _object == null ? this.Width : _width;
 
-            if(ms)
+            if(autosuggestbox)
             {
-                ListView1.Width = this.ActualWidth;
-                ListViewSearchable.Width = this.ActualWidth;
+                MainWindowStopListStopsList.Width = this.ActualWidth;
+                MainWindowStopListSearchStopList.Width = this.ActualWidth;
 
-                ListView1.HorizontalAlignment = HorizontalAlignment.Center;
-                ListViewSearchable.HorizontalAlignment = HorizontalAlignment.Center;
+                MainWindowStopListStopsList.HorizontalAlignment = HorizontalAlignment.Center;
+                MainWindowStopListSearchStopList.HorizontalAlignment = HorizontalAlignment.Center;
             }
-            else if (ResultListView.Visibility == Visibility.Collapsed)
+            else if (MainWindowStopListLinesList.Visibility == Visibility.Collapsed)
             {
-                ListView1.Width = width;
-                ListViewSearchable.Width = width;
+                MainWindowStopListStopsList.Width = width;
+                MainWindowStopListSearchStopList.Width = width;
 
-                ListView1.HorizontalAlignment = HorizontalAlignment.Center;
-                ListViewSearchable.HorizontalAlignment = HorizontalAlignment.Center;
+                MainWindowStopListStopsList.HorizontalAlignment = HorizontalAlignment.Center;
+                MainWindowStopListSearchStopList.HorizontalAlignment = HorizontalAlignment.Center;
             }
             else
             {
-                ListView1.Width = width / 2;
-                ListViewSearchable.Width = width / 2;
+                MainWindowStopListStopsList.Width = width / 2;
+                MainWindowStopListSearchStopList.Width = width / 2;
 
-                ListView1.HorizontalAlignment = HorizontalAlignment.Left;
-                ListViewSearchable.HorizontalAlignment = HorizontalAlignment.Left;
+                MainWindowStopListStopsList.HorizontalAlignment = HorizontalAlignment.Left;
+                MainWindowStopListSearchStopList.HorizontalAlignment = HorizontalAlignment.Left;
             }
         }
 
-        public static void preparefromfav(NazwaPrzystanku pr)
+        public static void preparefromfav(NazwaPrzystanku stop)
         {
-            if(gui.ListViewSearchable.Visibility == Visibility.Visible)
+            if(gui.MainWindowStopListSearchStopList.Visibility == Visibility.Visible)
             {
-                gui.ListViewSearchable.Visibility = Visibility.Collapsed;
-                gui.ListView1.Visibility = Visibility.Visible;
+                gui.MainWindowStopListSearchStopList.Visibility = Visibility.Collapsed;
+                gui.MainWindowStopListStopsList.Visibility = Visibility.Visible;
             }
 
-            Grid.SetColumnSpan(gui.ListView1, 1);
-            gui.ResultListView.Visibility = Visibility.Visible;
+            Grid.SetColumnSpan(gui.MainWindowStopListStopsList, 1);
+            gui.MainWindowStopListLinesList.Visibility = Visibility.Visible;
 
-            gui.tempPrzystankiNames = pr;
-            gui.showListView2(pr);
+            gui.stop_name_temp = stop;
+            gui.showListView2(stop);
         }
         //przystanek
-        private void ListView_ItemClick(object sender, ItemClickEventArgs e)
+        private void MainWindowStopListStopsList_ItemClick(object sender, ItemClickEventArgs e)
         {
-            if (!loaded || (sender as ListView).SelectedItem == e.ClickedItem)
+            if (!isPageLoaded || (sender as ListView).SelectedItem == e.ClickedItem)
                 return;
 
-            Grid.SetColumnSpan(gui.ListView1, 1);
+            Grid.SetColumnSpan(gui.MainWindowStopListStopsList, 1);
             changesize(null);
 
-            ResultListView.Visibility = Visibility.Visible;
+            MainWindowStopListLinesList.Visibility = Visibility.Visible;
             showListView2(e.ClickedItem as NazwaPrzystanku);
         }
         private void showListView2(NazwaPrzystanku clickeditem)
         {
-            lista3.Clear();
+            clicked_lines_list.Clear();
 
-            if (ListView1.Visibility == Visibility.Visible)
+            if (MainWindowStopListStopsList.Visibility == Visibility.Visible)
             {
-                ListView1.HorizontalAlignment = HorizontalAlignment.Left;
-                ListView1.Width = this.ActualWidth / 2;
+                MainWindowStopListStopsList.HorizontalAlignment = HorizontalAlignment.Left;
+                MainWindowStopListStopsList.Width = this.ActualWidth / 2;
             }
             else
             {
-                ListViewSearchable.HorizontalAlignment = HorizontalAlignment.Left;
-                ListViewSearchable.Width = this.ActualWidth / 2;
+                MainWindowStopListSearchStopList.HorizontalAlignment = HorizontalAlignment.Left;
+                MainWindowStopListSearchStopList.Width = this.ActualWidth / 2;
             }
 
             var przystankinames = clickeditem as NazwaPrzystanku;
@@ -157,11 +157,11 @@ namespace RozkladJazdy.Pages
 
             MainPage.gui.setFavouriteButtonVisibility = Visibility.Visible;
 
-            ProgressRing2.Visibility = Visibility.Visible;
+            MainWindowStopListStatusProgressRingLinesList.Visibility = Visibility.Visible;
 
-            selectedPrzystanek = przystankinames;
+            selected_stop = przystankinames;
 
-            var filteredlist = lista2.Where(p => p.przystanek_id == przystankinames.id).ToList().OrderBy(p => p.linia_id).ToList();
+            var filteredlist = lines_list.Where(p => p.przystanek_id == przystankinames.id).ToList().OrderBy(p => p.linia_id).ToList();
 
             BackgroundWorker worker = new BackgroundWorker();
             //worker.WorkerReportsProgress = true;
@@ -172,12 +172,12 @@ namespace RozkladJazdy.Pages
 
                 for (int i = 0; i < filteredlist.Count(); i++)
                 {
-                    var lid = filteredlist[i].linia_id;
-                    var rid = filteredlist[i].rozklad_id;
-                    var tid = filteredlist[i].trasa_id;
+                    var line_id = filteredlist[i].linia_id;
+                    var schedule_id = filteredlist[i].rozklad_id;
+                    var track_id = filteredlist[i].trasa_id;
 
-                    var kier = SQLServices.getData<Trasa>(0, "SELECT name FROM Trasa WHERE (id_linia = ? AND id_rozklad = ?) LIMIT 2", lid, rid)[tid].name;////MainWindow.lines[lid].rozklad[rid].track[tid].name;
-                    var name = MainWindow.lines[lid].name;
+                    var dest = SQLServices.getData<Trasa>(0, "SELECT name FROM Trasa WHERE (id_linia = ? AND id_rozklad = ?) LIMIT 2", line_id, schedule_id)[line_id].name;////MainWindow.lines[lid].rozklad[rid].track[tid].name;
+                    var name = MainWindow.lines[track_id].name;
 
                     bool state = false;
 
@@ -187,12 +187,12 @@ namespace RozkladJazdy.Pages
                         {
                             for (int y = 0; y < temp_list[d].rozklady.Count(); y++)
                             {
-                                if (temp_list[d].rozklady[y].roz_id == rid)
+                                if (temp_list[d].rozklady[y].roz_id == schedule_id)
                                 {
                                     var g = temp_list[d];
 
                                     if (g.rozklady[y].kierunki.Count() <= 1)
-                                        g.rozklady[y].kierunki.Add(new PrzystanekListaPrzystanków4() { name = kier, rozk_id = rid, track_id = tid, line_id = lid });
+                                        g.rozklady[y].kierunki.Add(new PrzystanekListaPrzystanków4() { name = dest, rozk_id = schedule_id, track_id = track_id, line_id = line_id });
 
                                     temp_list[d] = g;
                                     state = true;
@@ -207,10 +207,10 @@ namespace RozkladJazdy.Pages
                             {
                                 var g = temp_list[d];
                                 var kierunkis = new List<PrzystanekListaPrzystanków4>();
-                                kierunkis.Add(new PrzystanekListaPrzystanków4() { name = kier, rozk_id = rid, track_id = tid, line_id = lid });
+                                kierunkis.Add(new PrzystanekListaPrzystanków4() { name = dest, rozk_id = schedule_id, track_id = track_id, line_id = line_id });
 
-                                var text = SQLServices.getData<Rozklad>(0, "SELECT text FROM Rozklad WHERE id_linia = ?", lid)[rid].text;
-                                g.rozklady.Add(new PrzystanekListaPrzystanków3() { kierunki = kierunkis, name = text, roz_id = rid, line_id = lid });
+                                var text = SQLServices.getData<Rozklad>(0, "SELECT text FROM Rozklad WHERE id_linia = ?", line_id)[schedule_id].text;
+                                g.rozklady.Add(new PrzystanekListaPrzystanków3() { kierunki = kierunkis, name = text, roz_id = schedule_id, line_id = line_id });
 
                                 temp_list[d] = g;
                                 state = true;
@@ -229,17 +229,17 @@ namespace RozkladJazdy.Pages
                     m.kierunki = new List<PrzystanekListaPrzystanków4>();
                     h.rozklady = new List<PrzystanekListaPrzystanków3>();
 
-                    l.Add(new PrzystanekListaPrzystanków4() { name = kier, rozk_id = rid, track_id = tid, line_id = lid });
+                    l.Add(new PrzystanekListaPrzystanków4() { name = dest, rozk_id = schedule_id, track_id = track_id, line_id = line_id });
 
-                    m.roz_id = rid;
-                    m.name = SQLServices.getData<Rozklad>(0, "SELECT text FROM Rozklad WHERE id_linia = ?", lid)[rid].text;// MainWindow.lines[lid].rozklad[rid].text;
+                    m.roz_id = schedule_id;
+                    m.name = SQLServices.getData<Rozklad>(0, "SELECT text FROM Rozklad WHERE id_linia = ?", line_id)[schedule_id].text;// MainWindow.lines[lid].rozklad[rid].text;
                     m.kierunki = l;
-                    m.line_id = lid;
+                    m.line_id = line_id;
 
                     h.rozklady.Add(m);
 
                     h.nazwa_lini = name;
-                    h.line_id = lid;
+                    h.line_id = line_id;
                     temp_list.Add(h);
                     // worker.ReportProgress(1, h);
                 }
@@ -257,47 +257,44 @@ namespace RozkladJazdy.Pages
 
             worker.RunWorkerCompleted += (s, f) =>
             {
-                (f.Result as List<PrzystanekListaPrzystanków2>).ForEach(p => lista3.Add(p));
-                ProgressRing2.Visibility = Visibility.Collapsed;
+                (f.Result as List<PrzystanekListaPrzystanków2>).ForEach(p => clicked_lines_list.Add(p));
+                MainWindowStopListStatusProgressRingLinesList.Visibility = Visibility.Collapsed;
             };
 
             worker.RunWorkerAsync();
         }
         //linia
-        private void ListView_ItemClick_1(object sender, ItemClickEventArgs e)
+        private void MainWindowStopListLinesList_ItemClick(object sender, ItemClickEventArgs e)
         {
             reset(sender);
-
-            var linia = e.ClickedItem as PrzystanekListaPrzystanków2;
-
-            changePage(linia.line_id);
+            changePage((e.ClickedItem as PrzystanekListaPrzystanków2).line_id);
         }
-        private void changePage(int lineid, int rozkladid = -1, Przystanek przid = null)
+        private void changePage(int line_id, int schedule_id = -1, Przystanek stop_id = null)
         {
-            if(MainWindowLinesList.selected_line == null || (MainWindowLinesList.selected_line != null && MainWindow.lines.IndexOf(MainWindowLinesList.selected_line) != lineid))
+            if(MainWindowLinesList.selected_line == null || (MainWindowLinesList.selected_line != null && MainWindow.lines.IndexOf(MainWindowLinesList.selected_line) != line_id))
             {
                 MainWindowLinesList.selected_line = new Linia();
-                MainWindowLinesList.selected_line = MainWindow.lines[lineid];
+                MainWindowLinesList.selected_line = MainWindow.lines[line_id];
             }
 
             MainWindowLinesList.selected_schedule = new int();
-            MainWindowLinesList.selected_schedule = rozkladid;
+            MainWindowLinesList.selected_schedule = schedule_id;
 
-            navigated_from = true;
+            isNavigatedFromThisPage = true;
 
             MainPage.gui.setRefreshButtonVisibility = Visibility.Collapsed;
 
-            if (przid != null)
+            if (stop_id != null)
             {
                 MainWindowLinesInfo.selected_stop = new Przystanek();
-                MainWindowLinesInfo.selected_stop = przid;
+                MainWindowLinesInfo.selected_stop = stop_id;
 
                 MainPage.gui.setViewPage = typeof(MainWindowLinesInfoHours);
                 return;
             }
-            else if(rozkladid == -1)
+            else if(schedule_id == -1)
             {
-                if (SQLServices.getData<Rozklad>(0, "SELECT * FROM Rozklad WHERE id_linia = ?", lineid).Count() > 1)
+                if (SQLServices.getData<Rozklad>(0, "SELECT * FROM Rozklad WHERE id_linia = ?", line_id).Count() > 1)
                 {
                     MainPage.gui.setViewPage = typeof(MainWindowLinesSchedule);
                     return;
@@ -308,26 +305,25 @@ namespace RozkladJazdy.Pages
         }
 
         //rozklad
-        private void ListView_ItemClick_2(object sender, ItemClickEventArgs e)
+        private void MainWindowStopListLinesList_Schedule_ItemClick(object sender, ItemClickEventArgs e)
         {
             reset(sender);
 
-            var rozklady = e.ClickedItem as PrzystanekListaPrzystanków3;
-
-            changePage(rozklady.line_id, rozklady.roz_id);
+            var schedule = e.ClickedItem as PrzystanekListaPrzystanków3;
+            changePage(schedule.line_id, schedule.roz_id);
         }
         //kierunek
-        private void ListView_ItemClick_3(object sender, ItemClickEventArgs e)
+        private void MainWindowStopListLinesList_Stop_ItemClick(object sender, ItemClickEventArgs e)
         {
             reset(sender);
 
-            var kierunki = e.ClickedItem as PrzystanekListaPrzystanków4;
+            var dest = e.ClickedItem as PrzystanekListaPrzystanków4;
 
-            var linia = kierunki.line_id;
-            var rozklad = kierunki.rozk_id;
-            var trasa = kierunki.track_id;
+            var line_id = dest.line_id;
+            var schedule_id = dest.rozk_id;
+            var track_id = dest.track_id;
 
-            var listview = ListView1.Visibility == Visibility.Collapsed ? ListViewSearchable : ListView1;
+            var listview = MainWindowStopListStopsList.Visibility == Visibility.Collapsed ? MainWindowStopListSearchStopList : MainWindowStopListStopsList;
             var temp = (listview.SelectedItem as NazwaPrzystanku);
 
             if (temp == null)
@@ -337,103 +333,98 @@ namespace RozkladJazdy.Pages
 
             worker.DoWork += (s, f) =>
             {
-                var a = MainWindow.lines[linia];
-                var b = SQLServices.getData<Rozklad>(0, "SELECT * FROM Rozklad WHERE id_linia = ?", linia);//a.rozklad[rozklad];
+                var a = MainWindow.lines[line_id];
+                var b = SQLServices.getData<Rozklad>(0, "SELECT * FROM Rozklad WHERE id_linia = ?", line_id);//a.rozklad[rozklad];
 
                 MainWindowLinesList.selected_line = new Linia();
-                MainWindowLinesList.selected_line = MainWindow.lines[linia];
+                MainWindowLinesList.selected_line = MainWindow.lines[line_id];
 
                 MainWindowLinesList.selected_line.rozklad = new List<Rozklad>();
                 MainWindowLinesList.selected_line.rozklad = b;
 
-                var c = SQLServices.getData<Trasa>(0, "SELECT * FROM Trasa WHERE (id_linia = ? AND id_rozklad = ?) LIMIT 2", linia, rozklad);//b.track[trasa];
-                MainWindowLinesList.selected_line.rozklad[rozklad].track = new List<Trasa>();
-                MainWindowLinesList.selected_line.rozklad[rozklad].track = c;
+                var c = SQLServices.getData<Trasa>(0, "SELECT * FROM Trasa WHERE (id_linia = ? AND id_rozklad = ?) LIMIT 2", line_id, schedule_id);//b.track[trasa];
+                MainWindowLinesList.selected_line.rozklad[schedule_id].track = new List<Trasa>();
+                MainWindowLinesList.selected_line.rozklad[schedule_id].track = c;
 
-                var d = SQLServices.getData<Przystanek>(0, "SELECT * FROM Przystanek WHERE id_trasa = ? AND id_rozklad = ?", c[trasa].id, b[rozklad].id, temp.id);//c.stops.Where(p => p.nid == temp.id).ToList();
-                MainWindowLinesList.selected_line.rozklad[rozklad].track[trasa].stops = new List<Przystanek>();
-                MainWindowLinesList.selected_line.rozklad[rozklad].track[trasa].stops = d;
+                var d = SQLServices.getData<Przystanek>(0, "SELECT * FROM Przystanek WHERE id_trasa = ? AND id_rozklad = ?", c[track_id].id, b[schedule_id].id, temp.id);//c.stops.Where(p => p.nid == temp.id).ToList();
+                MainWindowLinesList.selected_line.rozklad[schedule_id].track[track_id].stops = new List<Przystanek>();
+                MainWindowLinesList.selected_line.rozklad[schedule_id].track[track_id].stops = d;
 
                 f.Result = d.Where(p => p.nid == temp.id).First() as Przystanek;
             };
-            worker.RunWorkerCompleted += (s, f) => changePage(linia, rozklad, f.Result as Przystanek);
+            worker.RunWorkerCompleted += (s, f) => changePage(line_id, schedule_id, f.Result as Przystanek);
             worker.RunWorkerAsync();
             
         }
 
         private void reset(object sender)
         {
-            navigated_from = false;
+            isNavigatedFromThisPage = false;
             foreach (ListView gr in MainWindowLinesInfoHours.FindVisualChildren<ListView>(this))
             {
-                if (gr == sender || gr == ListView1 || gr == ListViewSearchable)
+                if (gr == sender || gr == MainWindowStopListStopsList || gr == MainWindowStopListSearchStopList)
                     continue;
 
                 gr.SelectedIndex = -1; 
             }
         }
 
-        private void ListViewSearchable_ItemClick(object sender, ItemClickEventArgs e)
+        private void MainWindowStopListSearchStopList_ItemClick(object sender, ItemClickEventArgs e)
         {
-            ResultListView.Visibility = Visibility.Visible;
-            Grid.SetColumnSpan(ListViewSearchable, 1);
+            MainWindowStopListLinesList.Visibility = Visibility.Visible;
+            Grid.SetColumnSpan(MainWindowStopListSearchStopList, 1);
             changesize(null);
 
             showListView2(e.ClickedItem as NazwaPrzystanku);
         }
 
-        private void SearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        private void MainWindowStopListAutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
         {
-            var txt = SearchBox.Text.Trim();
+            var message = sender.Text.Trim();
 
-            if (txt == "")
+            clicked_lines_list.Clear();
+            searched_stop_list.Clear();
+            MainWindowStopListLinesList.Visibility = Visibility.Collapsed;
+            MainWindowStopListNoStopsText.Visibility = Visibility.Collapsed;
+            changesize(null, 0.00, true);
+
+            if (message == "")
             {
-                ResultText.Text = "Przystanków: " + lista.Count().ToString();
-                lista3.Clear();
-                lista_searchable.Clear();
-                ResultListView.Visibility = Visibility.Collapsed;
+                MainWindowStopListSearchResultText.Text = "Przystanków: " + stop_list.Count().ToString();
+                
+                Grid.SetColumnSpan(MainWindowStopListSearchStopList, 2);
+                Grid.SetColumnSpan(MainWindowStopListStopsList, 2);
+                MainWindowStopListStopsList.Visibility = Visibility.Visible;
 
-                Grid.SetColumnSpan(ListViewSearchable, 2);
-                Grid.SetColumnSpan(ListView1, 2);
-
-                changesize(null, 0.00, true);
-                ListView1.Visibility = Visibility.Visible;
-                ListViewSearchable.Visibility = Visibility.Collapsed;
-                BrakWynikowTextBlock.Visibility = Visibility.Collapsed;
                 return;
             }
 
-            lista3.Clear();
-            lista_searchable.Clear();
-            ResultListView.Visibility = Visibility.Collapsed;
-            Grid.SetColumnSpan(ListViewSearchable, 2);
+            Grid.SetColumnSpan(MainWindowStopListSearchStopList, 2);
 
-            changesize(null, 0.00, true);
 
-            ListView1.Visibility = Visibility.Collapsed;
-            ListViewSearchable.Visibility = Visibility.Visible;
-            BrakWynikowTextBlock.Visibility = Visibility.Collapsed;
+            MainWindowStopListStopsList.Visibility = Visibility.Collapsed;
+            MainWindowStopListSearchStopList.Visibility = Visibility.Visible;
 
             BackgroundWorker worker = new BackgroundWorker();
 
-            var list = HTMLServices.przystankinames;
+            var stops_name = HTMLServices.przystankinames as List<NazwaPrzystanku>;
 
-            worker.DoWork += (s, f) => f.Result = list.Where(p => normalize(p.name.ToLower()).Contains(normalize(txt.ToLower()))).OrderBy(p => p.name).ToList();
+            worker.DoWork += (s, f) => f.Result = stops_name.Where(p => normalize(p.name.ToLower()).Contains(normalize(message.ToLower()))).OrderBy(p => p.name).ToList();
             worker.RunWorkerCompleted += (s, f) =>
             {
-                list = null;
+                stops_name = null;
                 foreach (var a in f.Result as List<NazwaPrzystanku>)
-                    lista_searchable.Add(new NazwaPrzystanku() { id = a.id, name = a.name });
+                    searched_stop_list.Add(new NazwaPrzystanku() { id = a.id, name = a.name });
 
-                ResultText.Text = "Przystanków: " + lista_searchable.Count().ToString();
+                MainWindowStopListSearchResultText.Text = "Przystanków: " + searched_stop_list.Count().ToString();
 
-                if(lista_searchable.Count() == 0 )
-                    BrakWynikowTextBlock.Visibility = Visibility.Visible;
+                if(searched_stop_list.Count() == 0 )
+                    MainWindowStopListNoStopsText.Visibility = Visibility.Visible;
 
-                ProgressRing1.Visibility = Visibility.Collapsed;
+                MainWindowStopListStatusProgressRingStopList.Visibility = Visibility.Collapsed;
             };
 
-            ProgressRing1.Visibility = Visibility.Visible;
+            MainWindowStopListStatusProgressRingStopList.Visibility = Visibility.Visible;
             worker.RunWorkerAsync();
 
         }
@@ -443,10 +434,10 @@ namespace RozkladJazdy.Pages
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            if(selectedPrzystanek != null && selectedPrzystanek.name != null)
+            if(selected_stop != null && selected_stop.name != null)
                 MainPage.gui.setFavouriteButtonVisibility = Visibility.Visible;
 
-            if (MainPage.isFavourite(selectedPrzystanek))
+            if (MainPage.isFavourite(selected_stop))
                 MainPage.gui.setFavouriteButtonColor = Colors.Black;
             else
                 MainPage.gui.setFavouriteButtonColor = Colors.LightGray;
@@ -459,7 +450,7 @@ namespace RozkladJazdy.Pages
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
-            tempPrzystankiNames = new NazwaPrzystanku();
+            stop_name_temp = new NazwaPrzystanku();
             this.SizeChanged -= MainWindowStopList_SizeChanged;
         }
     }

@@ -16,7 +16,7 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <Grid x:Name="Grid" Grid.Row="0" BorderBrush="DarkGray" BorderThickness="0,0,0,1" >
+            <Grid Grid.Row="0" >
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -25,34 +25,34 @@
                 </Grid.RowDefinitions>
 
                 <Grid Margin="20">
-                    <Button x:Name="Button1" Background="AliceBlue" HorizontalAlignment="Center" Margin="10" BorderBrush="Gray" BorderThickness="1" Click="Button1_Click">
-                        <Grid x:Name="Grid1" Width="75" Height="75">
-                            <TextBlock Name="tx1" Margin="0,0,0,10" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="50" Text="&#xE174;" />
-                            <TextBlock Name="tx11" Foreground="Blue" HorizontalAlignment="Center" FontSize="13" VerticalAlignment="Bottom" Text="Przystanki" />
+                    <Button Background="AliceBlue" HorizontalAlignment="Center" Margin="10" BorderBrush="Gray" BorderThickness="1" Click="StopButton_Click">
+                        <Grid Width="75" Height="75">
+                            <TextBlock Margin="0,0,0,10" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="50" Text="&#xE174;" />
+                            <TextBlock Foreground="Blue" HorizontalAlignment="Center" FontSize="13" VerticalAlignment="Bottom" Text="Przystanki" />
                         </Grid>
                     </Button>
                 </Grid>
                 <Grid Margin="20" Grid.Row="1">
-                    <Button x:Name="Button3" Background="AliceBlue" HorizontalAlignment="Center" Margin="10" BorderBrush="Gray" BorderThickness="1" Click="Button3_Click">
+                    <Button Background="AliceBlue" HorizontalAlignment="Center" Margin="10" BorderBrush="Gray" BorderThickness="1" Click="FavouriteButton_Click">
                         <Grid Name="Grid3" Width="75" Height="75">
-                            <TextBlock Name="tx2" Margin="0,0,0,10" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="50" Text="&#xE082;" />
-                            <TextBlock Name="tx22" Foreground="Blue" HorizontalAlignment="Center" FontSize="13" VerticalAlignment="Bottom" Text="Ulubione" />
+                            <TextBlock Margin="0,0,0,10" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="50" Text="&#xE082;" />
+                            <TextBlock Foreground="Blue" HorizontalAlignment="Center" FontSize="13" VerticalAlignment="Bottom" Text="Ulubione" />
                         </Grid>
                     </Button>
                 </Grid>
                 <Grid Margin="20" Grid.Row="2">
-                    <Button x:Name="Button2" PointerEntered="Button2_PointerEntered"  Background="AliceBlue" HorizontalAlignment="Center" Margin="10" BorderBrush="Gray" BorderThickness="1" Click="Button2_Click">
-                        <Grid Name="Grid2" Width="75" Height="75">
-                            <TextBlock Name="tx3" Margin="0,0,0,10" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="50" Text="&#xE806;" />
-                            <TextBlock Name="tx33" Foreground="Blue" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Bottom" Text="Linie" />
+                    <Button PointerEntered="Button2_PointerEntered" Background="AliceBlue" HorizontalAlignment="Center" Margin="10" BorderBrush="Gray" BorderThickness="1" Click="LinesButton_Click">
+                        <Grid Width="75" Height="75">
+                            <TextBlock Margin="0,0,0,10" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="50" Text="&#xE806;" />
+                            <TextBlock Foreground="Blue" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Bottom" Text="Linie" />
                         </Grid>
                     </Button>
                 </Grid>
             </Grid>
-        
-            <StackPanel Grid.Row="1" Margin="20" x:Name="ResultStackPanel" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom">
-                <TextBlock x:Name="ResultText" VerticalAlignment="Center" Text="Trwa wczytywanie rozkładu..." Foreground="Red" FontSize="20" />
-                <ProgressRing HorizontalAlignment="Center" x:Name="ResultProgressRing" Width="40" Height="40" Margin="20,0"  IsActive="True" Visibility="Visible" />
+
+            <StackPanel Grid.Row="1" BorderBrush="DarkGray" BorderThickness="0,1,0,0" Margin="20" Name="MainWindowSelectResultStackPanel" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+                <TextBlock VerticalAlignment="Center" Text="Trwa wczytywanie rozkładu..." Foreground="Red" FontSize="20" />
+                <ProgressRing HorizontalAlignment="Center" Width="40" Height="40" Margin="20,0"  IsActive="True" Visibility="Visible" />
             </StackPanel>
 
         </Grid>
