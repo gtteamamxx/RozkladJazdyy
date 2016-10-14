@@ -45,11 +45,11 @@ namespace RozkladJazdy.Pages
 
                 work.DoWork += (se, esf) =>
                 {
-                    HTMLServices.przystankinames = new List<NazwaPrzystanku>();
-                    HTMLServices.przystankinames = SQLServices.getData<NazwaPrzystanku>(0, "SELECT * FROM NazwaPrzystanku");
+                    HTMLServices.stops_name = new List<NazwaPrzystanku>();
+                    HTMLServices.stops_name = SQLServices.getData<NazwaPrzystanku>(0, "SELECT * FROM NazwaPrzystanku");
 
-                    HTMLServices.godzinynames = new List<NazwaGodziny>();
-                    HTMLServices.godzinynames = SQLServices.getData<NazwaGodziny>(0, "SELECT * FROM NazwaGodziny");
+                    HTMLServices.hours_name = new List<NazwaGodziny>();
+                    HTMLServices.hours_name = SQLServices.getData<NazwaGodziny>(0, "SELECT * FROM NazwaGodziny");
 
                     //wczytaj ulubione
                     MainPage.favourite_stops = new ObservableCollection<Ulubiony>();

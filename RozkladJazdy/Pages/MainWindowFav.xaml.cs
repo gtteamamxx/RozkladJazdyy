@@ -120,7 +120,7 @@ namespace RozkladJazdy.Pages
             else // przystanek
             {
                 MainPage.gui.setViewPage = typeof(MainWindowStopList);
-                MainWindowStopList.preparefromfav(HTMLServices.przystankinames.ElementAt(clickedFavItem.id));   
+                MainWindowStopList.preparefromfav(HTMLServices.stops_name.ElementAt(clickedFavItem.id));   
             }
         }
     }

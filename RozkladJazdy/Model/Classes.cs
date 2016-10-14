@@ -136,7 +136,7 @@ namespace RozkladJazdy.Model
         public int id { get; set; }
         public int nid { get; set; }
         public string url { get; set; }
-        public string getName() { return HTMLServices.przystankinames[nid].name; }
+        public string getName() { return HTMLServices.stops_name[nid].name; }
         public bool wariant { get; set; }
         public bool strefowy { get; set; }
         public bool na_zadanie() { return getName().Contains("n/ż"); }
@@ -166,7 +166,7 @@ namespace RozkladJazdy.Model
         [Indexed]
         public int id { get; set; }
         public int nid { get; set; }
-        public string getName() { return HTMLServices.godzinynames[nid].name; }
+        public string getName() { return HTMLServices.hours_name[nid].name; }
         public string godziny_full { get; set; }
         public int id_przystanek { get; set; }
         public static int aid = 0;

@@ -303,7 +303,7 @@ namespace RozkladJazdy.Pages
                 {
                     var stoplist_list= new List<PrzystanekListaPrzystanków>();
 
-                    for (int j = 0; j < HTMLServices.przystankinames.Count(); j++)
+                    for (int j = 0; j < HTMLServices.stops_name.Count(); j++)
                     {
                         for (int i = 0; i < lines.Count(); i++)
                         {
@@ -315,7 +315,7 @@ namespace RozkladJazdy.Pages
                                     {
                                         for (int c = 0; c < lines[i].rozklad[k].track[b].stops.Count(); c++)
                                         {
-                                            if (lines[i].rozklad[k].track[b].stops[c].nid == HTMLServices.przystankinames[j].id)
+                                            if (lines[i].rozklad[k].track[b].stops[c].nid == HTMLServices.stops_name[j].id)
                                             {
                                                 bool isBreak = false;
                                                 foreach (PrzystanekListaPrzystanków pp in stoplist_list)
@@ -351,9 +351,9 @@ namespace RozkladJazdy.Pages
                     SQLServices.createDatabases();
 
                     SQLServices.addAllToDataBase<Linia>(lines);
-                    SQLServices.addAllToDataBase<NazwaPrzystanku>(HTMLServices.przystankinames);
-                    SQLServices.addAllToDataBase<NazwaGodziny>(HTMLServices.godzinynames);
-                    SQLServices.addAllToDataBase<Literka>(HTMLServices.literkiinfo);
+                    SQLServices.addAllToDataBase<NazwaPrzystanku>(HTMLServices.stops_name);
+                    SQLServices.addAllToDataBase<NazwaGodziny>(HTMLServices.hours_name);
+                    SQLServices.addAllToDataBase<Literka>(HTMLServices.letters_info);
                     SQLServices.addAllToDataBase<PrzystanekListaPrzystanków>(stoplist_list);
 
                     List<Przystanek> przystanki = new List<Przystanek>();

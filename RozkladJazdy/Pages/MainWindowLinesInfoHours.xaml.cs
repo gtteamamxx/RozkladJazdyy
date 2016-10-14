@@ -93,7 +93,7 @@ namespace RozkladJazdy.Pages
         {
             MainPage.gui.setFavouriteSubText = "przystanek";
             //check if stop is in favourtie
-            if (MainPage.isFavourite(HTMLServices.przystankinames[MainWindowLinesInfo.selected_stop.nid]))
+            if (MainPage.isFavourite(HTMLServices.stops_name[MainWindowLinesInfo.selected_stop.nid]))
                 MainPage.gui.setFavouriteButtonColor = Colors.Black;
             else
                 MainPage.gui.setFavouriteButtonColor = Colors.LightGray;
@@ -261,7 +261,7 @@ namespace RozkladJazdy.Pages
 
             /* selectedHour = e.ClickedItem.ToString();
 
-             var a = HTMLServices.godzinynames.Where(p => p.name == 
+             var a = HTMLServices.hours_name.Where(p => p.name == 
                  (((sender as GridView).Parent as StackPanel).Children[0] as TextBlock).
                      Text).ToList();
 
@@ -307,7 +307,7 @@ namespace RozkladJazdy.Pages
         {
             navigated_from = true;
             MainPage.gui.setViewPage = typeof(MainWindowStopList);
-            MainWindowStopList.preparefromfav(HTMLServices.przystankinames.ElementAt(MainWindowLinesInfo.selected_stop.nid));
+            MainWindowStopList.preparefromfav(HTMLServices.stops_name.ElementAt(MainWindowLinesInfo.selected_stop.nid));
         }
     }
 }

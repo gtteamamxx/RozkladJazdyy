@@ -13,10 +13,10 @@ namespace RozkladJazdy.Model
 {
     class HTMLServices
     {
-        public static List<Linia> list;
-        public static List<NazwaPrzystanku> przystankinames = new List<NazwaPrzystanku>();
-        public static List<NazwaGodziny> godzinynames = new List<NazwaGodziny>();
-        public static List<Literka> literkiinfo = new List<Literka>();
+        public static List<Linia> lines_list;
+        public static List<NazwaPrzystanku> stops_name = new List<NazwaPrzystanku>();
+        public static List<NazwaGodziny> hours_name = new List<NazwaGodziny>();
+        public static List<Literka> letters_info = new List<Literka>();
 
         public delegate void eventGetLinesBackgroundFinish(List<Linia> a, bool update = false);
         public delegate void eventGetLinesDetailProgressChange(int percent, object state, bool update = false);
@@ -26,8 +26,8 @@ namespace RozkladJazdy.Model
 
         public HTMLServices()
         {
-            list = new List<Linia>();
-            MainPage.OnTimeTableRefesh += () => list.Clear();
+            lines_list = new List<Linia>();
+            MainPage.OnTimeTableRefesh += () => lines_list.Clear();
         }
 
         public static void getLinesInfo(bool update = false)
@@ -47,13 +47,13 @@ namespace RozkladJazdy.Model
 
             worker.RunWorkerCompleted += (senders, es) =>
             {
-                list = update == false ? (es.Result as List<Linia>) : (es.Result as List<Linia>).Where(p => (p.pfm & 32) == 32).ToList();
-                getLinesDetail(list, update);
+                lines_list = update == false ? (es.Result as List<Linia>) : (es.Result as List<Linia>).Where(p => (p.pfm & 32) == 32).ToList();
+                getLinesDetail(lines_list, update);
             };
 
-            przystankinames = new List<Model.NazwaPrzystanku>();
-            godzinynames = new List<Model.NazwaGodziny>();
-            literkiinfo = new List<Model.Literka>();
+            stops_name = new List<Model.NazwaPrzystanku>();
+            hours_name = new List<Model.NazwaGodziny>();
+            letters_info = new List<Model.Literka>();
 
             worker.RunWorkerAsync();
         }
@@ -71,7 +71,7 @@ namespace RozkladJazdy.Model
 
                     string url = string.Format("{0}{1}", "http://rozklady.kzkgop.pl/", buslist[i].url);
 
-                    list[i].rozklad = ParserLine(url, AsyncHelpers.RunSync(() => GetHTML(url)), i).ToList();
+                    lines_list[i].rozklad = ParserLine(url, AsyncHelpers.RunSync(() => GetHTML(url)), i).ToList();
 
                     worker.ReportProgress(nums, state);
                 }
@@ -79,7 +79,7 @@ namespace RozkladJazdy.Model
 
             worker.ProgressChanged += (sender, e) => OnGetLinesDetailProgressChange(e.ProgressPercentage, e.UserState, update);
 
-            worker.RunWorkerCompleted += (sender, e) => OnGetLinesBackgroundFinish?.Invoke(list, update);
+            worker.RunWorkerCompleted += (sender, e) => OnGetLinesBackgroundFinish?.Invoke(lines_list, update);
             worker.RunWorkerAsync();
         }
         private static int num = 0;
@@ -148,13 +148,13 @@ namespace RozkladJazdy.Model
 
                         var l3 = l5[0].QuerySelectorAll("tr").ToList();
 
-                        Trasa trasa = new Trasa();
-                        trasa.stops = new List<Przystanek>();
+                        Trasa track = new Trasa();
+                        track.stops = new List<Przystanek>();
 
-                        trasa.id_linia = line_id;
-                        trasa.id_rozklad = i;
+                        track.id_linia = line_id;
+                        track.id_rozklad = i;
 
-                        trasa.name = l3.Where(p => p.GetAttribute("class") == "tr_kierunek").ToList()[0].FirstElementChild.FirstElementChild.TextContent;
+                        track.name = l3.Where(p => p.GetAttribute("class") == "tr_kierunek").ToList()[0].FirstElementChild.FirstElementChild.TextContent;
 
                         l3 = l3.Where(p => (p.GetAttribute("class").Contains("zwyk") || p.GetAttribute("class").Contains("stre") || p.GetAttribute("class").Contains("wyj"))).ToList();
 
@@ -162,39 +162,39 @@ namespace RozkladJazdy.Model
                         {
                             var d = l3[k].LastElementChild;
 
-                            Przystanek przystanek = new Przystanek();
+                            Przystanek stop = new Przystanek();
 
-                            przystanek.nid = -1;
+                            stop.nid = -1;
 
-                            for (int v = 0; v < przystankinames.Count(); v++)
+                            for (int v = 0; v < stops_name.Count(); v++)
                             {
-                                if (przystankinames[v].name == d.LastElementChild.TextContent)
+                                if (stops_name[v].name == d.LastElementChild.TextContent)
                                 {
-                                    przystanek.nid = v;
+                                    stop.nid = v;
                                     break;
                                 }
                             }
 
-                            if (przystanek.nid == -1)
+                            if (stop.nid == -1)
                             {
-                                przystankinames.Add(new NazwaPrzystanku() { name = d.LastElementChild.TextContent });
-                                przystanek.nid = przystankinames.IndexOf(przystankinames.Last());
+                                stops_name.Add(new NazwaPrzystanku() { name = d.LastElementChild.TextContent });
+                                stop.nid = stops_name.IndexOf(stops_name.Last());
                             }
 
-                            przystanek.track_id = s;
-                            przystanek.rozkladzien_id = i;
+                            stop.track_id = s;
+                            stop.rozkladzien_id = i;
 
-                            przystanek.id_trasa = trasa.id;
-                            przystanek.id_rozklad = val[i].id;
+                            stop.id_trasa = track.id;
+                            stop.id_rozklad = val[i].id;
 
-                            przystanek.godziny = new List<Godzina>();
+                            stop.godziny = new List<Godzina>();
 
-                            przystanek.url = @d.LastElementChild.GetAttribute("href");
-                            przystanek.id = num++;
+                            stop.url = @d.LastElementChild.GetAttribute("href");
+                            stop.id = num++;
 
-                            if (trasa.name != d.LastElementChild.TextContent)
+                            if (track.name != d.LastElementChild.TextContent)
                             {
-                                source = AsyncHelpers.RunSync(() => GetHTML(string.Format("http://rozklady.kzkgop.pl/{0}", przystanek.url)));
+                                source = AsyncHelpers.RunSync(() => GetHTML(string.Format("http://rozklady.kzkgop.pl/{0}", stop.url)));
                                 document = parser.Parse(source);
                             }
 
@@ -207,31 +207,31 @@ namespace RozkladJazdy.Model
                             {
                                 var l6 = l4[0].QuerySelectorAll("tr");
 
-                                var dzien = new Godzina();
-                                dzien.nid = -1;
-                                dzien.godziny_full = null;
+                                var hour = new Godzina();
+                                hour.nid = -1;
+                                hour.godziny_full = null;
                                 int j = 0;
 
                                 for (int b = 0; b < l6.Count(); b++)
                                 {
                                     if (b % 2 == 0)
                                     {
-                                        if (dzien.godziny_full != null && b != 0 && dzien.nid != -1)
+                                        if (hour.godziny_full != null && b != 0 && hour.nid != -1)
                                         {
                                             j++;
-                                            dzien.id_przystanek = przystanek.id;
-                                            przystanek.godziny.Add(dzien);
-                                            dzien = new Godzina();
+                                            hour.id_przystanek = stop.id;
+                                            stop.godziny.Add(hour);
+                                            hour = new Godzina();
                                         }
-                                        dzien.godziny_full = "";
+                                        hour.godziny_full = "";
 
                                         bool set = false;
 
-                                        for (int v = 0; v < godzinynames.Count(); v++)
+                                        for (int v = 0; v < hours_name.Count(); v++)
                                         {
-                                            if (godzinynames[v].name == l6[b].FirstElementChild.TextContent.Trim())
+                                            if (hours_name[v].name == l6[b].FirstElementChild.TextContent.Trim())
                                             {
-                                                dzien.nid = v;
+                                                hour.nid = v;
                                                 set = true;
                                                 break;
                                             }
@@ -239,10 +239,10 @@ namespace RozkladJazdy.Model
 
                                         if (!set)
                                         {
-                                            godzinynames.Add(new NazwaGodziny() { name = l6[b].FirstElementChild.TextContent.Trim() });
-                                            dzien.nid = godzinynames.IndexOf(godzinynames.Last());
+                                            hours_name.Add(new NazwaGodziny() { name = l6[b].FirstElementChild.TextContent.Trim() });
+                                            hour.nid = hours_name.IndexOf(hours_name.Last());
                                         }
-                                        dzien.id_przystanek = przystanek.id;
+                                        hour.id_przystanek = stop.id;
 
                                         continue;
                                     }
@@ -277,12 +277,12 @@ namespace RozkladJazdy.Model
                                                 state = true;
                                             }
 
-                                            dzien.godziny_full += string.Format("{0}:{1}{2}#", n1, n2, letter.ToLower());
+                                            hour.godziny_full += string.Format("{0}:{1}{2}#", n1, n2, letter.ToLower());
                                         }
                                     }
                                 }
 
-                                przystanek.godziny.Add(dzien);
+                                stop.godziny.Add(hour);
 
                                 // jeśli jest literka, dodaj do bazy danych
                                 if (state)
@@ -298,11 +298,11 @@ namespace RozkladJazdy.Model
                                             Char @c = @l7[m].TextContent[0];
                                             var @a = l7[m].TextContent.Remove(0, 1).Insert(0, string.Format("{0} - ", c));
 
-                                            Literka literka = new Literka();
+                                            Literka letter = new Literka();
 
-                                            literka.id_przystanku = przystanek.id;
-                                            literka.info = @a;
-                                            literkiinfo.Add(literka);
+                                            letter.id_przystanku = stop.id;
+                                            letter.info = @a;
+                                            letters_info.Add(letter);
                                         }
                                     }
                                 }
@@ -311,16 +311,16 @@ namespace RozkladJazdy.Model
 
                             // stefa + wartiant
                             if (l3[k].GetAttribute("class").Contains("stref"))
-                                przystanek.strefowy = true;
+                                stop.strefowy = true;
 
                             if (d.GetAttribute("class").Contains("wariant"))
-                                przystanek.wariant = true;
+                                stop.wariant = true;
 
-                            trasa.stops.Add(przystanek);
+                            track.stops.Add(stop);
                         }
 
-                        trasa.stops = trasa.stops.OrderBy(p => p.id).ToList();
-                        val[i].track.Add(trasa);
+                        track.stops = track.stops.OrderBy(p => p.id).ToList();
+                        val[i].track.Add(track);
                     }
                     val[i].id_linia = line_id;
                 }
@@ -441,19 +441,13 @@ namespace RozkladJazdy.Model
                 SynchronizationContext.SetSynchronizationContext(synch);
                 synch.Post(async _ =>
                 {
-                    try
-                    {
-                        await task();
-                    }
+                    try { await task(); }
                     catch (Exception e)
                     {
                         synch.InnerException = e;
                         throw;
                     }
-                    finally
-                    {
-                        synch.EndMessageLoop();
-                    }
+                    finally { synch.EndMessageLoop(); }
                 }, null);
                 synch.BeginMessageLoop();
 

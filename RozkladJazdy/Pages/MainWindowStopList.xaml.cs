@@ -28,7 +28,7 @@ namespace RozkladJazdy.Pages
     /// </summary>
     public sealed partial class MainWindowStopList : Page
     {
-        private List<NazwaPrzystanku> stop_list => HTMLServices.przystankinames.OrderBy(p => p.name).ToList();
+        private List<NazwaPrzystanku> stop_list => HTMLServices.stops_name.OrderBy(p => p.name).ToList();
         private ObservableCollection<NazwaPrzystanku> searched_stop_list = new ObservableCollection<NazwaPrzystanku>();
         private List<PrzystanekListaPrzystanków> lines_list;
         private NazwaPrzystanku stop_name_temp = new NazwaPrzystanku();
@@ -407,7 +407,7 @@ namespace RozkladJazdy.Pages
 
             BackgroundWorker worker = new BackgroundWorker();
 
-            var stops_name = HTMLServices.przystankinames as List<NazwaPrzystanku>;
+            var stops_name = HTMLServices.stops_name as List<NazwaPrzystanku>;
 
             worker.DoWork += (s, f) => f.Result = stops_name.Where(p => normalize(p.name.ToLower()).Contains(normalize(message.ToLower()))).OrderBy(p => p.name).ToList();
             worker.RunWorkerCompleted += (s, f) =>
