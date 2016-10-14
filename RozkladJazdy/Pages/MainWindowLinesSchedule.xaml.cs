@@ -21,24 +21,24 @@ namespace RozkladJazdy.Pages
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class MainWindowLinesRozkladDzien : Page
+    public sealed partial class MainWindowLinesSchedule : Page
     {
-        private List<Rozklad> lista;
+        private List<Rozklad> list_of_schedules;
 
-        public MainWindowLinesRozkladDzien()
+        public MainWindowLinesSchedule()
         {
             this.InitializeComponent();
 
-            MainWindowLinesRozkladDzienTextBlock1.Text = MainWindowLinesRozkladDzienTextBlock1.Text + " " + MainWindowLinesList.selectedLine.name;
+            MainWindowLinesScheduleTitle.Text = MainWindowLinesScheduleTitle.Text + " " + MainWindowLinesList.selected_line.name;
 
-            lista = new List<Rozklad>();
-            MainWindowLinesList.selectedLine.rozklad = new List<Rozklad>();
-            MainWindowLinesList.selectedLine.rozklad = lista = SQLServices.getData<Rozklad>(0, "SELECT * FROM Rozklad WHERE id_linia = ?", MainWindowLinesList.selectedLine.id);
+            list_of_schedules = new List<Rozklad>();
+            MainWindowLinesList.selected_line.rozklad = new List<Rozklad>();
+            MainWindowLinesList.selected_line.rozklad = list_of_schedules = SQLServices.getData<Rozklad>(0, "SELECT * FROM Rozklad WHERE id_linia = ?", MainWindowLinesList.selected_line.id);
         }
 
         private void ListView_ItemClick(object sender, ItemClickEventArgs e)
         {
-            MainWindowLinesList.selectedRozklad = (sender as ListView).Items.IndexOf(e.ClickedItem as Rozklad);
+            MainWindowLinesList.selected_schedule = (sender as ListView).Items.IndexOf(e.ClickedItem as Rozklad);
             MainPage.gui.setViewPage = typeof(MainWindowLinesInfo);
         }
 
@@ -47,14 +47,12 @@ namespace RozkladJazdy.Pages
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
-
             if (e.SourcePageType == typeof(MainWindowLinesInfo))
             {
-                if(MainWindowLinesList.selectedLine.rozklad.Count() > 1)
-                    return;
+                if(MainWindowLinesList.selected_line.rozklad.Count() > 1) return;
 
                 MainWindowLinesInfo.selectedScheduleIndex = -1;
-                MainWindowLinesList.selectedRozklad = new int();
+                MainWindowLinesList.selected_schedule = new int();
             }
         }
     }

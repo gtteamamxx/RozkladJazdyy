@@ -135,8 +135,8 @@
     <Compile Include="Pages\MainWindowLinesList.xaml.cs">
       <DependentUpon>MainWindowLinesList.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\MainWindowLinesRozkladDzien.xaml.cs">
-      <DependentUpon>MainWindowLinesRozkladDzien.xaml</DependentUpon>
+    <Compile Include="Pages\MainWindowLinesSchedule.xaml.cs">
+      <DependentUpon>MainWindowLinesSchedule.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\MainWindowSelect.xaml.cs">
       <DependentUpon>MainWindowSelect.xaml</DependentUpon>
@@ -211,7 +211,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\MainWindowLinesRozkladDzien.xaml">
+    <Page Include="Pages\MainWindowLinesSchedule.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

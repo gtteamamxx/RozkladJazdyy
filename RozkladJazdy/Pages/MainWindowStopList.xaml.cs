@@ -274,14 +274,14 @@ namespace RozkladJazdy.Pages
         }
         private void changePage(int lineid, int rozkladid = -1, Przystanek przid = null)
         {
-            if(MainWindowLinesList.selectedLine == null || (MainWindowLinesList.selectedLine != null && MainWindow.lines.IndexOf(MainWindowLinesList.selectedLine) != lineid))
+            if(MainWindowLinesList.selected_line == null || (MainWindowLinesList.selected_line != null && MainWindow.lines.IndexOf(MainWindowLinesList.selected_line) != lineid))
             {
-                MainWindowLinesList.selectedLine = new Linia();
-                MainWindowLinesList.selectedLine = MainWindow.lines[lineid];
+                MainWindowLinesList.selected_line = new Linia();
+                MainWindowLinesList.selected_line = MainWindow.lines[lineid];
             }
 
-            MainWindowLinesList.selectedRozklad = new int();
-            MainWindowLinesList.selectedRozklad = rozkladid;
+            MainWindowLinesList.selected_schedule = new int();
+            MainWindowLinesList.selected_schedule = rozkladid;
 
             navigated_from = true;
 
@@ -299,7 +299,7 @@ namespace RozkladJazdy.Pages
             {
                 if (SQLServices.getData<Rozklad>(0, "SELECT * FROM Rozklad WHERE id_linia = ?", lineid).Count() > 1)
                 {
-                    MainPage.gui.setViewPage = typeof(MainWindowLinesRozkladDzien);
+                    MainPage.gui.setViewPage = typeof(MainWindowLinesSchedule);
                     return;
                 }
             }
@@ -340,19 +340,19 @@ namespace RozkladJazdy.Pages
                 var a = MainWindow.lines[linia];
                 var b = SQLServices.getData<Rozklad>(0, "SELECT * FROM Rozklad WHERE id_linia = ?", linia);//a.rozklad[rozklad];
 
-                MainWindowLinesList.selectedLine = new Linia();
-                MainWindowLinesList.selectedLine = MainWindow.lines[linia];
+                MainWindowLinesList.selected_line = new Linia();
+                MainWindowLinesList.selected_line = MainWindow.lines[linia];
 
-                MainWindowLinesList.selectedLine.rozklad = new List<Rozklad>();
-                MainWindowLinesList.selectedLine.rozklad = b;
+                MainWindowLinesList.selected_line.rozklad = new List<Rozklad>();
+                MainWindowLinesList.selected_line.rozklad = b;
 
                 var c = SQLServices.getData<Trasa>(0, "SELECT * FROM Trasa WHERE (id_linia = ? AND id_rozklad = ?) LIMIT 2", linia, rozklad);//b.track[trasa];
-                MainWindowLinesList.selectedLine.rozklad[rozklad].track = new List<Trasa>();
-                MainWindowLinesList.selectedLine.rozklad[rozklad].track = c;
+                MainWindowLinesList.selected_line.rozklad[rozklad].track = new List<Trasa>();
+                MainWindowLinesList.selected_line.rozklad[rozklad].track = c;
 
                 var d = SQLServices.getData<Przystanek>(0, "SELECT * FROM Przystanek WHERE id_trasa = ? AND id_rozklad = ?", c[trasa].id, b[rozklad].id, temp.id);//c.stops.Where(p => p.nid == temp.id).ToList();
-                MainWindowLinesList.selectedLine.rozklad[rozklad].track[trasa].stops = new List<Przystanek>();
-                MainWindowLinesList.selectedLine.rozklad[rozklad].track[trasa].stops = d;
+                MainWindowLinesList.selected_line.rozklad[rozklad].track[trasa].stops = new List<Przystanek>();
+                MainWindowLinesList.selected_line.rozklad[rozklad].track[trasa].stops = d;
 
                 f.Result = d.Where(p => p.nid == temp.id).First() as Przystanek;
             };

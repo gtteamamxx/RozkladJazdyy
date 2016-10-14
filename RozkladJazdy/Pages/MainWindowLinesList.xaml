@@ -28,7 +28,7 @@
         <ScrollViewer Grid.Row="1">
             <StackPanel Name="MainWindowLinesStackPanel1" Grid.Row="1">
                 
-                <StackPanel Name="MainWindowLinesStackPanelWszystkieLinie"
+                <StackPanel Name="MainWindowLinesStackPanelAllLines"
                         BorderBrush="Black"
                         BorderThickness="0,1,0,1"
                         Background="AliceBlue"
@@ -43,7 +43,7 @@
                 </StackPanel>
 
                 <Grid>
-                    <GridView Name="MainWindowLinesListGirdViewWszystkieLinie" 
+                    <GridView Name="MainWindowLinesListGirdViewAllLines" 
                             IsItemClickEnabled="True" 
                             ItemClick="MainWindowLinesListGirdView_ItemClick"  Margin="10"
                             ItemsSource="{Binding ElementName=MainWindowLinesAutoSuggestBox, Path=Items}"
@@ -72,12 +72,11 @@
 
                     </GridView>
 
-                    <TextBlock Visibility="Collapsed" HorizontalAlignment="Center" Foreground="Black" Name="SzukaneLinieText" Text="Brak wyników do podanej frazy" />
+                    <TextBlock Name="MainWindowLinesListSearchText" Visibility="Collapsed" HorizontalAlignment="Center" Foreground="Black" Text="Brak wyników do podanej frazy" />
 
                 </Grid>
-                
 
-                <StackPanel Name="MainWindowLinesStackPanelTramwaje"
+                <StackPanel Name="MainWindowLinesStackPanelTrams"
                         BorderBrush="Black"
                         BorderThickness="0,1,0,1"
                         Background="AliceBlue"
@@ -90,10 +89,10 @@
                     </Grid>
                 </StackPanel>
 
-                <GridView Name="MainWindowLinesListGirdViewTramwaje" 
+                <GridView Name="MainWindowLinesListGirdViewTrams" 
                       IsItemClickEnabled="True" 
                       ItemClick="MainWindowLinesListGirdView_ItemClick" Margin="10"
-                      ItemsSource="{x:Bind LinieTramwaje}"
+                      ItemsSource="{x:Bind lines_tram}"
                       Background="White">
 
                     <GridView.ItemTemplate>
@@ -117,51 +116,10 @@
 
                 </GridView>
 
-                <ProgressRing Name="MainWindowLinesProgressRingTramwaje" IsActive="True" Foreground="Blue" VerticalAlignment="Center" Margin="10" Width="50" Height="50" HorizontalAlignment="Center" />
+                <ProgressRing Name="MainWindowLinesProgressRingTrams" IsActive="True" Foreground="Blue" VerticalAlignment="Center" Margin="10" Width="50" Height="50" HorizontalAlignment="Center" />
 
-                <StackPanel Name="MainWindowLinesStackPanelLotnisko"
-                        BorderBrush="Black"
-                        BorderThickness="0,1,0,1"
-                        Background="AliceBlue"
-                        IsTapEnabled="True"
-                        Tapped="MainWindowLinesStackPanel_Tapped">
-                    <Grid>
-                        <TextBlock Foreground="IndianRed" FontSize="25" HorizontalAlignment="Center" Text="Lotnisko"></TextBlock>
-                        <TextBlock Margin="0,0,10,0" HorizontalAlignment="Right" FontSize="25" Foreground="Black" FontFamily="Segoe MDL2 Assets" VerticalAlignment="Center" Text="&#xE74B;"/>
-                    </Grid>
-                </StackPanel>
-
-
-                <GridView Name="MainWindowLinesListGirdViewLotnisko" 
-                      IsItemClickEnabled="True" 
-                      ItemClick="MainWindowLinesListGirdView_ItemClick" Margin="10"
-                      ItemsSource="{x:Bind LinieLotnisko}">
-
-                    <GridView.ItemTemplate>
-                        <DataTemplate x:DataType="data:Linia">
-                            <Grid Margin="5" 
-                              HorizontalAlignment="Center" 
-                              VerticalAlignment="Center" 
-                              Height="60"
-                              BorderBrush="DarkBlue" 
-                              BorderThickness="1" 
-                              Background="Brown">
-
-                                <TextBlock Foreground="White" 
-                                           VerticalAlignment="Center"
-                                           Margin="10,5,10,5"
-                                           Text="{x:Bind name}" 
-                                           FontSize="20" 
-                                           HorizontalAlignment="Center"/>
-
-                            </Grid>
-                        </DataTemplate>
-                    </GridView.ItemTemplate>
-
-                </GridView>
-                <ProgressRing Name="MainWindowLinesProgressRingLotnisko" IsActive="True" Foreground="Blue" VerticalAlignment="Center" Margin="10" Width="50" Height="50" HorizontalAlignment="Center" />
-
-                <StackPanel Name="MainWindowLinesStackPanelNocne"
+                
+                <StackPanel Name="MainWindowLinesStackPanelNight"
                         BorderBrush="Black"
                         BorderThickness="0,1,0,1"
                         Background="AliceBlue"
@@ -173,10 +131,10 @@
                     </Grid>
                 </StackPanel>
 
-                <GridView Name="MainWindowLinesListGirdViewNocne" 
+                <GridView Name="MainWindowLinesListGirdViewNight" 
                       IsItemClickEnabled="True" 
                       ItemClick="MainWindowLinesListGirdView_ItemClick" Margin="10"
-                      ItemsSource="{x:Bind LinieNocne}"
+                      ItemsSource="{x:Bind lines_night}"
                       Background="White">
 
                     <GridView.ItemTemplate>
@@ -201,8 +159,9 @@
                     </GridView.ItemTemplate>
 
                 </GridView>
-                <ProgressRing Name="MainWindowLinesProgressRingNocne" IsActive="True" Foreground="Blue" VerticalAlignment="Center" Margin="10" Width="50" Height="50" HorizontalAlignment="Center" />
-                <StackPanel Name="MainWindowLinesStackPanelAutobusy"
+                <ProgressRing Name="MainWindowLinesProgressRingNight" IsActive="True" Foreground="Blue" VerticalAlignment="Center" Margin="10" Width="50" Height="50" HorizontalAlignment="Center" />
+                
+                <StackPanel Name="MainWindowLinesStackPanelBus"
                         BorderBrush="Black"
                         BorderThickness="0,1,0,1"
                         Background="AliceBlue"
@@ -214,10 +173,10 @@
                     </Grid>
                 </StackPanel>
 
-                <GridView Name="MainWindowLinesListGirdViewAutobusy" 
+                <GridView Name="MainWindowLinesListGirdViewBus" 
                       IsItemClickEnabled="True" 
                       ItemClick="MainWindowLinesListGirdView_ItemClick" Margin="10"
-                      ItemsSource="{x:Bind LinieAutobusy}"
+                      ItemsSource="{x:Bind lines_bus}"
                       Background="White">
 
                     <GridView.ItemTemplate>
@@ -242,7 +201,51 @@
                     </GridView.ItemTemplate>
 
                 </GridView>
-                <ProgressRing Name="MainWindowLinesProgressRingAutobusy" IsActive="True" Foreground="Blue" VerticalAlignment="Center" Margin="10" Width="50" Height="50" HorizontalAlignment="Center" />
+                <ProgressRing Name="MainWindowLinesProgressRingBus" IsActive="True" Foreground="Blue" VerticalAlignment="Center" Margin="10" Width="50" Height="50" HorizontalAlignment="Center" />
+
+                <StackPanel Name="MainWindowLinesStackPanelAir"
+                        BorderBrush="Black"
+                        BorderThickness="0,1,0,1"
+                        Background="AliceBlue"
+                        IsTapEnabled="True"
+                        Tapped="MainWindowLinesStackPanel_Tapped">
+                    <Grid>
+                        <TextBlock Foreground="IndianRed" FontSize="25" HorizontalAlignment="Center" Text="Lotnisko"></TextBlock>
+                        <TextBlock Margin="0,0,10,0" HorizontalAlignment="Right" FontSize="25" Foreground="Black" FontFamily="Segoe MDL2 Assets" VerticalAlignment="Center" Text="&#xE74B;"/>
+                    </Grid>
+                </StackPanel>
+
+
+                <GridView Name="MainWindowLinesListGirdViewAir" 
+                      IsItemClickEnabled="True" 
+                      ItemClick="MainWindowLinesListGirdView_ItemClick" Margin="10"
+                      ItemsSource="{x:Bind lines_air}">
+
+                    <GridView.ItemTemplate>
+                        <DataTemplate x:DataType="data:Linia">
+                            <Grid Margin="5" 
+                              HorizontalAlignment="Center" 
+                              VerticalAlignment="Center" 
+                              Height="60"
+                              BorderBrush="DarkBlue" 
+                              BorderThickness="1" 
+                              Background="Brown">
+
+                                <TextBlock Foreground="White" 
+                                           VerticalAlignment="Center"
+                                           Margin="10,5,10,5"
+                                           Text="{x:Bind name}" 
+                                           FontSize="20" 
+                                           HorizontalAlignment="Center"/>
+
+                            </Grid>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+
+                </GridView>
+                <ProgressRing Name="MainWindowLinesProgressRingAir" IsActive="True" Foreground="Blue" VerticalAlignment="Center" Margin="10" Width="50" Height="50" HorizontalAlignment="Center" />
+
+                
                 <StackPanel Name="MainWindowLinesStackPanelMini"
                         BorderBrush="Black"
                         BorderThickness="0,1,0,1"
@@ -258,7 +261,7 @@
                 <GridView Name="MainWindowLinesListGirdViewMini" 
                       IsItemClickEnabled="True" 
                       ItemClick="MainWindowLinesListGirdView_ItemClick" Margin="10"
-                      ItemsSource="{x:Bind LinieMini}"
+                      ItemsSource="{x:Bind lines_mini}"
                       Background="White">
 
                     <GridView.ItemTemplate>

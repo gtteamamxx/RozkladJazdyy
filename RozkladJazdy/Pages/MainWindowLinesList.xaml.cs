@@ -28,17 +28,17 @@ namespace RozkladJazdy.Pages
     /// </summary>
     public sealed partial class MainWindowLinesList : Page
     {
-        private List<Linia> Linie;
-        private ObservableCollection<Linia> LinieTramwaje;
-        private ObservableCollection<Linia> LinieLotnisko;
-        private ObservableCollection<Linia> LinieNocne;
-        private ObservableCollection<Linia> LinieAutobusy;
-        private ObservableCollection<Linia> LinieMini;
+        private List<Linia> lines;
+        private ObservableCollection<Linia> lines_tram;
+        private ObservableCollection<Linia> lines_air;
+        private ObservableCollection<Linia> lines_night;
+        private ObservableCollection<Linia> lines_bus;
+        private ObservableCollection<Linia> lines_mini;
 
-        public static Linia selectedLine;
-        public static int selectedRozklad = new int();
+        public static Linia selected_line;
+        public static int selected_schedule = new int();
 
-        private static bool loaded = false;
+        private static bool isPageLoaded = false;
 
         public MainWindowLinesList()
         {
@@ -46,40 +46,40 @@ namespace RozkladJazdy.Pages
 
             MainPage.OnTimeTableRefesh += () =>
             {
-                Linie.Clear();
-                LinieTramwaje.Clear();
-                LinieLotnisko.Clear();
-                LinieNocne.Clear();
-                LinieAutobusy.Clear();
-                LinieMini.Clear();
-                selectedLine = null;
-                selectedRozklad = -1;
-                loaded = false;
+                lines.Clear();
+                lines_tram.Clear();
+                lines_air.Clear();
+                lines_night.Clear();
+                lines_bus.Clear();
+                lines_mini.Clear();
+                selected_line = null;
+                selected_schedule = -1;
+                isPageLoaded = false;
             };
 
             
-            Linie = new List<Linia>();
-            LinieTramwaje = new ObservableCollection<Linia>();
-            LinieLotnisko = new ObservableCollection<Linia>();
-            LinieNocne = new ObservableCollection<Linia>();
-            LinieAutobusy = new ObservableCollection<Linia>();
-            LinieMini = new ObservableCollection<Linia>();
+            lines = new List<Linia>();
+            lines_tram = new ObservableCollection<Linia>();
+            lines_air = new ObservableCollection<Linia>();
+            lines_night = new ObservableCollection<Linia>();
+            lines_bus = new ObservableCollection<Linia>();
+            lines_mini = new ObservableCollection<Linia>();
 
-            selectedLine = new Linia();
+            selected_line = new Linia();
         }
         private void MainWindowLinesListGirdView_ItemClick(object sender, ItemClickEventArgs e)
         {
-            if (!loaded)
+            if (!isPageLoaded)
                 return;
 
             var linia = e.ClickedItem as Linia;
 
-            selectedLine = linia;
+            selected_line = linia;
 
-            var liczba_rozkladow = SQLServices.getData<Rozklad>(0, "SELECT id FROM Rozklad where id_linia = ?", selectedLine.id).Count();
+            var liczba_rozkladow = SQLServices.getData<Rozklad>(0, "SELECT id FROM Rozklad where id_linia = ?", selected_line.id).Count();
 
             if (liczba_rozkladow > 1)
-                MainPage.gui.setViewPage = typeof(MainWindowLinesRozkladDzien);
+                MainPage.gui.setViewPage = typeof(MainWindowLinesSchedule);
             else
                 MainPage.gui.setViewPage = typeof(MainWindowLinesInfo);
 
@@ -92,27 +92,28 @@ namespace RozkladJazdy.Pages
             worker.WorkerReportsProgress = true;
             worker.DoWork += (senders, es) =>
             {
-                foreach (Linia l in Linie)
+
+                foreach (Linia l in lines)
                     if ((l.pfm & 4) == 4)
                         worker.ReportProgress(0, l); // pierw tramwaje
                 worker.ReportProgress(10);
 
-                foreach (Linia l in Linie)
+                foreach (Linia l in lines)
                     if ((l.pfm & 16) == 16)
                         worker.ReportProgress(1, l); // potem lotnisko
                 worker.ReportProgress(20);
 
-                foreach (Linia l in Linie)
+                foreach (Linia l in lines)
                     if ((l.pfm & 256) == 256)
                         worker.ReportProgress(2, l); // potem nocne
                 worker.ReportProgress(30);
 
-                foreach (Linia l in Linie)
+                foreach (Linia l in lines)
                     if ((l.pfm & 1) == 1)
                         worker.ReportProgress(3, l); // potem autobusy
                 worker.ReportProgress(40);
 
-                foreach (Linia l in Linie)
+                foreach (Linia l in lines)
                     if ((l.pfm & 8) == 8)
                         worker.ReportProgress(4, l); // potem mini
                 worker.ReportProgress(50);
@@ -122,70 +123,70 @@ namespace RozkladJazdy.Pages
             worker.ProgressChanged += (senders, es) =>
             {
                 if (es.ProgressPercentage == 10)
-                    MainWindowLinesProgressRingTramwaje.Visibility = Visibility.Collapsed;
+                    MainWindowLinesProgressRingTrams.Visibility = Visibility.Collapsed;
                 else if (es.ProgressPercentage == 20)
-                    MainWindowLinesProgressRingLotnisko.Visibility = Visibility.Collapsed;
+                    MainWindowLinesProgressRingAir.Visibility = Visibility.Collapsed;
                 else if (es.ProgressPercentage == 30)
-                    MainWindowLinesProgressRingNocne.Visibility = Visibility.Collapsed;
+                    MainWindowLinesProgressRingNight.Visibility = Visibility.Collapsed;
                 else if (es.ProgressPercentage == 40)
-                    MainWindowLinesProgressRingAutobusy.Visibility = Visibility.Collapsed;
+                    MainWindowLinesProgressRingBus.Visibility = Visibility.Collapsed;
                 else if (es.ProgressPercentage == 50)
                     MainWindowLinesProgressRingMini.Visibility = Visibility.Collapsed;
 
                 else if (es.ProgressPercentage == 0)
-                    LinieTramwaje.Add(es.UserState as Linia);
+                    lines_tram.Add(es.UserState as Linia);
                 else if (es.ProgressPercentage == 1)
-                    LinieLotnisko.Add(es.UserState as Linia);
+                    lines_air.Add(es.UserState as Linia);
                 else if (es.ProgressPercentage == 2)
-                    LinieNocne.Add(es.UserState as Linia);
+                    lines_night.Add(es.UserState as Linia);
                 else if (es.ProgressPercentage == 3)
-                    LinieAutobusy.Add(es.UserState as Linia);
+                    lines_bus.Add(es.UserState as Linia);
                 else if (es.ProgressPercentage == 4)
-                    LinieMini.Add(es.UserState as Linia);
+                    lines_mini.Add(es.UserState as Linia);
             };
 
             worker.RunWorkerCompleted += (sendesr, es) =>
             {
-                if (LinieTramwaje.Count() == 0)
+                if (lines_tram.Count() == 0)
                 {
-                    MainWindowLinesListGirdViewTramwaje.Visibility = Visibility.Collapsed;
-                    MainWindowLinesStackPanelTramwaje.Visibility = Visibility.Collapsed;
+                    MainWindowLinesListGirdViewTrams.Visibility = Visibility.Collapsed;
+                    MainWindowLinesStackPanelTrams.Visibility = Visibility.Collapsed;
                 }
 
-                if (LinieAutobusy.Count() == 0)
+                if (lines_bus.Count() == 0)
                 {
-                    MainWindowLinesListGirdViewAutobusy.Visibility = Visibility.Collapsed;
-                    MainWindowLinesStackPanelAutobusy.Visibility = Visibility.Collapsed;
+                    MainWindowLinesListGirdViewBus.Visibility = Visibility.Collapsed;
+                    MainWindowLinesStackPanelBus.Visibility = Visibility.Collapsed;
                 }
 
-                if (LinieLotnisko.Count() == 0)
+                if (lines_air.Count() == 0)
                 {
-                    MainWindowLinesListGirdViewLotnisko.Visibility = Visibility.Collapsed;
-                    MainWindowLinesStackPanelLotnisko.Visibility = Visibility.Collapsed;
+                    MainWindowLinesListGirdViewAir.Visibility = Visibility.Collapsed;
+                    MainWindowLinesStackPanelAir.Visibility = Visibility.Collapsed;
                 }
 
-                if (LinieMini.Count() == 0)
+                if (lines_mini.Count() == 0)
                 {
                     MainWindowLinesListGirdViewMini.Visibility = Visibility.Collapsed;
                     MainWindowLinesStackPanelMini.Visibility = Visibility.Collapsed;
                 }
 
-                if (LinieNocne.Count() == 0)
+                if (lines_night.Count() == 0)
                 {
-                    MainWindowLinesListGirdViewNocne.Visibility = Visibility.Collapsed;
-                    MainWindowLinesStackPanelNocne.Visibility = Visibility.Collapsed;
+                    MainWindowLinesListGirdViewNight.Visibility = Visibility.Collapsed;
+                    MainWindowLinesStackPanelNight.Visibility = Visibility.Collapsed;
                 }
 
-                loaded = true;
+                isPageLoaded = true;
 
                 MainPage.gui.setRefreshButtonVisibility = Visibility.Visible;
                 MainWindow.isTimetableRefreshing = false;
 
             };
 
-            if (!loaded || (!loaded && MainWindow.isPageLoaded == true))
+            if (!isPageLoaded || (!isPageLoaded && MainWindow.isPageLoaded == true))
             {
-                Linie = MainWindow.lines;
+                lines = MainWindow.lines;
                 worker.RunWorkerAsync();
             }
         }
@@ -216,23 +217,23 @@ namespace RozkladJazdy.Pages
         {
             MainWindowLinesStackPanel1.Width = e.NewSize.Width;
 
-            if (MainWindowLinesStackPanelTramwaje.Visibility == Visibility.Visible)
-                MainWindowLinesStackPanelTramwaje.Width = e.NewSize.Width;
+            if (MainWindowLinesStackPanelTrams.Visibility == Visibility.Visible)
+                MainWindowLinesStackPanelTrams.Width = e.NewSize.Width;
 
-            if (MainWindowLinesStackPanelLotnisko.Visibility == Visibility.Visible)
-                MainWindowLinesStackPanelLotnisko.Width = e.NewSize.Width;
+            if (MainWindowLinesStackPanelAir.Visibility == Visibility.Visible)
+                MainWindowLinesStackPanelAir.Width = e.NewSize.Width;
 
-            if (MainWindowLinesStackPanelNocne.Visibility == Visibility.Visible)
-                MainWindowLinesStackPanelNocne.Width = e.NewSize.Width;
+            if (MainWindowLinesStackPanelNight.Visibility == Visibility.Visible)
+                MainWindowLinesStackPanelNight.Width = e.NewSize.Width;
 
-            if (MainWindowLinesStackPanelAutobusy.Visibility == Visibility.Visible)
-                MainWindowLinesStackPanelAutobusy.Width = e.NewSize.Width;
+            if (MainWindowLinesStackPanelBus.Visibility == Visibility.Visible)
+                MainWindowLinesStackPanelBus.Width = e.NewSize.Width;
 
             if (MainWindowLinesStackPanelMini.Visibility == Visibility.Visible)
                 MainWindowLinesStackPanelMini.Width = e.NewSize.Width;
 
-            if (MainWindowLinesStackPanelWszystkieLinie.Visibility == Visibility.Visible)
-                MainWindowLinesStackPanelWszystkieLinie.Width = e.NewSize.Width;
+            if (MainWindowLinesStackPanelAllLines.Visibility == Visibility.Visible)
+                MainWindowLinesStackPanelAllLines.Width = e.NewSize.Width;
         }
 
         private void MainWindowLinesAutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
@@ -241,25 +242,25 @@ namespace RozkladJazdy.Pages
 
             if (asg.Text.Trim().Count() == 0)
             {
-                MainWindowLinesStackPanelWszystkieLinie.Visibility = Visibility.Collapsed;
-                MainWindowLinesListGirdViewWszystkieLinie.Visibility = Visibility.Collapsed;
-                SzukaneLinieText.Visibility = Visibility.Collapsed;
+                MainWindowLinesStackPanelAllLines.Visibility = Visibility.Collapsed;
+                MainWindowLinesListGirdViewAllLines.Visibility = Visibility.Collapsed;
+                MainWindowLinesListSearchText.Visibility = Visibility.Collapsed;
                 asg.Items.Clear();
             }
             else
             {
-                MainWindowLinesStackPanelWszystkieLinie.Visibility = Visibility.Visible;
-                MainWindowLinesListGirdViewWszystkieLinie.Visibility = Visibility.Visible;
+                MainWindowLinesStackPanelAllLines.Visibility = Visibility.Visible;
+                MainWindowLinesListGirdViewAllLines.Visibility = Visibility.Visible;
 
                 asg.Items.Clear();
 
-                foreach (Linia l in Linie.Where(p => (p as Linia).name.ToLower().StartsWith(asg.Text.Trim().ToLower())))
+                foreach (Linia l in lines.Where(p => (p as Linia).name.ToLower().StartsWith(asg.Text.Trim().ToLower())))
                     asg.Items.Add(l);
 
                 if (asg.Items.Count == 0)
-                    SzukaneLinieText.Visibility = Visibility.Visible;
+                    MainWindowLinesListSearchText.Visibility = Visibility.Visible;
                 else
-                    SzukaneLinieText.Visibility = Visibility.Collapsed;
+                    MainWindowLinesListSearchText.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -271,8 +272,7 @@ namespace RozkladJazdy.Pages
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
-        {
-            this.SizeChanged -= Page_SizeChanged;
-        }
+            => this.SizeChanged -= Page_SizeChanged;
+
     }
 }

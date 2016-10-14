@@ -65,20 +65,20 @@ namespace RozkladJazdy
             if (stop.na_zadanie())
                 bold = FontWeights.Bold;
 
-            var track = MainWindowLinesList.selectedLine.rozklad[stop.rozkladzien_id].track;
+            var track = MainWindowLinesList.selected_line.rozklad[stop.rozkladzien_id].track;
             if (track == null)
             {
-                track = SQLServices.getData<Trasa>(0, "SELECT * FROM Trasa WHERE (id_linia = ? AND id_rozklad = ?) LIMIT 2", MainWindowLinesList.selectedLine.id, stop.rozkladzien_id);
+                track = SQLServices.getData<Trasa>(0, "SELECT * FROM Trasa WHERE (id_linia = ? AND id_rozklad = ?) LIMIT 2", MainWindowLinesList.selected_line.id, stop.rozkladzien_id);
 
-                MainWindowLinesList.selectedLine.rozklad[stop.rozkladzien_id].track = new List<Trasa>();
-                MainWindowLinesList.selectedLine.rozklad[stop.rozkladzien_id].track = track;
+                MainWindowLinesList.selected_line.rozklad[stop.rozkladzien_id].track = new List<Trasa>();
+                MainWindowLinesList.selected_line.rozklad[stop.rozkladzien_id].track = track;
 
                 for(int i = 0; i < track.Count(); i++)
                 {
                     track[i].stops = new List<Przystanek>();
-                    MainWindowLinesList.selectedLine.rozklad[stop.rozkladzien_id].track[i].stops = new List<Model.Przystanek>();
+                    MainWindowLinesList.selected_line.rozklad[stop.rozkladzien_id].track[i].stops = new List<Model.Przystanek>();
 
-                    track[i].stops = MainWindowLinesList.selectedLine.rozklad[stop.rozkladzien_id].track[i].stops = SQLServices.getData<Przystanek>(0, "SELECT * FROM Przystanek WHERE id_trasa = ?", track[i].id);
+                    track[i].stops = MainWindowLinesList.selected_line.rozklad[stop.rozkladzien_id].track[i].stops = SQLServices.getData<Przystanek>(0, "SELECT * FROM Przystanek WHERE id_trasa = ?", track[i].id);
                 }
 
             }

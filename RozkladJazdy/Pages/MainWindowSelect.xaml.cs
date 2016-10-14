@@ -123,7 +123,7 @@ namespace RozkladJazdy.Pages
 
             MainPage.gui.setPageTitle = "Rozkład jazdy";
             MainWindowLinesInfo.selectedScheduleIndex = -1;
-            MainWindowLinesList.selectedRozklad = new int();
+            MainWindowLinesList.selected_schedule = new int();
         }
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e) 
             =>    MainPage.gui.setMenuSplitViewDisplayMode = SplitViewDisplayMode.Inline;

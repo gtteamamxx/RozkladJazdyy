@@ -100,18 +100,18 @@ namespace RozkladJazdy.Pages
 
             if (clickedFavItem.type == 0) // linia
             {
-                MainWindowLinesList.selectedLine = new Linia();
-                MainWindowLinesList.selectedRozklad = new int();
+                MainWindowLinesList.selected_line = new Linia();
+                MainWindowLinesList.selected_schedule = new int();
 
                 MainPage.gui.setRefreshButtonVisibility = Visibility.Collapsed;
 
-                MainWindowLinesList.selectedLine = MainWindow.lines[clickedFavItem.id];
+                MainWindowLinesList.selected_line = MainWindow.lines[clickedFavItem.id];
 
-                var liczba_rozkladow = SQLServices.getData<Rozklad>(0, "SELECT id FROM Rozklad where id_linia = ?", MainWindowLinesList.selectedLine.id).Count();
+                var liczba_rozkladow = SQLServices.getData<Rozklad>(0, "SELECT id FROM Rozklad where id_linia = ?", MainWindowLinesList.selected_line.id).Count();
 
                 if (liczba_rozkladow > 1)
                 {
-                    MainPage.gui.setViewPage = typeof(MainWindowLinesRozkladDzien);
+                    MainPage.gui.setViewPage = typeof(MainWindowLinesSchedule);
                     return;
                 }
 

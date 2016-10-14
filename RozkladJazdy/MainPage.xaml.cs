@@ -161,8 +161,8 @@ namespace RozkladJazdy
         {
             if (MainPageFrame.SourcePageType == typeof(MainWindowLinesInfoHours))
             {
-                MainWindowLinesInfoHours.was = null;
-                MainWindowLinesInfoHours.hour = 0;
+                MainWindowLinesInfoHours.isClosestHour_temp = null;
+                MainWindowLinesInfoHours.closest_hour = 0;
                 //MainWindowLinesInfoHours.selectedHour = "";
 
                 MainPageTopPanelStopsButton.Visibility = Visibility.Collapsed;
@@ -207,15 +207,15 @@ namespace RozkladJazdy
                     return;
                 }
 
-                if (MainWindowLinesList.selectedLine.rozklad.Count == 1)
+                if (MainWindowLinesList.selected_line.rozklad.Count == 1)
                         MainPageFrame.Navigate(typeof(MainWindowLinesList));
                 else
                 {
                     MainPageTopPanelRefreshButton.Visibility = Visibility.Collapsed;
-                    MainPageFrame.Navigate(typeof(MainWindowLinesRozkladDzien));
+                    MainPageFrame.Navigate(typeof(MainWindowLinesSchedule));
                 }
             }
-            else if (MainPageFrame.SourcePageType == typeof(MainWindowLinesRozkladDzien))
+            else if (MainPageFrame.SourcePageType == typeof(MainWindowLinesSchedule))
             {
                 if (MainWindowFav.isNavigatedFromThisPage == true)
                 {
@@ -312,11 +312,11 @@ namespace RozkladJazdy
             if (MainPageFrame.SourcePageType == typeof(MainWindowLinesInfo))
             {
                 if (addToFavourite)
-                    favourite_stops.Add(new Ulubiony() { type = 0, id = MainWindow.lines.IndexOf(MainWindowLinesList.selectedLine), name = MainWindowLinesList.selectedLine.name });
+                    favourite_stops.Add(new Ulubiony() { type = 0, id = MainWindow.lines.IndexOf(MainWindowLinesList.selected_line), name = MainWindowLinesList.selected_line.name });
                 else
-                    favourite_stops.Remove(favourite_stops.Where(p => p.type == 0 && p.name == MainWindowLinesList.selectedLine.name).ToList().First());
+                    favourite_stops.Remove(favourite_stops.Where(p => p.type == 0 && p.name == MainWindowLinesList.selected_line.name).ToList().First());
 
-                name = MainWindowLinesList.selectedLine.name;
+                name = MainWindowLinesList.selected_line.name;
             }
             else if (MainPageFrame.SourcePageType == typeof(MainWindowLinesInfoHours))
             {

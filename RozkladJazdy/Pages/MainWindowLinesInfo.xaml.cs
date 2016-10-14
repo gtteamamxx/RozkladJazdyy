@@ -83,15 +83,15 @@ namespace RozkladJazdy.Pages
             MainPage.gui.setFavouriteSubText = "linia";
             MainPage.gui.setFavouriteButtonVisibility = Visibility.Visible;
 
-            if (MainPage.isFavourite(MainWindowLinesList.selectedLine))
+            if (MainPage.isFavourite(MainWindowLinesList.selected_line))
                 MainPage.gui.setFavouriteButtonColor = Colors.Black;
             else
                 MainPage.gui.setFavouriteButtonColor = Colors.LightGray;
 
-            if (!isFirstTimePageOpened && (line.id == MainWindowLinesList.selectedLine.id && isPageLoaded) && stops_dest1.Count() > 0)
+            if (!isFirstTimePageOpened && (line.id == MainWindowLinesList.selected_line.id && isPageLoaded) && stops_dest1.Count() > 0)
             {
                 bool _return = false;
-                int new_schedule_index = selectedScheduleIndex = MainWindowLinesList.selectedRozklad == -1 ? 0 : MainWindowLinesList.selectedRozklad;
+                int new_schedule_index = selectedScheduleIndex = MainWindowLinesList.selected_schedule == -1 ? 0 : MainWindowLinesList.selected_schedule;
                 int old_schedule_index = -1;
 
                 if (usercontrol_mainwindowlinesinfofirst_list.Count() > 0)
@@ -111,13 +111,13 @@ namespace RozkladJazdy.Pages
 
             ClearDestsLists();
 
-            if (MainWindowLinesList.selectedLine.id != line.id && MainWindowLinesList.selectedLine.rozklad == null)
-                MainWindowLinesList.selectedRozklad = -1;
+            if (MainWindowLinesList.selected_line.id != line.id && MainWindowLinesList.selected_line.rozklad == null)
+                MainWindowLinesList.selected_schedule = -1;
 
-            selectedScheduleIndex = MainWindowLinesList.selectedRozklad == -1 ? 0 : MainWindowLinesList.selectedRozklad;
+            selectedScheduleIndex = MainWindowLinesList.selected_schedule == -1 ? 0 : MainWindowLinesList.selected_schedule;
             selected_schedule = new Rozklad();
 
-            string bus_description = (MainWindowLinesList.selectedLine.getPfmText(MainWindowLinesList.selectedLine.pfm));
+            string bus_description = (MainWindowLinesList.selected_line.getPfmText(MainWindowLinesList.selected_line.pfm));
 
             MainWindowLinesInfoStatusProgressRing1.Visibility = Visibility.Visible;
             MainWindowLinesInfoStatusProgressRing2.Visibility = Visibility.Visible;
@@ -126,29 +126,29 @@ namespace RozkladJazdy.Pages
                 || bus_description.Contains("ini") || bus_description.Contains("otni")) 
                 ? "\uEB47" : "\uEB4D";
 
-            MainWindowLinesInfoLineName.Text = MainWindowLinesList.selectedLine.name;
+            MainWindowLinesInfoLineName.Text = MainWindowLinesList.selected_line.name;
             MainWindowLinesInfoLineType.Text = bus_description;
 
-            if (MainWindowLinesList.selectedLine.rozklad == null || MainWindowLinesList.selectedLine.rozklad.Count() == 0)
+            if (MainWindowLinesList.selected_line.rozklad == null || MainWindowLinesList.selected_line.rozklad.Count() == 0)
             {
-                MainWindowLinesList.selectedLine.rozklad = new List<Rozklad>();
-                MainWindowLinesList.selectedLine.rozklad = SQLServices.getData<Rozklad>(0, "SELECT * FROM Rozklad WHERE id_linia = ?", MainWindowLinesList.selectedLine.id);
-                selected_schedule = MainWindowLinesList.selectedLine.rozklad[selectedScheduleIndex];
+                MainWindowLinesList.selected_line.rozklad = new List<Rozklad>();
+                MainWindowLinesList.selected_line.rozklad = SQLServices.getData<Rozklad>(0, "SELECT * FROM Rozklad WHERE id_linia = ?", MainWindowLinesList.selected_line.id);
+                selected_schedule = MainWindowLinesList.selected_line.rozklad[selectedScheduleIndex];
             }
             else
-                selected_schedule = MainWindowLinesList.selectedLine.rozklad[selectedScheduleIndex];
+                selected_schedule = MainWindowLinesList.selected_line.rozklad[selectedScheduleIndex];
 
             selected_schedule.track = new List<Trasa>();
-            MainWindowLinesList.selectedLine.rozklad[selectedScheduleIndex].track = new List<Trasa>();
+            MainWindowLinesList.selected_line.rozklad[selectedScheduleIndex].track = new List<Trasa>();
 
             BackgroundWorker worker1 = new BackgroundWorker();
 
             worker1.DoWork += (se, fe) => fe.Result = SQLServices.getData<Trasa>(0, "SELECT * FROM Trasa WHERE (id_rozklad = ? AND id_linia = ?) LIMIT 2",
-                selectedScheduleIndex, MainWindowLinesList.selectedLine.id);
+                selectedScheduleIndex, MainWindowLinesList.selected_line.id);
 
             worker1.RunWorkerCompleted += (se, fe) =>
             {
-                MainWindowLinesList.selectedLine.rozklad[selectedScheduleIndex].track = selected_schedule.track =
+                MainWindowLinesList.selected_line.rozklad[selectedScheduleIndex].track = selected_schedule.track =
                     fe.Result as List<Trasa>;
 
                 if (selected_schedule.text.Contains("zawie"))
@@ -162,7 +162,7 @@ namespace RozkladJazdy.Pages
                     MainWindowLinesInfoSelectedSchedule.Text = "Rozkład: " + selected_schedule.text;
 
                     selected_schedule.track[0].stops = new List<Przystanek>();
-                    MainWindowLinesList.selectedLine.rozklad[selectedScheduleIndex].track[0].stops = new List<Przystanek>();
+                    MainWindowLinesList.selected_line.rozklad[selectedScheduleIndex].track[0].stops = new List<Przystanek>();
 
                     BackgroundWorker worker2 = new BackgroundWorker();
 
@@ -171,12 +171,12 @@ namespace RozkladJazdy.Pages
 
                     worker2.RunWorkerCompleted += (see, fee) =>
                     {
-                        if (MainWindowLinesList.selectedLine.rozklad == null || (MainWindowLinesList.selectedLine.rozklad != null && MainWindowLinesList.selectedLine.rozklad.Count() == 0)
-                            || (MainWindowLinesList.selectedLine.rozklad != null && MainWindowLinesList.selectedLine.rozklad.Count() > 0 && MainWindowLinesList.selectedLine.rozklad[selectedScheduleIndex].track == null)
-                            || (MainWindowLinesList.selectedLine.rozklad != null && MainWindowLinesList.selectedLine.rozklad.Count() > 0 && MainWindowLinesList.selectedLine.rozklad[selectedScheduleIndex].track.Count() == 0))
+                        if (MainWindowLinesList.selected_line.rozklad == null || (MainWindowLinesList.selected_line.rozklad != null && MainWindowLinesList.selected_line.rozklad.Count() == 0)
+                            || (MainWindowLinesList.selected_line.rozklad != null && MainWindowLinesList.selected_line.rozklad.Count() > 0 && MainWindowLinesList.selected_line.rozklad[selectedScheduleIndex].track == null)
+                            || (MainWindowLinesList.selected_line.rozklad != null && MainWindowLinesList.selected_line.rozklad.Count() > 0 && MainWindowLinesList.selected_line.rozklad[selectedScheduleIndex].track.Count() == 0))
                             return;
 
-                        MainWindowLinesList.selectedLine.rozklad[selectedScheduleIndex].track[0].stops = selected_schedule.track[0].stops = fee.Result as List<Przystanek>;
+                        MainWindowLinesList.selected_line.rozklad[selectedScheduleIndex].track[0].stops = selected_schedule.track[0].stops = fee.Result as List<Przystanek>;
 
                         foreach (Przystanek p in selected_schedule.track[0].stops)
                             stops_dest1.Add(p);
@@ -200,7 +200,7 @@ namespace RozkladJazdy.Pages
                             MainWindowLinesInfoDestName2.Text = "Kierunek: " + selected_schedule.track[1].name;
 
                             selected_schedule.track[1].stops = new List<Przystanek>();
-                            MainWindowLinesList.selectedLine.rozklad[selectedScheduleIndex].track[1].stops = new List<Przystanek>();
+                            MainWindowLinesList.selected_line.rozklad[selectedScheduleIndex].track[1].stops = new List<Przystanek>();
 
                             BackgroundWorker worker3 = new BackgroundWorker();
 
@@ -210,13 +210,13 @@ namespace RozkladJazdy.Pages
 
                             worker3.RunWorkerCompleted += (sea, fea) =>
                             {
-                                MainWindowLinesList.selectedLine.rozklad[selectedScheduleIndex].track[1].stops = selected_schedule.track[1].stops = fea.Result as List<Przystanek>;
+                                MainWindowLinesList.selected_line.rozklad[selectedScheduleIndex].track[1].stops = selected_schedule.track[1].stops = fea.Result as List<Przystanek>;
 
                                 foreach (Przystanek p in selected_schedule.track[1].stops)
                                     stops_dest2.Add(p);
 
                                 MainWindowLinesInfoStatusProgressRing2.Visibility = Visibility.Collapsed;
-                                line.id = MainWindowLinesList.selectedLine.id;
+                                line.id = MainWindowLinesList.selected_line.id;
                                 isPageLoaded = true;
                             };
 
@@ -233,7 +233,7 @@ namespace RozkladJazdy.Pages
 
                             foreach (var uc in usercontrol_mainwindowlinesinfofirst_list)
                                 uc.setWidth(1, getPageWidth);
-                            line.id = MainWindowLinesList.selectedLine.id;
+                            line.id = MainWindowLinesList.selected_line.id;
                             isPageLoaded = true;
                         }
 
@@ -311,7 +311,7 @@ namespace RozkladJazdy.Pages
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            MainPage.gui.setPageTitle = "Rozkład jazdy -> Linia: " + MainWindowLinesList.selectedLine.name;
+            MainPage.gui.setPageTitle = "Rozkład jazdy -> Linia: " + MainWindowLinesList.selected_line.name;
             this.SizeChanged += Page_SizeChanged;
         }
 

@@ -66,11 +66,11 @@ namespace RozkladJazdy.Pages
             line_hours = new ObservableCollection<GodzinaHours>();
             letters_info = new ObservableCollection<string>();
 
-            selected_line = MainWindowLinesList.selectedLine;
+            selected_line = MainWindowLinesList.selected_line;
             selected_stop = MainWindowLinesInfo.selected_stop;
 
-            selected_track = selected_line.rozklad[MainWindowLinesList.selectedRozklad == -1 ? 0 : 
-                MainWindowLinesList.selectedRozklad].track[selected_stop.track_id];
+            selected_track = selected_line.rozklad[MainWindowLinesList.selected_schedule == -1 ? 0 : 
+                MainWindowLinesList.selected_schedule].track[selected_stop.track_id];
 
             if (MainPage.gui.stops_track != selected_stop.track_id)
                 MainPage.gui.clearStopListStops();
@@ -110,7 +110,7 @@ namespace RozkladJazdy.Pages
                 if (selected_stop == null || selected_stop.godziny == null)
                     selected_stop.godziny = new List<Godzina>();
 
-                var stop_index = MainWindowLinesList.selectedLine.rozklad[selected_stop.rozkladzien_id].
+                var stop_index = MainWindowLinesList.selected_line.rozklad[selected_stop.rozkladzien_id].
                         track[selected_stop.track_id].stops.IndexOf(selected_stop);
 
                 if(stop_index == -1)
@@ -118,10 +118,10 @@ namespace RozkladJazdy.Pages
                     ef.Cancel = true;
                     return;
                 }
-                selected_stop.godziny = MainWindowLinesList.selectedLine.rozklad[selected_stop.rozkladzien_id].track[selected_stop.track_id].
+                selected_stop.godziny = MainWindowLinesList.selected_line.rozklad[selected_stop.rozkladzien_id].track[selected_stop.track_id].
                     stops[stop_index].godziny = new List<Godzina>();
 
-                selected_stop.godziny = MainWindowLinesList.selectedLine.rozklad[selected_stop.rozkladzien_id].track[selected_stop.track_id].
+                selected_stop.godziny = MainWindowLinesList.selected_line.rozklad[selected_stop.rozkladzien_id].track[selected_stop.track_id].
                     stops[stop_index].godziny = SQLServices.getData<Godzina>(0, "SELECT * FROM Godzina WHERE id_przystanek = ?", selected_stop.id);
 
                 if (selected_stop == null || selected_stop.godziny == null)

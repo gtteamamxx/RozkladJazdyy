@@ -1,5 +1,5 @@
 ﻿<Page
-    x:Class="RozkladJazdy.Pages.MainWindowLinesRozkladDzien"
+    x:Class="RozkladJazdy.Pages.MainWindowLinesSchedule"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:RozkladJazdy.Pages"
@@ -10,13 +10,13 @@
     NavigationCacheMode="Disabled">
 
     <Grid>
-        <TextBlock Name="MainWindowLinesRozkladDzienTextBlock1" Margin="20" Foreground="Black" Text="Wybrana linia: " FontSize="30" TextWrapping="Wrap" />
+        <TextBlock Name="MainWindowLinesScheduleTitle" Margin="20" Foreground="Black" Text="Wybrana linia: " FontSize="30" TextWrapping="Wrap" />
         
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
             <TextBlock Foreground="Brown" Text="Wybierz rozkład:" FontSize="25"/>
 
-            <ListView Margin="0,20" Background="LightBlue" 
-                      ItemsSource="{x:Bind lista}" 
+            <ListView Margin="0,20" Background="LightGray" 
+                      ItemsSource="{x:Bind list_of_schedules}" 
                       IsItemClickEnabled="True" SelectionMode="Single"
                       ItemClick="ListView_ItemClick">
                 <ListView.ItemTemplate>
