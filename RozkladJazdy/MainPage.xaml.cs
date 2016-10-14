@@ -44,7 +44,7 @@ namespace RozkladJazdy
 
         public Visibility setBackButtonVisibility { get { return MainPageTopPanelBackButton.Visibility; } set { if (DetectPlatform() == Platform.WindowsPhone) return; MainPageTopPanelBackButton.Visibility = value; }}
         public Visibility setRefreshButtonVisibility { get { return MainPageTopPanelRefreshButton.Visibility; } set { MainPageTopPanelRefreshButton.Visibility = value; } }
-        public Visibility setFavouriteButtonVisibility { get { return MainPageTopPanelFavouriteButton.Visibility; } set { MainPageTopPanelFavouriteButton.Visibility = value; MainPageTopPanelFavouriteButton.Visibility = value; } }
+        public Visibility setFavouriteButtonVisibility { get { return MainPageTopPanelFavouriteButton.Visibility; } set { MainPageTopPanelFavouriteButton.Visibility = value; MainPageTopPanelFavouriteButtonTypeText.Visibility = value; } }
         public Visibility setStopButtonVisibility { get { return MainPageTopPanelStopsButton.Visibility; } set { MainPageTopPanelStopsButton.Visibility = value; } }
         public SplitViewDisplayMode setMenuSplitViewDisplayMode { get { return MainPageSplitView.DisplayMode; } set { MainPageSplitView.DisplayMode = value; } }
 
@@ -122,7 +122,7 @@ namespace RozkladJazdy
             bool isExit = false;
             goBack(ref isExit);
 
-            if (!isExit)
+            if (!isExit && e != null)
                 e.Handled = true;
         }
 
@@ -193,9 +193,9 @@ namespace RozkladJazdy
                     return;
                 }
 
-                if (MainWindowFav.navigated_from == true)
+                if (MainWindowFav.isNavigatedFromThisPage == true)
                 {
-                    MainWindowFav.navigated_from = false;
+                    MainWindowFav.isNavigatedFromThisPage = false;
                     MainPageFrame.GoBack();
                     return;
                 }
@@ -217,9 +217,9 @@ namespace RozkladJazdy
             }
             else if (MainPageFrame.SourcePageType == typeof(MainWindowLinesRozkladDzien))
             {
-                if (MainWindowFav.navigated_from == true)
+                if (MainWindowFav.isNavigatedFromThisPage == true)
                 {
-                    MainWindowFav.navigated_from = false;
+                    MainWindowFav.isNavigatedFromThisPage = false;
                     MainPageFrame.GoBack();
                     return;
                 }
@@ -243,9 +243,9 @@ namespace RozkladJazdy
                     return;
                 }
 
-                if (MainWindowFav.navigated_from == true)
+                if (MainWindowFav.isNavigatedFromThisPage == true)
                 {
-                    MainWindowFav.navigated_from = false;
+                    MainWindowFav.isNavigatedFromThisPage = false;
                     MainPageFrame.GoBack();
                     return;
                 }

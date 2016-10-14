@@ -28,12 +28,12 @@
 
         <TextBlock Margin="5" Grid.Column="1" HorizontalAlignment="Center" Foreground="Black" FontSize="20" Text="Ulubione linie" />
 
-        <TextBlock Visibility="Collapsed" Name="NoFavStops" Text="Brak ulubionych przystanków.&#x0a;Dodaj kilka." HorizontalAlignment="Center" Margin="0,20" Foreground="LightCoral" Grid.Row="1" />
-        <TextBlock Visibility="Collapsed" Name="NoFavLines" Text="Brak ulubionych linii.&#x0a;Dodaj kilka." HorizontalAlignment="Center" Margin="0,20" Foreground="LightCoral" Grid.Column="1" Grid.Row="1" />
-        
-        <ProgressRing Name="ProgressRing" Width="100" Height="100" Grid.Row="1" Grid.ColumnSpan="2" IsActive="True"/>
+        <TextBlock Visibility="Collapsed" Name="MainWindowFavNoFavStops" Text="Brak ulubionych przystanków.&#x0a;Dodaj kilka." HorizontalAlignment="Center" Margin="0,20" Foreground="LightCoral" Grid.Row="1" />
+        <TextBlock Visibility="Collapsed" Name="MainWindowFavNoFavLines" Text="Brak ulubionych linii.&#x0a;Dodaj kilka." HorizontalAlignment="Center" Margin="0,20" Foreground="LightCoral" Grid.Column="1" Grid.Row="1" />
 
-        <ListView Grid.Row="1" ItemsSource="{x:Bind ulubioneprzystanki}" IsItemClickEnabled="True" ItemClick="ListView_ItemClick">
+        <ProgressRing Name="MainWindowFavStatusProgressRing" Width="100" Height="100" Grid.Row="1" Grid.ColumnSpan="2" IsActive="True"/>
+
+        <ListView Grid.Row="1" ItemsSource="{x:Bind favourite_stops}" IsItemClickEnabled="True" ItemClick="MainWindowFavFavouriteList_Click">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="data:Ulubiony">
                     <Grid BorderBrush="LightGray" BorderThickness="0,0,0,1">
@@ -43,7 +43,7 @@
             </ListView.ItemTemplate>
         </ListView>
 
-        <ListView Grid.Row="1" Grid.Column="1" ItemsSource="{x:Bind ulubionelinie}" IsItemClickEnabled="True" ItemClick="ListView_ItemClick">
+        <ListView Grid.Row="1" Grid.Column="1" ItemsSource="{x:Bind favourite_lines}" IsItemClickEnabled="True" ItemClick="MainWindowFavFavouriteList_Click">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="data:Ulubiony">
                     <Grid BorderBrush="LightGray" BorderThickness="0,0,0,1">

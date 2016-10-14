@@ -96,7 +96,7 @@ namespace RozkladJazdy.Pages
         {
             if (!loaded) return;
 
-            if (MainWindowFav.loaded == null)
+            if (MainWindowFav.isPageLoaded == null)
                 MainPage.gui.setViewPage = typeof(MainWindowFav); // this same, cache if not exist;
 
             MainPage.gui.setViewPage = typeof(MainWindowStopList);

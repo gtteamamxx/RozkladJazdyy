@@ -24,63 +24,63 @@ namespace RozkladJazdy.Pages
     /// </summary>
     public sealed partial class MainWindowFav : Page
     {
-        private ObservableCollection<Ulubiony> ulubionelinie;
-        private ObservableCollection<Ulubiony> ulubioneprzystanki;
+        private ObservableCollection<Ulubiony> favourite_lines;
+        private ObservableCollection<Ulubiony> favourite_stops;
 
-        public static bool navigated_from = false;
+        public static bool isNavigatedFromThisPage = false;
+        public static bool? isPageLoaded = null;
 
-        public static bool? loaded = null;
         public MainWindowFav()
         {
             this.InitializeComponent();
 
-            loaded = false;
+            isPageLoaded = false;
 
-            ulubionelinie = new ObservableCollection<Ulubiony>();
-            ulubioneprzystanki = new ObservableCollection<Ulubiony>();
+            favourite_lines = new ObservableCollection<Ulubiony>();
+            favourite_stops = new ObservableCollection<Ulubiony>();
 
-            MainWindowStopList.OnLoaded += () => refresh();
+            MainWindowStopList.OnLoaded += () => RefreshFavouriteList();
 
-            MainPage.OnAddedFavouriteStop += (typ, obiekt, delete) =>
+            MainPage.OnAddedFavouriteStop += (type, _object, delete) =>
             {
-                if (typ == 0) // linia
+                if (type == 0) // linia
                 {
                     if (!delete)
-                        ulubionelinie.Add(obiekt as Ulubiony);
+                        favourite_lines.Add(_object as Ulubiony);
                     else
-                        ulubionelinie.Remove(ulubionelinie.Where(p => p.name == (obiekt as string)).ToList().First());
+                        favourite_lines.Remove(favourite_lines.Where(p => p.name == (_object as string)).ToList().First());
                 }
-                else if (typ == 1)
+                else if (type == 1)
                 {
                     if (!delete)
-                        ulubioneprzystanki.Add(obiekt as Ulubiony);
+                        favourite_stops.Add(_object as Ulubiony);
                     else
-                        ulubioneprzystanki.Remove(ulubioneprzystanki.Where(p => p.name == (obiekt as string)).ToList().First());
+                        favourite_stops.Remove(favourite_stops.Where(p => p.name == (_object as string)).ToList().First());
                 }
             };
 
-            refresh();
+            RefreshFavouriteList();
         }
 
-        public void refresh()
+        public void RefreshFavouriteList()
         {
-            ulubionelinie.Clear();
-            ulubioneprzystanki.Clear();
+            favourite_lines.Clear();
+            favourite_stops.Clear();
 
-            foreach (var a in MainPage.favourite_stops)
-                if (a.type == 0) // linia
-                    ulubionelinie.Add(a);
+            foreach (Ulubiony fav in (MainPage.favourite_stops.OrderBy(p => p.name)))
+                if (fav.type == 0) // linia
+                    favourite_lines.Add(fav);
                 else
-                    ulubioneprzystanki.Add(a);
+                    favourite_stops.Add(fav);
 
-            FavLinesNum.Text = "Ulubionych linii: " + ulubionelinie.Count().ToString();
-            FavStopsNum.Text = "Ulubionych przystanków: " + ulubioneprzystanki.Count().ToString();
+            FavLinesNum.Text = "Ulubionych linii: " + favourite_lines.Count().ToString();
+            FavStopsNum.Text = "Ulubionych przystanków: " + favourite_stops.Count().ToString();
 
-            NoFavLines.Visibility = ulubionelinie.Count() == 0 ? Visibility.Visible : Visibility.Collapsed;
-            NoFavStops.Visibility = ulubioneprzystanki.Count() == 0 ? Visibility.Visible : Visibility.Collapsed;
+            MainWindowFavNoFavLines.Visibility = favourite_lines.Count() == 0 ? Visibility.Visible : Visibility.Collapsed;
+            MainWindowFavNoFavStops.Visibility = favourite_stops.Count() == 0 ? Visibility.Visible : Visibility.Collapsed;
 
-            loaded = true;
-            ProgressRing.Visibility = Visibility.Collapsed;
+            isPageLoaded = true;
+            MainWindowFavStatusProgressRing.Visibility = Visibility.Collapsed;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -90,22 +90,22 @@ namespace RozkladJazdy.Pages
             MainPage.gui.setFavouriteButtonVisibility = Visibility.Collapsed;
         }
 
-        private void ListView_ItemClick(object sender, ItemClickEventArgs e)
+        private void MainWindowFavFavouriteList_Click(object sender, ItemClickEventArgs e)
         {
-            if (loaded == false)
+            if (isPageLoaded == false)
                 return;
 
-            var item = e.ClickedItem as Ulubiony;
-            navigated_from = true;
+            var clickedFavItem = e.ClickedItem as Ulubiony;
+            isNavigatedFromThisPage = true;
 
-            if (item.type == 0) // linia
+            if (clickedFavItem.type == 0) // linia
             {
                 MainWindowLinesList.selectedLine = new Linia();
                 MainWindowLinesList.selectedRozklad = new int();
 
                 MainPage.gui.setRefreshButtonVisibility = Visibility.Collapsed;
 
-                MainWindowLinesList.selectedLine = MainWindow.lines[item.id];
+                MainWindowLinesList.selectedLine = MainWindow.lines[clickedFavItem.id];
 
                 var liczba_rozkladow = SQLServices.getData<Rozklad>(0, "SELECT id FROM Rozklad where id_linia = ?", MainWindowLinesList.selectedLine.id).Count();
 
@@ -120,7 +120,7 @@ namespace RozkladJazdy.Pages
             else // przystanek
             {
                 MainPage.gui.setViewPage = typeof(MainWindowStopList);
-                MainWindowStopList.preparefromfav(HTMLServices.przystankinames.ElementAt(item.id));   
+                MainWindowStopList.preparefromfav(HTMLServices.przystankinames.ElementAt(clickedFavItem.id));   
             }
         }
     }

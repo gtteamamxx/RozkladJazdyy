@@ -259,7 +259,7 @@ namespace RozkladJazdy.Pages
 
             selectedPrzystanek = przystanek;
 
-            MainWindowFav.navigated_from = false;
+            MainWindowFav.isNavigatedFromThisPage = false;
 
             if (MainPage.gui.stops_track == 2)
                 MainPage.gui.clearStopListStops();
@@ -287,7 +287,7 @@ namespace RozkladJazdy.Pages
 
             selectedPrzystanek = przystanek;
 
-            MainWindowFav.navigated_from = false;
+            MainWindowFav.isNavigatedFromThisPage = false;
 
             if (MainPage.gui.stops_track == 1)
                 MainPage.gui.clearStopListStops();
