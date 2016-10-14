@@ -154,7 +154,7 @@ namespace RozkladJazdy.Model
                         track.id_linia = line_id;
                         track.id_rozklad = i;
 
-                        track.name = l3.Where(p => p.GetAttribute("class") == "tr_kierunek").ToList()[0].FirstElementChild.FirstElementChild.TextContent;
+                        track.name = l3.Where(p => p.GetAttribute("class") == "tr_kierunek").First().FirstElementChild.FirstElementChild.TextContent;
 
                         l3 = l3.Where(p => (p.GetAttribute("class").Contains("zwyk") || p.GetAttribute("class").Contains("stre") || p.GetAttribute("class").Contains("wyj"))).ToList();
 

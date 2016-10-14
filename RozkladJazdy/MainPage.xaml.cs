@@ -314,7 +314,7 @@ namespace RozkladJazdy
                 if (addToFavourite)
                     favourite_stops.Add(new Ulubiony() { type = 0, id = MainWindow.lines.IndexOf(MainWindowLinesList.selected_line), name = MainWindowLinesList.selected_line.name });
                 else
-                    favourite_stops.Remove(favourite_stops.Where(p => p.type == 0 && p.name == MainWindowLinesList.selected_line.name).ToList().First());
+                    favourite_stops.Remove(favourite_stops.Where(p => p.type == 0 && p.name == MainWindowLinesList.selected_line.name).First());
 
                 name = MainWindowLinesList.selected_line.name;
             }
@@ -323,7 +323,7 @@ namespace RozkladJazdy
                 if (addToFavourite)
                     favourite_stops.Add(new Ulubiony() { type = 1, id = MainWindowLinesInfo.selected_stop.nid, name = MainWindowLinesInfo.selected_stop.getName() });
                 else
-                    favourite_stops.Remove(favourite_stops.Where(p => p.type == 1 && p.name == MainWindowLinesInfo.selected_stop.getName()).ToList().First());
+                    favourite_stops.Remove(favourite_stops.Where(p => p.type == 1 && p.name == MainWindowLinesInfo.selected_stop.getName()).First());
 
                 type = 1;
                 name = MainWindowLinesInfo.selected_stop.getName();
@@ -333,7 +333,7 @@ namespace RozkladJazdy
                 if (addToFavourite)
                     favourite_stops.Add(new Ulubiony() { type = 1, id = MainWindowStopList.selected_stop.id, name = MainWindowStopList.selected_stop.name });
                 else
-                    favourite_stops.Remove(favourite_stops.Where(p => p.type == 1 && p.name == MainWindowStopList.selected_stop.name).ToList().First());
+                    favourite_stops.Remove(favourite_stops.Where(p => p.type == 1 && p.name == MainWindowStopList.selected_stop.name).First());
 
                 type = 1;
                 name = MainWindowStopList.selected_stop.name;
