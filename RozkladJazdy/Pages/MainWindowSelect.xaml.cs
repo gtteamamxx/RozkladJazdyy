@@ -122,7 +122,7 @@ namespace RozkladJazdy.Pages
             MainPage.gui.setBackButtonVisibility = Visibility.Collapsed;
 
             MainPage.gui.setPageTitle = "Rozkład jazdy";
-            MainWindowLinesInfo.selectedRozkladIndex = -1;
+            MainWindowLinesInfo.selectedScheduleIndex = -1;
             MainWindowLinesList.selectedRozklad = new int();
         }
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e) 

@@ -68,7 +68,7 @@ namespace RozkladJazdy.Pages
             literki = new ObservableCollection<string>();
 
             selectedLinia = MainWindowLinesList.selectedLine;
-            przystanek = MainWindowLinesInfo.selectedPrzystanek;
+            przystanek = MainWindowLinesInfo.selected_stop;
 
             trasa = selectedLinia.rozklad[MainWindowLinesList.selectedRozklad == -1 ? 0 : 
                 MainWindowLinesList.selectedRozklad].track[przystanek.track_id];
@@ -95,7 +95,7 @@ namespace RozkladJazdy.Pages
         {
             MainPage.gui.setFavouriteSubText = "przystanek";
             //check if stop is in favourtie
-            if (MainPage.isFavourite(HTMLServices.przystankinames[MainWindowLinesInfo.selectedPrzystanek.nid]))
+            if (MainPage.isFavourite(HTMLServices.przystankinames[MainWindowLinesInfo.selected_stop.nid]))
                 MainPage.gui.setFavouriteButtonColor = Colors.Black;
             else
                 MainPage.gui.setFavouriteButtonColor = Colors.LightGray;
@@ -313,7 +313,7 @@ namespace RozkladJazdy.Pages
         {
             navigated_from = true;
             MainPage.gui.setViewPage = typeof(MainWindowStopList);
-            MainWindowStopList.preparefromfav(HTMLServices.przystankinames.ElementAt(MainWindowLinesInfo.selectedPrzystanek.nid));
+            MainWindowStopList.preparefromfav(HTMLServices.przystankinames.ElementAt(MainWindowLinesInfo.selected_stop.nid));
         }
     }
 }

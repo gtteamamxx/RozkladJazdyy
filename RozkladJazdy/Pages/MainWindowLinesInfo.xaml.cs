@@ -27,63 +27,60 @@ namespace RozkladJazdy.Pages
     /// </summary>
     public sealed partial class MainWindowLinesInfo : Page
     {
-        private ObservableCollection<Przystanek> pk1;
-        private ObservableCollection<Przystanek> pk2;
-        public static int selectedRozkladIndex;
-        private double PageWidth;
+        private ObservableCollection<Przystanek> stops_dest1;
+        private ObservableCollection<Przystanek> stops_dest2;
+        public static int selectedScheduleIndex;
+        private double page_width;
 
         public static MainWindowLinesInfo gui;
         public static Linia line;
-        public static List<MainWindowLinesInfoFirst> cl;
-        public static Przystanek selectedPrzystanek;
-        public static Rozklad selectedRozklad;
-        public static double getWidth => gui.MainWindowLinesInfoListView2.Visibility == Visibility.Collapsed ? gui.PageWidth - 20.0 : gui.MainWindowLinesInfoListView2.Width;
-        public static Visibility getVisibility => gui.MainWindowLinesInfoListView2.Visibility;
+        public static List<MainWindowLinesInfoFirst> usercontrol_mainwindowlinesinfofirst_list;
+        public static Przystanek selected_stop;
+        public static Rozklad selected_schedule;
+        public static double getPageWidth => gui.MainWindowLinesInfoStopsList2.Visibility == Visibility.Collapsed ? gui.page_width - 20.0 : gui.MainWindowLinesInfoStopsList2.Width;
+        public static Visibility getSecondDestVisibility => gui.MainWindowLinesInfoStopsList2.Visibility;
 
-        public bool first_time = false;
-        public static bool loaded_to_finish = false;
-
+        public bool isFirstTimePageOpened = false;
+        public static bool isPageLoaded = false;
 
         public MainWindowLinesInfo()
         {
             this.InitializeComponent();
 
-            MainPage.OnTimeTableRefesh += Refresh;
+            MainPage.OnTimeTableRefesh += ClearDestsLists;
 
             gui = this;
 
             line = new Linia();
-            selectedRozklad = new Rozklad();
+            selected_schedule = new Rozklad();
 
             MainPage.gui.setBackButtonVisibility = Visibility.Visible;
 
-            pk1 = new ObservableCollection<Przystanek>();
-            pk2 = new ObservableCollection<Przystanek>();
+            stops_dest1 = new ObservableCollection<Przystanek>();
+            stops_dest2 = new ObservableCollection<Przystanek>();
 
-            cl = new List<MainWindowLinesInfoFirst>();
+            usercontrol_mainwindowlinesinfofirst_list = new List<MainWindowLinesInfoFirst>();
             Color color = new Color();
 
             color = Colors.LightSlateGray;
             color.A = 30;
 
-            MainWindowLinesInfoListView1.Background = new SolidColorBrush(color);
-            MainWindowLinesInfoListView2.Background = new SolidColorBrush(color);
+            MainWindowLinesInfoStopsList1.Background = new SolidColorBrush(color);
+            MainWindowLinesInfoStopsList2.Background = new SolidColorBrush(color);
 
-            first_time = true;
-
+            isFirstTimePageOpened = true;
         }
 
 
-        public void Refresh()
+        public void ClearDestsLists()
         {
-            cl.Clear();
-            pk1.Clear();
-            pk2.Clear();
+            usercontrol_mainwindowlinesinfofirst_list.Clear();
+            stops_dest1.Clear();
+            stops_dest2.Clear();
         }
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             MainPage.gui.setFavouriteSubText = "linia";
-            //check if Line is in favourite then set color
             MainPage.gui.setFavouriteButtonVisibility = Visibility.Visible;
 
             if (MainPage.isFavourite(MainWindowLinesList.selectedLine))
@@ -91,156 +88,153 @@ namespace RozkladJazdy.Pages
             else
                 MainPage.gui.setFavouriteButtonColor = Colors.LightGray;
 
-            if (!first_time && (line.id == MainWindowLinesList.selectedLine.id && loaded_to_finish) && pk1.Count() > 0)
+            if (!isFirstTimePageOpened && (line.id == MainWindowLinesList.selectedLine.id && isPageLoaded) && stops_dest1.Count() > 0)
             {
-                bool returnn = false;
-                int rozklad_new = selectedRozkladIndex = MainWindowLinesList.selectedRozklad == -1 ? 0 : MainWindowLinesList.selectedRozklad;
-                int rozklad_old = -1;
+                bool _return = false;
+                int new_schedule_index = selectedScheduleIndex = MainWindowLinesList.selectedRozklad == -1 ? 0 : MainWindowLinesList.selectedRozklad;
+                int old_schedule_index = -1;
 
-                if (cl.Count() > 0)
+                if (usercontrol_mainwindowlinesinfofirst_list.Count() > 0)
                 {
-                    rozklad_old = cl[0].getPrzystanek.rozkladzien_id;
+                    old_schedule_index = usercontrol_mainwindowlinesinfofirst_list[0].getPrzystanek.rozkladzien_id;
 
-                    if ((rozklad_new == rozklad_old))
-                        returnn = true;
+                    if ((new_schedule_index == old_schedule_index))
+                        _return = true;
                 }
 
-                if (!loaded_to_finish)
-                    returnn = true;
-
-                if (returnn)
+                if (!isPageLoaded || _return)
                     return;
             }
 
-            loaded_to_finish = false;
-            first_time = false;
+            isPageLoaded = false;
+            isFirstTimePageOpened = false;
 
-            Refresh();
+            ClearDestsLists();
 
             if (MainWindowLinesList.selectedLine.id != line.id && MainWindowLinesList.selectedLine.rozklad == null)
                 MainWindowLinesList.selectedRozklad = -1;
 
-            selectedRozkladIndex = MainWindowLinesList.selectedRozklad == -1 ? 0 : MainWindowLinesList.selectedRozklad;
-            selectedRozklad = new Rozklad();
+            selectedScheduleIndex = MainWindowLinesList.selectedRozklad == -1 ? 0 : MainWindowLinesList.selectedRozklad;
+            selected_schedule = new Rozklad();
 
-            var result = (MainWindowLinesList.selectedLine.getPfmText(MainWindowLinesList.selectedLine.pfm));
+            string bus_description = (MainWindowLinesList.selectedLine.getPfmText(MainWindowLinesList.selectedLine.pfm));
 
-            ProgressRing1.Visibility = Visibility.Visible;
-            ProgressRing2.Visibility = Visibility.Visible;
+            MainWindowLinesInfoStatusProgressRing1.Visibility = Visibility.Visible;
+            MainWindowLinesInfoStatusProgressRing2.Visibility = Visibility.Visible;
 
-            MainWindowLinesInfoImage.Text =  (result.Contains("bus") || result.Contains("ini")|| result.Contains("otni")) 
+            MainWindowLinesInfoImage.Text =  (bus_description.Contains("bus") 
+                || bus_description.Contains("ini") || bus_description.Contains("otni")) 
                 ? "\uEB47" : "\uEB4D";
 
-            MainWindowLinesInfoTextBlock.Text = MainWindowLinesList.selectedLine.name;
-            MainWindowLinesInfoTextBlock2.Text = result;
+            MainWindowLinesInfoLineName.Text = MainWindowLinesList.selectedLine.name;
+            MainWindowLinesInfoLineType.Text = bus_description;
 
             if (MainWindowLinesList.selectedLine.rozklad == null || MainWindowLinesList.selectedLine.rozklad.Count() == 0)
             {
                 MainWindowLinesList.selectedLine.rozklad = new List<Rozklad>();
                 MainWindowLinesList.selectedLine.rozklad = SQLServices.getData<Rozklad>(0, "SELECT * FROM Rozklad WHERE id_linia = ?", MainWindowLinesList.selectedLine.id);
-                selectedRozklad = MainWindowLinesList.selectedLine.rozklad[selectedRozkladIndex];
+                selected_schedule = MainWindowLinesList.selectedLine.rozklad[selectedScheduleIndex];
             }
             else
-                selectedRozklad = MainWindowLinesList.selectedLine.rozklad[selectedRozkladIndex];
+                selected_schedule = MainWindowLinesList.selectedLine.rozklad[selectedScheduleIndex];
 
-            selectedRozklad.track = new List<Trasa>();
-            MainWindowLinesList.selectedLine.rozklad[selectedRozkladIndex].track = new List<Trasa>();
+            selected_schedule.track = new List<Trasa>();
+            MainWindowLinesList.selectedLine.rozklad[selectedScheduleIndex].track = new List<Trasa>();
 
             BackgroundWorker worker1 = new BackgroundWorker();
 
             worker1.DoWork += (se, fe) => fe.Result = SQLServices.getData<Trasa>(0, "SELECT * FROM Trasa WHERE (id_rozklad = ? AND id_linia = ?) LIMIT 2",
-                selectedRozkladIndex, MainWindowLinesList.selectedLine.id);
+                selectedScheduleIndex, MainWindowLinesList.selectedLine.id);
 
             worker1.RunWorkerCompleted += (se, fe) =>
             {
-                MainWindowLinesList.selectedLine.rozklad[selectedRozkladIndex].track = selectedRozklad.track =
+                MainWindowLinesList.selectedLine.rozklad[selectedScheduleIndex].track = selected_schedule.track =
                     fe.Result as List<Trasa>;
 
-                if (selectedRozklad.text.Contains("zawie"))
+                if (selected_schedule.text.Contains("zawie"))
                 {
-                    MainWindowLinesInfoTextBlock3.Text = "Linia zawieszona, spróbuj zaaktualizować rozkład.";
+                    MainWindowLinesInfoDestName1.Text = "Linia zawieszona, spróbuj zaaktualizować rozkład.";
                     return;
                 }
                 else
                 {
-                    MainWindowLinesInfoTextBlock3.Text = "Kierunek: " + selectedRozklad.track[0].name;
-                    MainWindowLinesInfoTextBlock5.Text = "Rozkład: " + selectedRozklad.text;
+                    MainWindowLinesInfoDestName1.Text = "Kierunek: " + selected_schedule.track[0].name;
+                    MainWindowLinesInfoSelectedSchedule.Text = "Rozkład: " + selected_schedule.text;
 
-                    selectedRozklad.track[0].stops = new List<Przystanek>();
-                    MainWindowLinesList.selectedLine.rozklad[selectedRozkladIndex].track[0].stops = new List<Przystanek>();
+                    selected_schedule.track[0].stops = new List<Przystanek>();
+                    MainWindowLinesList.selectedLine.rozklad[selectedScheduleIndex].track[0].stops = new List<Przystanek>();
 
                     BackgroundWorker worker2 = new BackgroundWorker();
 
                     worker2.DoWork += (see, fee) => fee.Result = SQLServices.getData<Przystanek>(0, "SELECT * FROM Przystanek WHERE (id_rozklad = ? AND id_trasa = ?);",
-                        selectedRozklad.id, selectedRozklad.track[0].id);
+                        selected_schedule.id, selected_schedule.track[0].id);
 
                     worker2.RunWorkerCompleted += (see, fee) =>
                     {
                         if (MainWindowLinesList.selectedLine.rozklad == null || (MainWindowLinesList.selectedLine.rozklad != null && MainWindowLinesList.selectedLine.rozklad.Count() == 0)
-                            || (MainWindowLinesList.selectedLine.rozklad != null && MainWindowLinesList.selectedLine.rozklad.Count() > 0 && MainWindowLinesList.selectedLine.rozklad[selectedRozkladIndex].track == null)
-                            || (MainWindowLinesList.selectedLine.rozklad != null && MainWindowLinesList.selectedLine.rozklad.Count() > 0 && MainWindowLinesList.selectedLine.rozklad[selectedRozkladIndex].track.Count() == 0))
+                            || (MainWindowLinesList.selectedLine.rozklad != null && MainWindowLinesList.selectedLine.rozklad.Count() > 0 && MainWindowLinesList.selectedLine.rozklad[selectedScheduleIndex].track == null)
+                            || (MainWindowLinesList.selectedLine.rozklad != null && MainWindowLinesList.selectedLine.rozklad.Count() > 0 && MainWindowLinesList.selectedLine.rozklad[selectedScheduleIndex].track.Count() == 0))
                             return;
 
-                        MainWindowLinesList.selectedLine.rozklad[selectedRozkladIndex].track[0].stops = selectedRozklad.track[0].stops = fee.Result as List<Przystanek>;
+                        MainWindowLinesList.selectedLine.rozklad[selectedScheduleIndex].track[0].stops = selected_schedule.track[0].stops = fee.Result as List<Przystanek>;
 
-                        foreach (Przystanek p in selectedRozklad.track[0].stops)
-                            pk1.Add(p);
+                        foreach (Przystanek p in selected_schedule.track[0].stops)
+                            stops_dest1.Add(p);
 
-                        ProgressRing1.Visibility = Visibility.Collapsed;
+                        MainWindowLinesInfoStatusProgressRing1.Visibility = Visibility.Collapsed;
 
-                        if (selectedRozklad.track != null && selectedRozklad.track.Count >= 2)
+                        if (selected_schedule.track != null && selected_schedule.track.Count >= 2)
                         {
-                            if (MainWindowLinesInfoListView2.Visibility == Visibility.Collapsed)
+                            if (MainWindowLinesInfoStopsList2.Visibility == Visibility.Collapsed)
                             {
-                                MainWindowLinesInfoListView2.Visibility = Visibility.Visible;
+                                MainWindowLinesInfoStopsList2.Visibility = Visibility.Visible;
 
-                                Grid.SetColumnSpan(MainWindowLinesInfoListView1, 1);
-                                Grid.SetColumnSpan(MainWindowLinesInfoStackPanel1, 1);
-                                MainWindowLinesInfoStackPanel2.Visibility = Visibility.Visible; ;
+                                Grid.SetColumnSpan(MainWindowLinesInfoStopsList1, 1);
+                                Grid.SetColumnSpan(MainWindowLinesInfoStackPanelDest1, 1);
+                                MainWindowLinesInfoStackPanelDest2.Visibility = Visibility.Visible; ;
 
-                                foreach (var uc in cl)
-                                    uc.setWidth(0, getWidth);
-
+                                foreach (var uc in usercontrol_mainwindowlinesinfofirst_list)
+                                    uc.setWidth(0, getPageWidth);
                             }
 
-                            MainWindowLinesInfoTextBlock4.Text = "Kierunek: " + selectedRozklad.track[1].name;
+                            MainWindowLinesInfoDestName2.Text = "Kierunek: " + selected_schedule.track[1].name;
 
-                            selectedRozklad.track[1].stops = new List<Przystanek>();
-                            MainWindowLinesList.selectedLine.rozklad[selectedRozkladIndex].track[1].stops = new List<Przystanek>();
+                            selected_schedule.track[1].stops = new List<Przystanek>();
+                            MainWindowLinesList.selectedLine.rozklad[selectedScheduleIndex].track[1].stops = new List<Przystanek>();
 
                             BackgroundWorker worker3 = new BackgroundWorker();
 
                             worker3.DoWork += (sea, fea) =>
                                 fea.Result = SQLServices.getData<Przystanek>(0, "SELECT * FROM Przystanek WHERE (id_rozklad = ? AND id_trasa = ?);",
-                                    selectedRozklad.id, selectedRozklad.track[1].id);
+                                    selected_schedule.id, selected_schedule.track[1].id);
 
                             worker3.RunWorkerCompleted += (sea, fea) =>
                             {
-                                MainWindowLinesList.selectedLine.rozklad[selectedRozkladIndex].track[1].stops = selectedRozklad.track[1].stops = fea.Result as List<Przystanek>;
+                                MainWindowLinesList.selectedLine.rozklad[selectedScheduleIndex].track[1].stops = selected_schedule.track[1].stops = fea.Result as List<Przystanek>;
 
-                                foreach (Przystanek p in selectedRozklad.track[1].stops)
-                                    pk2.Add(p);
+                                foreach (Przystanek p in selected_schedule.track[1].stops)
+                                    stops_dest2.Add(p);
 
-                                ProgressRing2.Visibility = Visibility.Collapsed;
+                                MainWindowLinesInfoStatusProgressRing2.Visibility = Visibility.Collapsed;
                                 line.id = MainWindowLinesList.selectedLine.id;
-                                loaded_to_finish = true;
+                                isPageLoaded = true;
                             };
 
                             worker3.RunWorkerAsync();
                         }
                         else
                         {
-                            MainWindowLinesInfoListView2.Visibility = Visibility.Collapsed;
-                            Grid.SetColumnSpan(MainWindowLinesInfoListView1, 2);
-                            Grid.SetColumnSpan(MainWindowLinesInfoStackPanel1, 2);
+                            MainWindowLinesInfoStopsList2.Visibility = Visibility.Collapsed;
+                            Grid.SetColumnSpan(MainWindowLinesInfoStopsList1, 2);
+                            Grid.SetColumnSpan(MainWindowLinesInfoStackPanelDest1, 2);
 
-                            ProgressRing2.Visibility = Visibility.Collapsed;
-                            MainWindowLinesInfoStackPanel2.Visibility = Visibility.Collapsed;
+                            MainWindowLinesInfoStatusProgressRing2.Visibility = Visibility.Collapsed;
+                            MainWindowLinesInfoStackPanelDest2.Visibility = Visibility.Collapsed;
 
-                            foreach (var uc in cl)
-                                uc.setWidth(1, getWidth);
+                            foreach (var uc in usercontrol_mainwindowlinesinfofirst_list)
+                                uc.setWidth(1, getPageWidth);
                             line.id = MainWindowLinesList.selectedLine.id;
-                            loaded_to_finish = true;
+                            isPageLoaded = true;
                         }
 
                     };
@@ -253,11 +247,11 @@ namespace RozkladJazdy.Pages
         }
 
         //kierunek 1
-        private void MainWindowLinesInfoListView1_ItemClick(object sender, ItemClickEventArgs e)
+        private void MainWindowLinesInfoStopsList1_Click(object sender, ItemClickEventArgs e)
         {
-            var przystanek = e.ClickedItem as Przystanek;
+            var clicked_stop = e.ClickedItem as Przystanek;
 
-            selectedPrzystanek = przystanek;
+            selected_stop = clicked_stop;
 
             MainWindowFav.isNavigatedFromThisPage = false;
 
@@ -266,26 +260,28 @@ namespace RozkladJazdy.Pages
 
             MainPage.gui.setViewPage = typeof(MainWindowLinesInfoHours);
 
-            if (MainWindowLinesInfoListView2.Visibility != Visibility.Collapsed)
+            if (MainWindowLinesInfoStopsList2.Visibility != Visibility.Collapsed)
             {
-                var items = MainWindowLinesInfoListView2.Items.Where(d => (d as Przystanek).getName() == przystanek.getName()).ToList();
+                List<object> dest2_stops = MainWindowLinesInfoStopsList2.Items.Where(d => (d as Przystanek).getName() == clicked_stop.getName()).ToList();
 
-                if (items != null && items.Count > 0)
+                if (dest2_stops != null && dest2_stops.Count > 0)
                 {
-                    MainWindowLinesInfoListView2.SelectionChanged += (s, f) =>
-                        MainWindowLinesInfoListView2.ScrollIntoView(MainWindowLinesInfoListView2.SelectedItem);
+                    var stoplist_listview2 = MainWindowLinesInfoStopsList2;
 
-                    MainWindowLinesInfoListView2.SelectedIndex = MainWindowLinesInfoListView2.Items.IndexOf(items.First());
+                    stoplist_listview2.SelectionChanged += (s, f) =>
+                        stoplist_listview2.ScrollIntoView(stoplist_listview2.SelectedItem);
+
+                    stoplist_listview2.SelectedIndex = stoplist_listview2.Items.IndexOf(dest2_stops.First());
                 }
             }
         }
 
         //kierunek 2
-        private void MainWindowLinesInfoListView2_ItemClick(object sender, ItemClickEventArgs e)
+        private void MainWindowLinesInfoStopsList2_Click(object sender, ItemClickEventArgs e)
         {
-            var przystanek = e.ClickedItem as Przystanek;
+            var clicked_stop = e.ClickedItem as Przystanek;
 
-            selectedPrzystanek = przystanek;
+            selected_stop = clicked_stop;
 
             MainWindowFav.isNavigatedFromThisPage = false;
 
@@ -294,22 +290,23 @@ namespace RozkladJazdy.Pages
 
             MainPage.gui.setViewPage = typeof(MainWindowLinesInfoHours);
 
-            var items = MainWindowLinesInfoListView1.Items.Where(d => (d as Przystanek).getName() == przystanek.getName()).ToList();
+            var dest1_stops = MainWindowLinesInfoStopsList1.Items.Where(d => (d as Przystanek).getName() == przystanek.getName()).ToList();
 
-            if (items != null && items.Count > 0)
+            if (dest1_stops != null && dest1_stops.Count() > 0)
             {
-                MainWindowLinesInfoListView1.SelectionChanged += (s, f) =>
-                    MainWindowLinesInfoListView1.ScrollIntoView(MainWindowLinesInfoListView1.SelectedItem);
+                var stoplist_listview1 = MainWindowLinesInfoStopsList1 as ListView;
+                stoplist_listview1.SelectionChanged += (s, f) =>
+                    stoplist_listview1.ScrollIntoView(stoplist_listview1.SelectedItem);
 
-                MainWindowLinesInfoListView1.SelectedIndex = MainWindowLinesInfoListView1.Items.IndexOf(items.First());
+                stoplist_listview1.SelectedIndex = stoplist_listview1.Items.IndexOf(dest1_stops.First());
             }
         }
 
         private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            PageWidth = e.NewSize.Width;
-            foreach (var uc in cl)
-                uc.setWidth(getVisibility == Visibility.Collapsed ? 1 : 0, getWidth);
+            page_width = e.NewSize.Width;
+            foreach (var uc in usercontrol_mainwindowlinesinfofirst_list)
+                uc.setWidth(getSecondDestVisibility == Visibility.Collapsed ? 1 : 0, getPageWidth);
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -319,8 +316,7 @@ namespace RozkladJazdy.Pages
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
-        =>
-            this.SizeChanged -= Page_SizeChanged;
+            => this.SizeChanged -= Page_SizeChanged;
 
     }
 }

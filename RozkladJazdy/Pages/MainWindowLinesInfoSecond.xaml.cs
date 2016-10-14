@@ -37,7 +37,7 @@ namespace RozkladJazdy.Pages
 
         private void ChangeText(Przystanek przystanek)
         {
-            if(przystanek.track_id+1 > MainWindowLinesInfo.selectedRozklad.track.Count())
+            if(przystanek.track_id+1 > MainWindowLinesInfo.selected_schedule.track.Count())
                 return;
 
             FontWeight bold = FontWeights.Normal;
@@ -64,7 +64,7 @@ namespace RozkladJazdy.Pages
             if (przystanek.na_zadanie())
                 bold = FontWeights.Bold;
             
-            if (przystanek.getName() == MainWindowLinesInfo.selectedRozklad.track[przystanek.track_id].name)
+            if (przystanek.getName() == MainWindowLinesInfo.selected_schedule.track[przystanek.track_id].name)
             {
                 color = Colors.Green;
                 bold = FontWeights.Bold;

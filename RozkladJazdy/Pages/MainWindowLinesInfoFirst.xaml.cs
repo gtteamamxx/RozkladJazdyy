@@ -31,8 +31,8 @@ namespace RozkladJazdy.Pages
 
             this.DataContextChanged += (sender, e) =>
             {
-                if (MainWindowLinesInfo.cl.IndexOf(this) == -1)
-                    MainWindowLinesInfo.cl.Add(this);
+                if (MainWindowLinesInfo.usercontrol_mainwindowlinesinfofirst_list.IndexOf(this) == -1)
+                    MainWindowLinesInfo.usercontrol_mainwindowlinesinfofirst_list.Add(this);
 
                 var a = e.NewValue as Przystanek;
                 if (a != null) ChangeText(a);
@@ -75,7 +75,7 @@ namespace RozkladJazdy.Pages
             if (przystanek.na_zadanie())
                 bold = FontWeights.Bold;
 
-            if (przystanek.getName() == MainWindowLinesInfo.selectedRozklad.track[przystanek.track_id].name)
+            if (przystanek.getName() == MainWindowLinesInfo.selected_schedule.track[przystanek.track_id].name)
             {
                 color = Colors.Green;
                 bold = FontWeights.Bold;
@@ -88,7 +88,7 @@ namespace RozkladJazdy.Pages
             MainWindowLinesInfoListView1Grid.Background = new SolidColorBrush(color2);
             MainWindowLinesInfoListView1TextBlock.FontWeight = bold;
 
-            setWidth(MainWindowLinesInfo.getVisibility == Visibility.Collapsed ? 1 : 0, MainWindowLinesInfo.getWidth);
+            setWidth(MainWindowLinesInfo.getSecondDestVisibility == Visibility.Collapsed ? 1 : 0, MainWindowLinesInfo.getPageWidth);
         }
     }
 }

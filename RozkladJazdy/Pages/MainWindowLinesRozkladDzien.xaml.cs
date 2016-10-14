@@ -51,10 +51,9 @@ namespace RozkladJazdy.Pages
             if (e.SourcePageType == typeof(MainWindowLinesInfo))
             {
                 if(MainWindowLinesList.selectedLine.rozklad.Count() > 1)
-                {
                     return;
-                }
-                MainWindowLinesInfo.selectedRozkladIndex = -1;
+
+                MainWindowLinesInfo.selectedScheduleIndex = -1;
                 MainWindowLinesList.selectedRozklad = new int();
             }
         }

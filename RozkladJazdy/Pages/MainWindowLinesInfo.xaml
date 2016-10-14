@@ -25,10 +25,10 @@
 
         <TextBlock Margin="20" Name="MainWindowLinesInfoImage" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontFamily="Segoe MDL2 Assets" FontSize="75"/>
 
-        <StackPanel Margin="20"  Grid.Column="1">
-            <TextBlock Name="MainWindowLinesInfoTextBlock" TextWrapping="Wrap" FontSize="35" Foreground="Blue"/>
-            <TextBlock Name="MainWindowLinesInfoTextBlock2" TextWrapping="Wrap" FontWeight="Bold"  Foreground="Green"/>
-            <TextBlock Name="MainWindowLinesInfoTextBlock5" TextWrapping="Wrap" FontWeight="Bold" Foreground="Black" />
+        <StackPanel Margin="20" Grid.Column="1">
+            <TextBlock Name="MainWindowLinesInfoLineName" TextWrapping="Wrap" FontSize="35" Foreground="Blue"/>
+            <TextBlock Name="MainWindowLinesInfoLineType" TextWrapping="Wrap" FontWeight="Bold"  Foreground="Green"/>
+            <TextBlock Name="MainWindowLinesInfoSelectedSchedule" TextWrapping="Wrap" FontWeight="Bold" Foreground="Black" />
         </StackPanel>
 
         <Grid Grid.Row="1" Grid.ColumnSpan="2" Margin="10,0,10,0">
@@ -43,18 +43,20 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <StackPanel Name="MainWindowLinesInfoStackPanel1" Background="LightGray" BorderBrush="Black" BorderThickness="0,0,0,1.5">
-                <TextBlock Margin="5" Foreground="Red" FontSize="20" Name="MainWindowLinesInfoTextBlock3" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+            <StackPanel Name="MainWindowLinesInfoStackPanelDest1" Background="LightGray" BorderBrush="Black" BorderThickness="0,0,0,1.5">
+                <TextBlock Margin="5" Foreground="Red" FontSize="20" Name="MainWindowLinesInfoDestName1" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap"/>
             </StackPanel>
 
-            <StackPanel Name="MainWindowLinesInfoStackPanel2" Grid.Column="1" Background="LightGray" BorderBrush="Black" BorderThickness="1,0,0,1.5">
-                <TextBlock Margin="5" Foreground="Red" FontSize="20" Name="MainWindowLinesInfoTextBlock4" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+            <StackPanel Name="MainWindowLinesInfoStackPanelDest2" Grid.Column="1" Background="LightGray" BorderBrush="Black" BorderThickness="1,0,0,1.5">
+                <TextBlock Margin="5" Foreground="Red" FontSize="20" Name="MainWindowLinesInfoDestName2" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap"/>
             </StackPanel>
 
-            <ProgressRing Foreground="Blue" Name="ProgressRing1" Visibility="Visible" IsActive="True" Grid.Row="1" Width="50" Height="50" HorizontalAlignment="Center" VerticalAlignment="Center" />
-            <ProgressRing Foreground="Blue" Name="ProgressRing2" Visibility="Visible" IsActive="True"  Grid.Row="1" Grid.Column="1" Width="50" Height="50" HorizontalAlignment="Center" VerticalAlignment="Center" />
-            
-            <ListView Name="MainWindowLinesInfoListView1" IsItemClickEnabled="True" ItemClick="MainWindowLinesInfoListView1_ItemClick" Grid.Row="1" ItemsSource="{x:Bind pk1}" BorderThickness="0,0,0,0" SelectionMode="Single">
+            <ProgressRing Foreground="Blue" Name="MainWindowLinesInfoStatusProgressRing1" Visibility="Visible" IsActive="True" Grid.Row="1" Width="50" Height="50" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            <ProgressRing Foreground="Blue" Name="MainWindowLinesInfoStatusProgressRing2" Visibility="Visible" IsActive="True"  Grid.Row="1" Grid.Column="1" Width="50" Height="50" HorizontalAlignment="Center" VerticalAlignment="Center" />
+
+            <ListView Name="MainWindowLinesInfoStopsList1" IsItemClickEnabled="True" ItemClick="MainWindowLinesInfoStopsList1_Click" 
+                      Grid.Row="1" ItemsSource="{x:Bind stops_dest1}" BorderThickness="0,0,0,0" 
+                      SelectionMode="Single">
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="data:Przystanek">
                         <local:MainWindowLinesInfoFirst/>
@@ -62,7 +64,9 @@
                 </ListView.ItemTemplate>
             </ListView>
 
-            <ListView Name="MainWindowLinesInfoListView2" IsItemClickEnabled="True" ItemClick="MainWindowLinesInfoListView2_ItemClick" Grid.Column="1" Grid.Row="1" ItemsSource="{x:Bind pk2}" BorderBrush="Black" BorderThickness="1,0,0,0">
+            <ListView Name="MainWindowLinesInfoStopsList2" IsItemClickEnabled="True" ItemClick="MainWindowLinesInfoStopsList1_Click" 
+                      Grid.Column="1" Grid.Row="1" ItemsSource="{x:Bind stops_dest2}" BorderBrush="Black" 
+                      BorderThickness="1,0,0,0">
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="data:Przystanek">
                         <local:MainWindowLinesInfoSecond />

@@ -295,7 +295,7 @@ namespace RozkladJazdy
         private bool isStopClicked = false;
         private void MainPageStopListStopsList_Click(object sender, ItemClickEventArgs e)
         {
-            MainWindowLinesInfo.selectedPrzystanek = e.ClickedItem as Przystanek;
+            MainWindowLinesInfo.selected_stop = e.ClickedItem as Przystanek;
             MainPageFrame.Navigate(typeof(MainWindowLinesInfoHours));
             isStopClicked = true;
         }
@@ -321,12 +321,12 @@ namespace RozkladJazdy
             else if (MainPageFrame.SourcePageType == typeof(MainWindowLinesInfoHours))
             {
                 if (addToFavourite)
-                    favourite_stops.Add(new Ulubiony() { type = 1, id = MainWindowLinesInfo.selectedPrzystanek.nid, name = MainWindowLinesInfo.selectedPrzystanek.getName() });
+                    favourite_stops.Add(new Ulubiony() { type = 1, id = MainWindowLinesInfo.selected_stop.nid, name = MainWindowLinesInfo.selected_stop.getName() });
                 else
-                    favourite_stops.Remove(favourite_stops.Where(p => p.type == 1 && p.name == MainWindowLinesInfo.selectedPrzystanek.getName()).ToList().First());
+                    favourite_stops.Remove(favourite_stops.Where(p => p.type == 1 && p.name == MainWindowLinesInfo.selected_stop.getName()).ToList().First());
 
                 type = 1;
-                name = MainWindowLinesInfo.selectedPrzystanek.getName();
+                name = MainWindowLinesInfo.selected_stop.getName();
             }
             else if (MainPageFrame.SourcePageType == typeof(MainWindowStopList))
             {

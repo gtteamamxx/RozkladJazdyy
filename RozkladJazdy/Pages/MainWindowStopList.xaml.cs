@@ -289,8 +289,8 @@ namespace RozkladJazdy.Pages
 
             if (przid != null)
             {
-                MainWindowLinesInfo.selectedPrzystanek = new Przystanek();
-                MainWindowLinesInfo.selectedPrzystanek = przid;
+                MainWindowLinesInfo.selected_stop = new Przystanek();
+                MainWindowLinesInfo.selected_stop = przid;
 
                 MainPage.gui.setViewPage = typeof(MainWindowLinesInfoHours);
                 return;

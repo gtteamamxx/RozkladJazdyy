@@ -95,7 +95,7 @@ namespace RozkladJazdy
 
             MainWindowLinesInfoListView1TextBlock.FontWeight = bold;
 
-            if (przystanek == MainWindowLinesInfo.selectedPrzystanek)
+            if (przystanek == MainWindowLinesInfo.selected_stop)
                 MainPage.gui.setStopListActualIndex = MainPage.gui.getStopListActualIndex(przystanek);
 
             tempprzystanek = przystanek;
