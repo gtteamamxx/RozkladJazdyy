@@ -48,12 +48,12 @@ namespace RozkladJazdy.Pages
                 n2 = n2.Replace(n2.Last(), ' ').Trim();
             }
 
-            if (int.Parse(n1) < MainWindowLinesInfoHours.hour || 
-                (int.Parse(n1) == MainWindowLinesInfoHours.hour 
-                && int.Parse(n2) < MainWindowLinesInfoHours.minute))
-                MainWindowLinesInfoHours.was = null;
+            if (int.Parse(n1) < MainWindowLinesInfoHours.closest_hour || 
+                (int.Parse(n1) == MainWindowLinesInfoHours.closest_hour
+                && int.Parse(n2) < MainWindowLinesInfoHours.closest_minute))
+                MainWindowLinesInfoHours.isClosestHour_temp = null;
 
-            if (MainWindowLinesInfoHours.was == null)
+            if (MainWindowLinesInfoHours.isClosestHour_temp == null)
             {
                 int num = -1;
 
@@ -62,17 +62,17 @@ namespace RozkladJazdy.Pages
 
                 if (isClosest(int.Parse(n1), num, time.Hour, time.Minute) == true)
                 {
-                    MainWindowLinesInfoHours.hour = int.Parse(n1);
-                    MainWindowLinesInfoHours.minute = int.Parse(n2);
-                    MainWindowLinesInfoHours.was = false;
+                    MainWindowLinesInfoHours.closest_hour = int.Parse(n1);
+                    MainWindowLinesInfoHours.closest_minute = int.Parse(n2);
+                    MainWindowLinesInfoHours.isClosestHour_temp = false;
                     MainWindowHoursStackPanel.Background = new SolidColorBrush(Colors.Red);
                     MainWindowHoursText.Foreground = new SolidColorBrush(Colors.Yellow);
                 }
             }
-            else if(MainWindowLinesInfoHours.was == false)
+            else if(MainWindowLinesInfoHours.isClosestHour_temp == false)
             {
                 MainWindowHoursStackPanel.Background = new SolidColorBrush(Colors.Yellow);
-                MainWindowLinesInfoHours.was = true;
+                MainWindowLinesInfoHours.isClosestHour_temp = true;
             }
             
         }

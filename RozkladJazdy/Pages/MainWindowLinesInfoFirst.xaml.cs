@@ -23,8 +23,8 @@ namespace RozkladJazdy.Pages
 {
     public sealed partial class MainWindowLinesInfoFirst : UserControl
     {
-        public Przystanek getPrzystanek { get { return _przystanek; } }
-        private Przystanek _przystanek = new Przystanek();
+        public Przystanek getStop { get { return _stop; } }
+        private Przystanek _stop = new Przystanek();
         public MainWindowLinesInfoFirst()
         {
             this.InitializeComponent();
@@ -42,15 +42,14 @@ namespace RozkladJazdy.Pages
         public void setWidth(int val = 0, double width = 0.0)
         {
             MainWindowLinesInfoListView1Grid.Width = width;
-            MainWindowLinesInfoListView1TextBlock.Width = (width / 2);
+            MainWindowLinesInfoListView1StopName.Width = (width / 2);
             var var = (width / 2) - (width / 2 / 2);
             asd.Margin = new Thickness(val == 1 ? var < 150 ? 0.0 : var : 0.0 ,0.0,0.0,0.0);     
         }
 
         private void ChangeText(Przystanek przystanek)
         {
-
-            _przystanek = przystanek;
+            _stop = przystanek;
 
             FontWeight bold = FontWeights.Normal;
             Color color = Colors.Navy;
@@ -81,12 +80,12 @@ namespace RozkladJazdy.Pages
                 bold = FontWeights.Bold;
             }
 
-            MainWindowLinesInfoListView1TextBlock.Text = name + przystanek.getName();
-            MainWindowLinesInfoListView1TextBlock.Margin = margin;
+            MainWindowLinesInfoListView1StopName.Text = name + przystanek.getName();
+            MainWindowLinesInfoListView1StopName.Margin = margin;
 
-            MainWindowLinesInfoListView1TextBlock.Foreground = new SolidColorBrush(color);
+            MainWindowLinesInfoListView1StopName.Foreground = new SolidColorBrush(color);
             MainWindowLinesInfoListView1Grid.Background = new SolidColorBrush(color2);
-            MainWindowLinesInfoListView1TextBlock.FontWeight = bold;
+            MainWindowLinesInfoListView1StopName.FontWeight = bold;
 
             setWidth(MainWindowLinesInfo.getSecondDestVisibility == Visibility.Collapsed ? 1 : 0, MainWindowLinesInfo.getPageWidth);
         }

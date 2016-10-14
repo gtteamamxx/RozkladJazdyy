@@ -27,17 +27,21 @@ namespace RozkladJazdy.Pages
     /// </summary>
     public sealed partial class MainWindowLinesInfoHours : Page
     {
-        private Linia selectedLinia;
-        private ObservableCollection<GodzinaHours> LiniaGodziny;
-        private ObservableCollection<string> literki;
-        private Przystanek przystanek = new Przystanek();
+        private Linia selected_line;
+        private ObservableCollection<GodzinaHours> line_hours;
+        private ObservableCollection<string> letters_info;
+        private Przystanek selected_stop = new Przystanek();
+        private Trasa selected_track;
+
+        private MainWindowLinesInfoHours gui;
 
         //public static List<MainWindowLinesInfoThird> lista_test = new List<MainWindowLinesInfoThird>();
         //public static List<Przystanek> lista_test2 = new List<Przystanek>();
 
-        public static bool? was = null;
-        public static int hour;
-        public static int minute;
+        public static bool? isClosestHour_temp = null;
+        public static int closest_hour;
+        public static int closest_minute;
+        public static bool navigated_from;
 
         //public static string selectedHour;
         //public static int[] temphour = { 0, 0 };
@@ -47,15 +51,10 @@ namespace RozkladJazdy.Pages
         //public delegate void eventClickHour(string hour, int godzid, int godzid2);
         //public static event eventClickHour OnClickHour;
 
-        private MainWindowLinesInfoHours gui;
-        private Trasa trasa;
-
-        public static bool navigated_from;
-
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            if (selectedLinia != null)
-                MainPage.gui.setPageTitle = "Rozkład jazdy -> Linia: " + selectedLinia.name;
+            if (selected_line != null)
+                MainPage.gui.setPageTitle = "Rozkład jazdy -> Linia: " + selected_line.name;
         }
 
         public MainWindowLinesInfoHours()
@@ -63,28 +62,27 @@ namespace RozkladJazdy.Pages
             this.InitializeComponent();
             gui = this;
 
-            selectedLinia = new Linia();
-            LiniaGodziny = new ObservableCollection<GodzinaHours>();
-            literki = new ObservableCollection<string>();
+            selected_line = new Linia();
+            line_hours = new ObservableCollection<GodzinaHours>();
+            letters_info = new ObservableCollection<string>();
 
-            selectedLinia = MainWindowLinesList.selectedLine;
-            przystanek = MainWindowLinesInfo.selected_stop;
+            selected_line = MainWindowLinesList.selectedLine;
+            selected_stop = MainWindowLinesInfo.selected_stop;
 
-            trasa = selectedLinia.rozklad[MainWindowLinesList.selectedRozklad == -1 ? 0 : 
-                MainWindowLinesList.selectedRozklad].track[przystanek.track_id];
+            selected_track = selected_line.rozklad[MainWindowLinesList.selectedRozklad == -1 ? 0 : 
+                MainWindowLinesList.selectedRozklad].track[selected_stop.track_id];
 
-            if (MainPage.gui.stops_track != przystanek.track_id)
+            if (MainPage.gui.stops_track != selected_stop.track_id)
                 MainPage.gui.clearStopListStops();
 
-            MainPage.gui.stops_track = przystanek.track_id;
-            MainPage.gui.setPageTitle = "Rozkład jazdy -> Linia: " + selectedLinia.name;
-            MainPage.gui.setStopListDestName("Kierunek: " + trasa.name);
+            MainPage.gui.stops_track = selected_stop.track_id;
+            MainPage.gui.setPageTitle = "Rozkład jazdy -> Linia: " + selected_line.name;
+            MainPage.gui.setStopListDestName("Kierunek: " + selected_track.name);
 
-            MainWindowLinesInfoHOursKierunek.Text = "Kierunek: " + trasa.name;
+            MainWindowLinesInfoHoursDestName.Text = "Kierunek: " + selected_track.name;
 
-            MainWindowLinesInfoHOursLinia.Text = selectedLinia.name;
-            MainWindowLinesInfoHOursLiniaStackPanel.Background = new SolidColorBrush(new Color() { A = 100, B = 1, R = 0, G = 0 });
-            MainWindowLinesInfoHOursPrzystanek.Text = "Przystanek: " + przystanek.getName();
+            MainWindowLinesInfoHoursLineName.Text = selected_line.name;
+            MainWindowLinesInfoHoursStopName.Text = "Przystanek: " + selected_stop.getName();
 
             this.Loaded += MainWindowLinesInfoHours_Loaded;
             this.Unloaded += MainWindowLinesInfoHours_Unloaded;
@@ -106,59 +104,59 @@ namespace RozkladJazdy.Pages
             BackgroundWorker worker = new BackgroundWorker();
             worker.WorkerReportsProgress = true;
 
-            int num = 0;
-            worker.DoWork += (senders, es) =>
+            int temp_hours_num = 0;
+            worker.DoWork += (s, ef) =>
             {
-                if (przystanek == null || przystanek.godziny == null)
-                    przystanek.godziny = new List<Godzina>();
+                if (selected_stop == null || selected_stop.godziny == null)
+                    selected_stop.godziny = new List<Godzina>();
 
-                var index = MainWindowLinesList.selectedLine.rozklad[przystanek.rozkladzien_id].
-                        track[przystanek.track_id].stops.IndexOf(przystanek);
+                var stop_index = MainWindowLinesList.selectedLine.rozklad[selected_stop.rozkladzien_id].
+                        track[selected_stop.track_id].stops.IndexOf(selected_stop);
 
-                if(index == -1)
+                if(stop_index == -1)
                 {
-                    es.Cancel = true;
+                    ef.Cancel = true;
                     return;
                 }
-                przystanek.godziny = MainWindowLinesList.selectedLine.rozklad[przystanek.rozkladzien_id].track[przystanek.track_id].
-                    stops[index].godziny = new List<Godzina>();
+                selected_stop.godziny = MainWindowLinesList.selectedLine.rozklad[selected_stop.rozkladzien_id].track[selected_stop.track_id].
+                    stops[stop_index].godziny = new List<Godzina>();
 
-                przystanek.godziny = MainWindowLinesList.selectedLine.rozklad[przystanek.rozkladzien_id].track[przystanek.track_id].
-                    stops[index].godziny = SQLServices.getData<Godzina>(0, "SELECT * FROM Godzina WHERE id_przystanek = ?", przystanek.id);
+                selected_stop.godziny = MainWindowLinesList.selectedLine.rozklad[selected_stop.rozkladzien_id].track[selected_stop.track_id].
+                    stops[stop_index].godziny = SQLServices.getData<Godzina>(0, "SELECT * FROM Godzina WHERE id_przystanek = ?", selected_stop.id);
 
-                if (przystanek == null || przystanek.godziny == null)
+                if (selected_stop == null || selected_stop.godziny == null)
                 {
-                    es.Cancel = true;
+                    ef.Cancel = true;
                     return;
                 }
 
-                foreach (var p in przystanek.godziny)
+                foreach (Godzina hour in selected_stop.godziny)
                 {
-                    if (przystanek == null || przystanek.godziny == null)
+                    if (selected_stop == null || selected_stop.godziny == null)
                     {
-                        es.Cancel = true;
+                        ef.Cancel = true;
                         return;
                     }
-                    worker.ReportProgress(0, p);
+                    worker.ReportProgress(0, hour);
                 }
             };
 
-            worker.ProgressChanged += (sendesr, es) =>
+            worker.ProgressChanged += (s, f) =>
             {
-                var godz = es.UserState as Godzina;
+                var hour = f.UserState as Godzina;
 
                 var temp = new GodzinaHours();
 
                 temp.godziny = new List<string>();
-                temp.id = num++;
-                temp.name = godz.getName();
-                temp.nid = godz.nid;
+                temp.id = temp_hours_num++;
+                temp.name = hour.getName();
+                temp.nid = hour.nid;
 
-                temp.godziny = godz.godziny_full.Split('#').ToList();
+                temp.godziny = hour.godziny_full.Split('#').ToList();
                 var index_last = temp.godziny.IndexOf(temp.godziny.Last());
                 temp.godziny.RemoveAt(index_last);
 
-                LiniaGodziny.Add(temp);
+                line_hours.Add(temp);
             };
 
             worker.RunWorkerCompleted += (senders, es) =>
@@ -170,43 +168,42 @@ namespace RozkladJazdy.Pages
 
                 worker1.DoWork += (se, fe) =>
                 {
-                    var literki = SQLServices.getData<Literka>(0, "SELECT info FROM Literka WHERE id_przystanku = ?", przystanek.id);
+                    var letters = SQLServices.getData<Literka>(0, "SELECT info FROM Literka WHERE id_przystanku = ?", selected_stop.id);
 
-                    przystanek.literki_info = new List<string>();
+                    selected_stop.literki_info = new List<string>();
 
-                    foreach (var lit in literki)
-                        przystanek.literki_info.Add(lit.info);
+                    foreach (Literka let in letters)
+                        selected_stop.literki_info.Add(let.info);
                 };
 
                 worker1.RunWorkerCompleted += (se, fe) =>
                 {
-                    if (przystanek.literki_info != null && przystanek.literki_info.Count() > 0)
-                        przystanek.literki_info.ForEach(p => literki.Add(p));
+                    if (selected_stop.literki_info != null && selected_stop.literki_info.Count() > 0)
+                        selected_stop.literki_info.ForEach(p => letters_info.Add(p));
 
-                    if (przystanek.godziny.Count() == 0)
-                        DodatkoweInformacje.Text = "Dodatkowe informacje: Z przystanku " + przystanek.getName() + " nie są realizowane żadne odjazdy.";
+                    if (selected_stop.godziny.Count() == 0)
+                        MainWindowLinesInfoHoursAdditionalInfo.Text = "Dodatkowe informacje: Z przystanku " + selected_stop.getName() + " nie są realizowane żadne odjazdy.";
                     else
                     {
-                        if (trasa.stops.ElementAt(trasa.stops.IndexOf(trasa.stops.Last())) == przystanek)
+                        if (selected_track.stops.ElementAt(selected_track.stops.IndexOf(selected_track.stops.Last())) == selected_stop)
                         {
-                            DodatkoweInformacje.Text = "Dodatkowe informacje: " + przystanek.getName() + " jest ostatnim przystankiem na trasie linii nr " +
-                            selectedLinia.name + ". Prezentowane godziny są godzinami przyjazdu.";
+                            MainWindowLinesInfoHoursAdditionalInfo.Text = "Dodatkowe informacje: " + selected_stop.getName() + " jest ostatnim przystankiem na trasie linii nr " +
+                            selected_line.name + ". Prezentowane godziny są godzinami przyjazdu.";
                         }
                     }
 
-                    MainWindowLinesINfoHoursProgressRing.Visibility = Visibility.Collapsed;
+                    MainWindowLinesInfoHoursStatusProgressRing.Visibility = Visibility.Collapsed;
 
                     if (!MainPage.gui.isAnyStopInList())
                     {
-                        MainPage.gui.setStopListStops(trasa.stops);
-                        MainPage.gui.setStopListActualIndex = MainPage.gui.getStopListActualIndex(przystanek);
+                        MainPage.gui.setStopListStops(selected_track.stops);
+                        MainPage.gui.setStopListActualIndex = MainPage.gui.getStopListActualIndex(selected_stop);
                     }
                     else
-                        MainPage.gui.setStopListActualIndex = MainPage.gui.getStopListActualIndex(przystanek);
+                        MainPage.gui.setStopListActualIndex = MainPage.gui.getStopListActualIndex(selected_stop);
                 };
 
                 worker1.RunWorkerAsync();
-
             };
 
             worker.RunWorkerAsync();
@@ -218,23 +215,20 @@ namespace RozkladJazdy.Pages
 
         private void clear()
         {
-            selectedLinia = null; ;
-            LiniaGodziny = null;
-            przystanek = null;
-            selectedLinia = null;
-            LiniaGodziny = null;
-            literki = null;
-            przystanek = null;
-            was = null;
+            selected_line = null; ;
+            line_hours = null;
+            selected_stop = null;
+            letters_info = null;
+            isClosestHour_temp = null;
             //selectedHour = null;
             gui = null;
-            trasa = null;
+            selected_track = null;
 
             this.SizeChanged -= MainWindowLinesInfoHours_SizeChanged;
             this.Unloaded -= MainWindowLinesInfoHours_Unloaded;
             this.Loaded -= MainWindowLinesInfoHours_Loaded;
         }
-        private void MainWindowLinesInfoHours_SizeChanged(object sender, SizeChangedEventArgs e) => MainWindowLinesInfoHOursKierunek.Width = e.NewSize.Width - 100;
+        private void MainWindowLinesInfoHours_SizeChanged(object sender, SizeChangedEventArgs e) => MainWindowLinesInfoHoursDestName.Width = e.NewSize.Width - 100;
 
         //from stackoverflow
         public static IEnumerable<T> FindVisualChildren<T>(DependencyObject depObj) where T : DependencyObject
@@ -263,7 +257,7 @@ namespace RozkladJazdy.Pages
             if (!MainPage.gui.isStopListPaneOpen)
                 MainPage.gui.isStopListPaneOpen = true;
 
-            MainPage.gui.setStopListActualIndex = MainPage.gui.getStopListActualIndex(przystanek);
+            MainPage.gui.setStopListActualIndex = MainPage.gui.getStopListActualIndex(selected_stop);
 
             /* selectedHour = e.ClickedItem.ToString();
 
@@ -303,13 +297,13 @@ namespace RozkladJazdy.Pages
                  item.test();*/
         }
 
-        private void MainWindowLinesInfoHOursLinia_Tapped(object sender, TappedRoutedEventArgs e)
+        private void MainWindowLinesInfoHoursLineName_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            MainPage.gui.setViewPage = typeof(MainWindowLinesInfo);
             navigated_from = true;
+            MainPage.gui.setViewPage = typeof(MainWindowLinesInfo);
         }
 
-        private void MainWindowLinesInfoHOursPrzystanek_Tapped(object sender, TappedRoutedEventArgs e)
+        private void MainWindowLinesInfoHoursStopName_Tapped(object sender, TappedRoutedEventArgs e)
         {
             navigated_from = true;
             MainPage.gui.setViewPage = typeof(MainWindowStopList);

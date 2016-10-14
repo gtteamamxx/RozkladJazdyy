@@ -96,7 +96,7 @@ namespace RozkladJazdy.Pages
 
                 if (usercontrol_mainwindowlinesinfofirst_list.Count() > 0)
                 {
-                    old_schedule_index = usercontrol_mainwindowlinesinfofirst_list[0].getPrzystanek.rozkladzien_id;
+                    old_schedule_index = usercontrol_mainwindowlinesinfofirst_list[0].getStop.rozkladzien_id;
 
                     if ((new_schedule_index == old_schedule_index))
                         _return = true;
@@ -290,7 +290,7 @@ namespace RozkladJazdy.Pages
 
             MainPage.gui.setViewPage = typeof(MainWindowLinesInfoHours);
 
-            var dest1_stops = MainWindowLinesInfoStopsList1.Items.Where(d => (d as Przystanek).getName() == przystanek.getName()).ToList();
+            var dest1_stops = MainWindowLinesInfoStopsList1.Items.Where(d => (d as Przystanek).getName() == clicked_stop.getName()).ToList();
 
             if (dest1_stops != null && dest1_stops.Count() > 0)
             {

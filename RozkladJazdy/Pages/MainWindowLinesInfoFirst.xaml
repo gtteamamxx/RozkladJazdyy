@@ -12,7 +12,7 @@
 
     <Grid Name="MainWindowLinesInfoListView1Grid" Margin="2">
         <Grid Name="asd" HorizontalAlignment="Center">
-            <TextBlock x:Name="MainWindowLinesInfoListView1TextBlock" Foreground="Navy" TextWrapping="Wrap" />
+            <TextBlock x:Name="MainWindowLinesInfoListView1StopName" Foreground="Navy" TextWrapping="Wrap" />
         </Grid>
     </Grid>
 
