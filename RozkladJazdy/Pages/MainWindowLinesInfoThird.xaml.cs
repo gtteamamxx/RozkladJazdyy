@@ -26,79 +26,79 @@ namespace RozkladJazdy
     /// </summary>
     public sealed partial class MainWindowLinesInfoThird : Page
     {
-        private Przystanek tempprzystanek = new Przystanek();
+        private Przystanek temp_stop = new Przystanek();
         public MainWindowLinesInfoThird()
         {
             this.InitializeComponent();
 
             this.DataContextChanged += (sender, e) =>
             {
-                var a = e.NewValue as Przystanek;
-                if (a != null)
+                var stop = e.NewValue as Przystanek;
+                if (stop != null)
                 {
-                   // if (a.getName().Contains("ienkiewic"))
-                    //    ;
+                    // if (a.getName().Contains("ienkiewic"))
+                    //    ; #debug
 
-                    ChangeText(a);
+                    ChangeText(stop);
                 }
             };
 
         }
 
-        private void ChangeText(Przystanek przystanek)
+        private void ChangeText(Przystanek stop)
         {
             FontWeight bold = FontWeights.Normal;
             Color color = Colors.Navy;
             Thickness margin = new Thickness(0.0, 0.0, 0.0, 0.0);
             string name = "";
 
-            if (przystanek.wariant)
+            if (stop.wariant)
             {
                 color = Colors.Red;
                 name = "-- ";
                 margin = new Thickness(10.0, 0.0, 0.0, 0.0);
             }
 
-            if (przystanek.strefowy)
+            if (stop.strefowy)
                 color = Colors.Yellow;
 
-            if (przystanek.na_zadanie())
+            if (stop.na_zadanie())
                 bold = FontWeights.Bold;
 
-            var track = MainWindowLinesList.selectedLine.rozklad[przystanek.rozkladzien_id].track;
+            var track = MainWindowLinesList.selectedLine.rozklad[stop.rozkladzien_id].track;
             if (track == null)
             {
-                track = SQLServices.getData<Trasa>(0, "SELECT * FROM Trasa WHERE (id_linia = ? AND id_rozklad = ?) LIMIT 2", MainWindowLinesList.selectedLine.id, przystanek.rozkladzien_id);
+                track = SQLServices.getData<Trasa>(0, "SELECT * FROM Trasa WHERE (id_linia = ? AND id_rozklad = ?) LIMIT 2", MainWindowLinesList.selectedLine.id, stop.rozkladzien_id);
 
-                MainWindowLinesList.selectedLine.rozklad[przystanek.rozkladzien_id].track = new List<Trasa>();
-                MainWindowLinesList.selectedLine.rozklad[przystanek.rozkladzien_id].track = track;
+                MainWindowLinesList.selectedLine.rozklad[stop.rozkladzien_id].track = new List<Trasa>();
+                MainWindowLinesList.selectedLine.rozklad[stop.rozkladzien_id].track = track;
 
                 for(int i = 0; i < track.Count(); i++)
                 {
                     track[i].stops = new List<Przystanek>();
-                    MainWindowLinesList.selectedLine.rozklad[przystanek.rozkladzien_id].track[i].stops = new List<Model.Przystanek>();
+                    MainWindowLinesList.selectedLine.rozklad[stop.rozkladzien_id].track[i].stops = new List<Model.Przystanek>();
 
-                    track[i].stops = MainWindowLinesList.selectedLine.rozklad[przystanek.rozkladzien_id].track[i].stops = SQLServices.getData<Przystanek>(0, "SELECT * FROM Przystanek WHERE id_trasa = ?", track[i].id);
+                    track[i].stops = MainWindowLinesList.selectedLine.rozklad[stop.rozkladzien_id].track[i].stops = SQLServices.getData<Przystanek>(0, "SELECT * FROM Przystanek WHERE id_trasa = ?", track[i].id);
                 }
 
             }
-            if (przystanek.getName() == track[przystanek.track_id].name)
+            if (stop.getName() == track[stop.track_id].name)
             {
                 color = Colors.Green;
                 bold = FontWeights.Bold;
             }
 
-            MainWindowLinesInfoListView1TextBlock.Text = name + przystanek.getName();
-            MainWindowLinesInfoListView1TextBlock.Margin = margin;
+            MainWindowLinesInfoListView1StopName.Text = name + stop.getName();
+            MainWindowLinesInfoListView1StopName.Margin = margin;
 
-            MainWindowLinesInfoListView1TextBlock.Foreground = new SolidColorBrush(color);
+            MainWindowLinesInfoListView1StopName.Foreground = new SolidColorBrush(color);
 
-            MainWindowLinesInfoListView1TextBlock.FontWeight = bold;
+            MainWindowLinesInfoListView1StopName.FontWeight = bold;
 
-            if (przystanek == MainWindowLinesInfo.selected_stop)
-                MainPage.gui.setStopListActualIndex = MainPage.gui.getStopListActualIndex(przystanek);
+            if (stop == MainWindowLinesInfo.selected_stop)
+                MainPage.gui.setStopListActualIndex = MainPage.gui.getStopListActualIndex(stop);
 
-            tempprzystanek = przystanek;
+            temp_stop = stop;
 
             /*if (MainWindowLinesInfoHours.lista_test2.IndexOf(przystanek) == -1)
             {

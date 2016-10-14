@@ -10,6 +10,6 @@
     d:DesignWidth="400">
 
     <Grid Margin="2" Name="MainWindowLinesInfoListView2Grid" HorizontalAlignment="Center">
-        <TextBlock x:Name="MainWindowLinesInfoListView2TextBlock" Foreground="Navy" HorizontalAlignment="Center" TextWrapping="Wrap" />
+        <TextBlock x:Name="MainWindowLinesInfoListView2StopName" Foreground="Navy" HorizontalAlignment="Center" TextWrapping="Wrap" />
     </Grid>
 </UserControl>

@@ -23,8 +23,8 @@ namespace RozkladJazdy.Pages
 {
     public sealed partial class MainWindowLinesInfoFirst : UserControl
     {
-        public Przystanek getStop { get { return _stop; } }
-        private Przystanek _stop = new Przystanek();
+        public Przystanek getStop { get { return temp_stop; } }
+        private Przystanek temp_stop = new Przystanek();
         public MainWindowLinesInfoFirst()
         {
             this.InitializeComponent();
@@ -47,9 +47,9 @@ namespace RozkladJazdy.Pages
             asd.Margin = new Thickness(val == 1 ? var < 150 ? 0.0 : var : 0.0 ,0.0,0.0,0.0);     
         }
 
-        private void ChangeText(Przystanek przystanek)
+        private void ChangeText(Przystanek stop)
         {
-            _stop = przystanek;
+            temp_stop = stop;
 
             FontWeight bold = FontWeights.Normal;
             Color color = Colors.Navy;
@@ -57,30 +57,30 @@ namespace RozkladJazdy.Pages
             Thickness margin = new Thickness(0.0, 0.0, 0.0, 0.0);
             string name = "";
 
-            if (przystanek.wariant)
+            if (stop.wariant)
             {
                 color = Colors.Red;
                 name = "-- ";
                 margin = new Thickness(10.0, 0.0, 0.0, 0.0);
             }
 
-            if (przystanek.strefowy)
+            if (stop.strefowy)
             {
                 color = Colors.Yellow;
                 color2 = Colors.Gray;
 
                 color2.A = 125;
             }
-            if (przystanek.na_zadanie())
+            if (stop.na_zadanie())
                 bold = FontWeights.Bold;
 
-            if (przystanek.getName() == MainWindowLinesInfo.selected_schedule.track[przystanek.track_id].name)
+            if (stop.getName() == MainWindowLinesInfo.selected_schedule.track[stop.track_id].name)
             {
                 color = Colors.Green;
                 bold = FontWeights.Bold;
             }
 
-            MainWindowLinesInfoListView1StopName.Text = name + przystanek.getName();
+            MainWindowLinesInfoListView1StopName.Text = name + stop.getName();
             MainWindowLinesInfoListView1StopName.Margin = margin;
 
             MainWindowLinesInfoListView1StopName.Foreground = new SolidColorBrush(color);

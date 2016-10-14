@@ -32,7 +32,7 @@ namespace RozkladJazdy.Pages
 
         public void changeText(string text)
         {
-            MainWindowHoursText.Text = text;
+            MainWindowHoursHoursText.Text = text;
 
             var txt = text.Split(':');
 
@@ -44,7 +44,7 @@ namespace RozkladJazdy.Pages
 
             if (!char.IsDigit(letter))
             {
-                MainWindowHoursText.Foreground = new SolidColorBrush(Colors.Brown);
+                MainWindowHoursHoursText.Foreground = new SolidColorBrush(Colors.Brown);
                 n2 = n2.Replace(n2.Last(), ' ').Trim();
             }
 
@@ -65,13 +65,13 @@ namespace RozkladJazdy.Pages
                     MainWindowLinesInfoHours.closest_hour = int.Parse(n1);
                     MainWindowLinesInfoHours.closest_minute = int.Parse(n2);
                     MainWindowLinesInfoHours.isClosestHour_temp = false;
-                    MainWindowHoursStackPanel.Background = new SolidColorBrush(Colors.Red);
-                    MainWindowHoursText.Foreground = new SolidColorBrush(Colors.Yellow);
+                    MainWindowHoursHoursStackPanel.Background = new SolidColorBrush(Colors.Red);
+                    MainWindowHoursHoursText.Foreground = new SolidColorBrush(Colors.Yellow);
                 }
             }
             else if(MainWindowLinesInfoHours.isClosestHour_temp == false)
             {
-                MainWindowHoursStackPanel.Background = new SolidColorBrush(Colors.Yellow);
+                MainWindowHoursHoursStackPanel.Background = new SolidColorBrush(Colors.Yellow);
                 MainWindowLinesInfoHours.isClosestHour_temp = true;
             }
             

@@ -27,17 +27,16 @@ namespace RozkladJazdy.Pages
             this.InitializeComponent();
             this.DataContextChanged += (sender, e) =>
             {
-                var a = e.NewValue as Przystanek;
+                var stop = e.NewValue as Przystanek;
 
-                if (a != null)
-                    ChangeText(a);
+                if (stop != null) ChangeText(stop);
             };
 
         }
 
-        private void ChangeText(Przystanek przystanek)
+        private void ChangeText(Przystanek stop)
         {
-            if(przystanek.track_id+1 > MainWindowLinesInfo.selected_schedule.track.Count())
+            if(stop.track_id+1 > MainWindowLinesInfo.selected_schedule.track.Count())
                 return;
 
             FontWeight bold = FontWeights.Normal;
@@ -47,35 +46,35 @@ namespace RozkladJazdy.Pages
             Thickness margin = new Thickness(0.0, 0.0, 0.0, 0.0);
             string name = "";
 
-            if (przystanek.wariant)
+            if (stop.wariant)
             {
                 color = Colors.Red;
                 name = "-- ";
                 margin = new Thickness(10.0, 0.0, 0.0, 0.0);
             }
 
-            if (przystanek.strefowy)
+            if (stop.strefowy)
             {
                 color = Colors.Yellow;
                 color2 = Colors.Gray;
 
                 color2.A = 125;
             }
-            if (przystanek.na_zadanie())
+            if (stop.na_zadanie())
                 bold = FontWeights.Bold;
             
-            if (przystanek.getName() == MainWindowLinesInfo.selected_schedule.track[przystanek.track_id].name)
+            if (stop.getName() == MainWindowLinesInfo.selected_schedule.track[stop.track_id].name)
             {
                 color = Colors.Green;
                 bold = FontWeights.Bold;
             }
 
-            MainWindowLinesInfoListView2TextBlock.Text = name + przystanek.getName();
-            MainWindowLinesInfoListView2TextBlock.Margin = margin;
+            MainWindowLinesInfoListView2StopName.Text = name + stop.getName();
+            MainWindowLinesInfoListView2StopName.Margin = margin;
 
-            MainWindowLinesInfoListView2TextBlock.Foreground = new SolidColorBrush(color);
+            MainWindowLinesInfoListView2StopName.Foreground = new SolidColorBrush(color);
             MainWindowLinesInfoListView2Grid.Background = new SolidColorBrush(color2);
-            MainWindowLinesInfoListView2TextBlock.FontWeight = bold;
+            MainWindowLinesInfoListView2StopName.FontWeight = bold;
         }
     }
 }

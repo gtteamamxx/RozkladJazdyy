@@ -9,10 +9,10 @@
     NavigationCacheMode="Disabled">
     
     <Grid Name="grid" Margin="2" HorizontalAlignment="Center">
-        <TextBlock x:Name="MainWindowLinesInfoListView1TextBlock" Foreground="Navy" HorizontalAlignment="Center" TextWrapping="Wrap" />
+        <TextBlock x:Name="MainWindowLinesInfoListView1StopName" Foreground="Navy" HorizontalAlignment="Center" TextWrapping="Wrap" />
         <StackPanel>
             <TextBlock />
-            <TextBlock Foreground="Black" Name="hours" />
+            <TextBlock Foreground="Black" Name="MainWindowLinesInfoListView1StopHour" />
         </StackPanel>
     </Grid>
 </Page>
