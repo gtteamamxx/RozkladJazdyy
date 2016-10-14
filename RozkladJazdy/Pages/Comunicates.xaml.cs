@@ -25,56 +25,56 @@ namespace RozkladJazdy.Pages
     /// </summary>
     public sealed partial class Comunicates : Page
     {
-        private ObservableCollection<Komunikat> komunikaty;
+        private ObservableCollection<Komunikat> communicates;
         public Comunicates()
         {
             this.InitializeComponent();
 
-            komunikaty = new ObservableCollection<Komunikat>();
+            communicates = new ObservableCollection<Komunikat>();
 
             this.Loaded += async (s, e) =>
             {
                 if (!MainPage.IsInternetConnection())
                 {
-                    if (komunikaty.Count() == 0)
+                    if (communicates.Count() == 0)
                     {
-                        RefreshButton.Visibility = Visibility.Visible;
-                        ListView.Visibility = Visibility.Collapsed;
-                        RefreshButton.Click += async (se, fe) =>
+                        CommunicatesRefreshButton.Visibility = Visibility.Visible;
+                        CommunicatesListOfCommunicates.Visibility = Visibility.Collapsed;
+                        CommunicatesRefreshButton.Click += async (se, fe) =>
                         {
                             if (MainPage.IsInternetConnection())
-                                await DownloadRss();
+                                await downloadRSS();
                         };
                         MainPage.showInfo("Wystąpił problem z połączeniem. Sprawdź, czy masz dostęp do sieci i odśwież stronę.");
                         return;
                     }
                 }
                 else
-                    await DownloadRss();
+                    await downloadRSS();
             };
         }
-        private async Task DownloadRss()
+        private async Task downloadRSS()
         {
-            await RSS_Services.getRSS(komunikaty);
-            StatusProgressRing.Visibility = Visibility.Collapsed;
+            await RSS_Services.getRSS(communicates);
+            CommunicatesStatusProgressRing.Visibility = Visibility.Collapsed;
 
-            RefreshButton.Visibility = Visibility.Collapsed;
-            ListView.Visibility = Visibility.Visible;
+            CommunicatesRefreshButton.Visibility = Visibility.Collapsed;
+            CommunicatesListOfCommunicates.Visibility = Visibility.Visible;
         }
         private void HyperlinkButton_Click(object sender, RoutedEventArgs e)
         {
-            var komunikat = ((e.OriginalSource as HyperlinkButton).Content as TextBlock).DataContext as Komunikat;
+            var communicate = ((e.OriginalSource as HyperlinkButton).Content as TextBlock).DataContext as Komunikat;
 
-            var stackpanel = (e.OriginalSource as HyperlinkButton).Parent as StackPanel;
-            var textblock = (stackpanel.Children[1] as TextBlock);
+            var communicate_stackpanel = (e.OriginalSource as HyperlinkButton).Parent as StackPanel;
+            var communicate_textblock = (communicate_stackpanel.Children[1] as TextBlock);
 
-            komunikat.state = komunikat.state == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+            communicate.state = communicate.state == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
 
-            textblock.Text = komunikat.actual_text;
+            communicate_textblock.Text = communicate.actual_text;
 
-            var txt = ((sender as HyperlinkButton).Content as TextBlock).Text;
+            var communicate_text = ((sender as HyperlinkButton).Content as TextBlock).Text;
 
-            ((sender as HyperlinkButton).Content as TextBlock).Text = txt == "Czytaj więcej..." ? "Czytaj mniej..." : "Czytaj więcej...";
+            ((sender as HyperlinkButton).Content as TextBlock).Text = (communicate_text == "Czytaj więcej...") ? "Czytaj mniej..." : "Czytaj więcej...";
         }
 
     }

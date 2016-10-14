@@ -11,11 +11,12 @@
 
     <Grid Background="White">
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <ProgressRing Width="100" Height="100" IsActive="True" Visibility="Visible" Name="StatusProgressRing"/>
-            <Button Margin="20" Foreground="White" Background="Gray" BorderBrush="Black" BorderThickness="1" Name="RefreshButton" Width="150" Height="50" Visibility="Collapsed" Content="Odśwież stronę" />
+            <ProgressRing Width="100" Height="100" IsActive="True" Visibility="Visible" Name="CommunicatesStatusProgressRing"/>
+            <Button Margin="20" Foreground="White" Background="Gray" BorderBrush="Black" BorderThickness="1" 
+                    Name="CommunicatesRefreshButton" Width="150" Height="50" Visibility="Collapsed" Content="Odśwież stronę" />
         </StackPanel>
 
-        <ListView Name="ListView" Visibility="Visible" ItemsSource="{x:Bind komunikaty}" IsItemClickEnabled="false" SelectionMode="None">
+        <ListView Name="CommunicatesListOfCommunicates" Visibility="Visible" ItemsSource="{x:Bind communicates}" IsItemClickEnabled="false" SelectionMode="None">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="data:Komunikat">
                     <Grid>
