@@ -8,9 +8,9 @@ Po parsowaniu, zapsiuje do sqlite i w taki oto sposób rozkład może działać 
 
 Zawiera podstawowe funkcje takie jak:
 
-  Wyświetlanie linii
-  Dodawanie do ulubionych
-  Liste przystanków
+  Wyświetlanie linii,
+  Dodawanie do ulubionych,
+  Liste przystanków,
   Pokazywanie tras / godzin danego przestanku
 
 
