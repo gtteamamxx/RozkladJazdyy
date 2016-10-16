@@ -78,75 +78,45 @@ namespace RozkladJazdy.Pages
 
             var liczba_rozkladow = SQLServices.getData<Rozklad>(0, "SELECT id FROM Rozklad where id_linia = ?", selected_line.id).Count();
 
-            if (liczba_rozkladow > 1)
-                MainPage.gui.setViewPage = typeof(MainWindowLinesSchedule);
-            else
-                MainPage.gui.setViewPage = typeof(MainWindowLinesInfo);
+            MainPage.gui.setViewPage = (liczba_rozkladow > 1) ? typeof(MainWindowLinesSchedule) : typeof(MainWindowLinesInfo);
 
             MainPage.gui.setRefreshButtonVisibility = Visibility.Collapsed;
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            BackgroundWorker worker = new BackgroundWorker();
-            worker.WorkerReportsProgress = true;
-            worker.DoWork += (senders, es) =>
+            if (!isPageLoaded || (!isPageLoaded && MainWindow.isPageLoaded == true))
             {
+                lines = MainWindow.lines;
+                List<Linia> list = lines.OrderBy(p => p.pfm).ToList();
 
-                foreach (Linia l in lines)
-                    if ((l.pfm & 4) == 4)
-                        worker.ReportProgress(0, l); // pierw tramwaje
-                worker.ReportProgress(10);
+                foreach(Linia l in list)
+                {
+                    if ((l.pfm & 1) == 1) lines_bus.Add(l);
+                    else if ((l.pfm & 4) == 4)
+                    {
+                        MainWindowLinesProgressRingTrams.Visibility = Visibility.Collapsed;
+                        lines_tram.Add(l);
+                    }
+                    else if ((l.pfm & 8) == 8)
+                    {
+                        MainWindowLinesProgressRingBus.Visibility = Visibility.Collapsed;
+                        lines_mini.Add(l);
+                    }
+                    else if ((l.pfm & 16) == 16)
+                    {
+                        MainWindowLinesProgressRingMini.Visibility = Visibility.Collapsed;
+                        lines_air.Add(l);
+                    }
+                    else if ((l.pfm & 256) == 256)
+                    {
+                        MainWindowLinesProgressRingAir.Visibility = Visibility.Collapsed;
+                        lines_night.Add(l);
+                    }
+                }
+                MainWindowLinesProgressRingNight.Visibility = Visibility.Collapsed;
 
-                foreach (Linia l in lines)
-                    if ((l.pfm & 16) == 16)
-                        worker.ReportProgress(1, l); // potem lotnisko
-                worker.ReportProgress(20);
 
-                foreach (Linia l in lines)
-                    if ((l.pfm & 256) == 256)
-                        worker.ReportProgress(2, l); // potem nocne
-                worker.ReportProgress(30);
-
-                foreach (Linia l in lines)
-                    if ((l.pfm & 1) == 1)
-                        worker.ReportProgress(3, l); // potem autobusy
-                worker.ReportProgress(40);
-
-                foreach (Linia l in lines)
-                    if ((l.pfm & 8) == 8)
-                        worker.ReportProgress(4, l); // potem mini
-                worker.ReportProgress(50);
-            };
-
-            /*Invoke*/
-            worker.ProgressChanged += (senders, es) =>
-            {
-                if (es.ProgressPercentage == 10)
-                    MainWindowLinesProgressRingTrams.Visibility = Visibility.Collapsed;
-                else if (es.ProgressPercentage == 20)
-                    MainWindowLinesProgressRingAir.Visibility = Visibility.Collapsed;
-                else if (es.ProgressPercentage == 30)
-                    MainWindowLinesProgressRingNight.Visibility = Visibility.Collapsed;
-                else if (es.ProgressPercentage == 40)
-                    MainWindowLinesProgressRingBus.Visibility = Visibility.Collapsed;
-                else if (es.ProgressPercentage == 50)
-                    MainWindowLinesProgressRingMini.Visibility = Visibility.Collapsed;
-
-                else if (es.ProgressPercentage == 0)
-                    lines_tram.Add(es.UserState as Linia);
-                else if (es.ProgressPercentage == 1)
-                    lines_air.Add(es.UserState as Linia);
-                else if (es.ProgressPercentage == 2)
-                    lines_night.Add(es.UserState as Linia);
-                else if (es.ProgressPercentage == 3)
-                    lines_bus.Add(es.UserState as Linia);
-                else if (es.ProgressPercentage == 4)
-                    lines_mini.Add(es.UserState as Linia);
-            };
-
-            worker.RunWorkerCompleted += (sendesr, es) =>
-            {
                 if (lines_tram.Count() == 0)
                 {
                     MainWindowLinesListGirdViewTrams.Visibility = Visibility.Collapsed;
@@ -181,13 +151,6 @@ namespace RozkladJazdy.Pages
 
                 MainPage.gui.setRefreshButtonVisibility = Visibility.Visible;
                 MainWindow.isTimetableRefreshing = false;
-
-            };
-
-            if (!isPageLoaded || (!isPageLoaded && MainWindow.isPageLoaded == true))
-            {
-                lines = MainWindow.lines;
-                worker.RunWorkerAsync();
             }
         }
 

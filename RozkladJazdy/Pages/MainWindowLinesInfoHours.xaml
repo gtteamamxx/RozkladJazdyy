@@ -19,7 +19,7 @@
                     <StackPanel Margin="0,0,10,0">
                         <TextBlock TextWrapping="Wrap" Foreground="Blue" FontSize="40" Tapped="MainWindowLinesInfoHoursLineName_Tapped" Name="MainWindowLinesInfoHoursLineName" />
                     </StackPanel>
-                    <TextBlock Name="MainWindowLinesInfoHoursDestName" Width="280" FontSize="25" Margin="20,0" VerticalAlignment="Center" Foreground="Black" />
+                    <TextBlock Name="MainWindowLinesInfoHoursDestName" Width="280" FontSize="25" Margin="20,0" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="Black" />
                 </StackPanel>
                 
                 <StackPanel BorderBrush="Black" BorderThickness="0,0,0,1">

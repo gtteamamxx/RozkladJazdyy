@@ -60,13 +60,12 @@ namespace RozkladJazdy.Pages
             this.Loaded += (s, f) =>
             {
                 MainWindowSelect.temp_lista = null;
-
+                MainWindowStopListStatusProgressRingStopList.Visibility = Visibility.Collapsed;
                 MainWindowStopListStatusProgressRingLinesList.Visibility = Visibility.Collapsed;
                 isPageLoaded = true;
                 OnPageLoaded?.Invoke();
                 MainWindowStopListStopsList.SelectionMode = ListViewSelectionMode.Single;
                 MainWindowStopListSearchResultText.Text = "Przystanków: " + stop_list.Count().ToString();
-
                 MainPage.gui.setFavouriteSubText = "przystanek";
                 if (!string.IsNullOrEmpty(stop_name_temp.name))
                     MainWindowStopListStopsList.SelectedIndex = stop_list.IndexOf(stop_name_temp);
@@ -176,8 +175,8 @@ namespace RozkladJazdy.Pages
                     var schedule_id = filteredlist[i].rozklad_id;
                     var track_id = filteredlist[i].trasa_id;
 
-                    var dest = SQLServices.getData<Trasa>(0, "SELECT name FROM Trasa WHERE (id_linia = ? AND id_rozklad = ?) LIMIT 2", line_id, schedule_id)[line_id].name;////MainWindow.lines[lid].rozklad[rid].track[tid].name;
-                    var name = MainWindow.lines[track_id].name;
+                    var dest = SQLServices.getData<Trasa>(0, "SELECT name FROM Trasa WHERE (id_linia = ? AND id_rozklad = ?) LIMIT 2", line_id, schedule_id)[track_id].name;////MainWindow.lines[lid].rozklad[rid].track[tid].name;
+                    var name = MainWindow.lines[line_id].name;
 
                     bool state = false;
 

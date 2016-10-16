@@ -79,9 +79,8 @@ namespace RozkladJazdy
 
             MainPageMenuList.SelectedIndex = 0;
 
-            MainPageFrame.Navigate(typeof(MainWindow));
-            MainPageTopPanelTitle.Text = "Rozkład jazdy";
 
+            // Ustala, czy jestesmy na pc, czy mobile ; i daje kolor pasku titlebar i statusbar
             //mobile
             if (DetectPlatform() == Platform.WindowsPhone)
             {
@@ -96,16 +95,11 @@ namespace RozkladJazdy
                 ApplicationView.GetForCurrentView().TitleBar.ForegroundColor = Colors.Red;
             }
 
+            // utawia widoczny guzik "cofnij" 
             var currentView = SystemNavigationManager.GetForCurrentView();
             currentView.AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
 
             currentView.BackRequested += BackButtonPressed;
-
-            MainPageFrame.Navigated += (sender, e) =>
-            {
-                if (e.SourcePageType == typeof(MainWindowLinesInfoHours))
-                    MainPageTopPanelStopsButton.Visibility = Visibility.Visible;
-            };
 
             MainPageStopListStopsList.SelectionChanged += (sender, e) =>
             {
@@ -115,6 +109,9 @@ namespace RozkladJazdy
             };
 
             ApplicationView.GetForCurrentView().SetPreferredMinSize(new Size(360, 500));
+
+            MainPageFrame.Navigate(typeof(MainWindow));
+            MainPageTopPanelTitle.Text = "Rozkład jazdy";
         }
 
         private void BackButtonPressed(object sender, BackRequestedEventArgs e)
@@ -154,8 +151,7 @@ namespace RozkladJazdy
             }
         }
 
-        private void MainPageTopPanelBackButton_Click(object sender, RoutedEventArgs e)
-            => BackButtonPressed(null, null);
+        private void MainPageTopPanelBackButton_Click(object sender, RoutedEventArgs e) => BackButtonPressed(null, null);
 
         private void goBack(ref bool exit)
         {

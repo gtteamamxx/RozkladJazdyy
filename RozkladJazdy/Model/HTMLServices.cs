@@ -32,6 +32,8 @@ namespace RozkladJazdy.Model
 
         public static void getLinesInfo(bool update = false)
         {
+            /* Trzeba zresetowac, bo jesli bedziemy chiecli od nowa pobrac dane, majac wczesniej rozklad
+             * to aid beda ustalone poprzez inicjalizacje konstruktora klas */
             BackgroundWorker worker = new BackgroundWorker();
 
             Literka.aid = 0;
@@ -40,7 +42,11 @@ namespace RozkladJazdy.Model
             Rozklad.aid = 0;
             NazwaGodziny.aid = 0;
             NazwaPrzystanku.aid = 0;
-            
+
+            stops_name = new List<Model.NazwaPrzystanku>();
+            hours_name = new List<Model.NazwaGodziny>();
+            letters_info = new List<Model.Literka>();
+
             worker.DoWork += (senders, es) =>
                 es.Result = ParserMain(AsyncHelpers.RunSync(() =>
                     GetHTML("http://rozklady.kzkgop.pl/index.php?co=rozklady")));
@@ -51,10 +57,6 @@ namespace RozkladJazdy.Model
                 getLinesDetail(lines_list, update);
             };
 
-            stops_name = new List<Model.NazwaPrzystanku>();
-            hours_name = new List<Model.NazwaGodziny>();
-            letters_info = new List<Model.Literka>();
-
             worker.RunWorkerAsync();
         }
         public static void getLinesDetail(List<Linia> buslist, bool update = false)
@@ -64,6 +66,7 @@ namespace RozkladJazdy.Model
 
             worker.DoWork += (sender, e) =>
             {
+                // skanuej po liczibe autobusow
                 for (int i = 0; i < buslist.Count; i++)
                 {
                     int nums = (int)(0.5f + ((100f * i) / buslist.Count));
@@ -95,8 +98,7 @@ namespace RozkladJazdy.Model
 
                 var list = document.QuerySelectorAll("td").Where(p => p.GetAttribute("class") != null && p.GetAttribute("class").Contains("kier")).ToList();
 
-                // jesli nie ma kierunkow, chodiaz jednego, to sprawdz, czy nie div_tabelki tras
-                // jest to lista rozkladow na specjlanie dnie.
+                // pobiera listę rozkładów; sprawdza, czy linia nie jest zawieszona
 
                 if (list == null || list.Count() == 0)
                 {
@@ -116,9 +118,11 @@ namespace RozkladJazdy.Model
                         val.Add(new Rozklad() { text = l2[i].TextContent.Trim(), actual = l2[i].TextContent.Trim().Contains("obecnie"), url = string.Format("{0}{1}", "http://rozklady.kzkgop.pl/", @l2[i].GetAttribute("href")) });
                 }
 
+                // jesli jest tylko jeden rozkład, to ustal go jako obowiązujący
                 if (val.Count() == 0)
                     val.Add(new Rozklad() { text = "obecnie obowiązujący", url = url, actual = true });
 
+                //skanuje po liczbie rozkładów
                 for (int i = 0; i < val.Count(); i++)
                 {
                     val[i].track = new List<Trasa>();
@@ -127,12 +131,14 @@ namespace RozkladJazdy.Model
 
                     document = parser.Parse(source);
 
+                    // pobiera liczbe tras
                     var l2 = document.QuerySelectorAll("div").Where(p => p.GetAttribute("id") != null && (
                         p.Attributes["id"].Value.Contains("lewo") ||
                         p.Attributes["id"].Value.Contains("srodek") ||
                         p.Attributes["id"].Value.Contains("prawo"))).
                         ToList();
 
+                    // skanuje po liczbie tras
                     for (int s = 0; s < l2.Count(); s++)
                     {
                         string firstlink = l2[s].QuerySelectorAll("tr td a").ToList()[0].GetAttribute("href");
@@ -153,11 +159,13 @@ namespace RozkladJazdy.Model
 
                         track.id_linia = line_id;
                         track.id_rozklad = i;
-
+                        // ustala nazwę kierunku
                         track.name = l3.Where(p => p.GetAttribute("class") == "tr_kierunek").First().FirstElementChild.FirstElementChild.TextContent;
 
+                        // wyszukuje wszystkie przystanki
                         l3 = l3.Where(p => (p.GetAttribute("class").Contains("zwyk") || p.GetAttribute("class").Contains("stre") || p.GetAttribute("class").Contains("wyj"))).ToList();
 
+                        //skanuej po wszystkich przystankach
                         for (int k = 0; k < l3.Count(); k++)
                         {
                             var d = l3[k].LastElementChild;
@@ -165,6 +173,9 @@ namespace RozkladJazdy.Model
                             Przystanek stop = new Przystanek();
 
                             stop.nid = -1;
+
+                            /* sprawdza, czy nazwa przystanku już jest w bazie, jesli nie to dodaje, 
+                             * jesli jest, to ustala "nid" na numer tego przystanku w bazie */
 
                             for (int v = 0; v < stops_name.Count(); v++)
                             {
@@ -181,6 +192,8 @@ namespace RozkladJazdy.Model
                                 stop.nid = stops_name.IndexOf(stops_name.Last());
                             }
 
+                            /* **************** */
+
                             stop.track_id = s;
                             stop.rozkladzien_id = i;
 
@@ -192,6 +205,8 @@ namespace RozkladJazdy.Model
                             stop.url = @d.LastElementChild.GetAttribute("href");
                             stop.id = num++;
 
+                            /* Pobiera źródło strony od danego przystanku */
+
                             if (track.name != d.LastElementChild.TextContent)
                             {
                                 source = AsyncHelpers.RunSync(() => GetHTML(string.Format("http://rozklady.kzkgop.pl/{0}", stop.url)));
@@ -201,15 +216,18 @@ namespace RozkladJazdy.Model
                             var l4 = document.QuerySelectorAll("table").Where(
                                 p => p.GetAttribute("id") != null && p.GetAttribute("id") == "tabliczka_przystankowo").ToList();
 
-                            bool state = false;
+                            /* ********** */
 
-                            if (l4.Count() > 0)
+                            bool state = false; // posluzy nam do sprawdzenai, czy jest jakas literka
+
+                            if (l4.Count() > 0) // jesli sa jakies godziny
                             {
                                 var l6 = l4[0].QuerySelectorAll("tr");
 
                                 var hour = new Godzina();
                                 hour.nid = -1;
                                 hour.godziny_full = null;
+
                                 int j = 0;
 
                                 for (int b = 0; b < l6.Count(); b++)
@@ -224,6 +242,9 @@ namespace RozkladJazdy.Model
                                             hour = new Godzina();
                                         }
                                         hour.godziny_full = "";
+
+                                        /* Ponizszy kod sprawdza, czy nazwa godziny jest juz w bazie, jesli tak
+                                         * to ustal nid */
 
                                         bool set = false;
 
@@ -242,6 +263,9 @@ namespace RozkladJazdy.Model
                                             hours_name.Add(new NazwaGodziny() { name = l6[b].FirstElementChild.TextContent.Trim() });
                                             hour.nid = hours_name.IndexOf(hours_name.Last());
                                         }
+
+                                        /* ******************** */
+
                                         hour.id_przystanek = stop.id;
 
                                         continue;
@@ -249,6 +273,7 @@ namespace RozkladJazdy.Model
 
                                     var l7 = l6[b].QuerySelectorAll("span").Where(p => p.GetAttribute("id") != null && p.GetAttribute("id").Contains("blok_godzina")).ToList();
 
+                                    // skanuje po godzinach
                                     for (int g = 0; g < l7.Count(); g++)
                                     {
                                         string n1, n2, letter = "";
@@ -358,11 +383,9 @@ namespace RozkladJazdy.Model
                         if (item2.LocalName == "a" && item2.FirstChild != null && item2.FirstElementChild.LocalName == "span")
                             list2.Add(item2);
 
-                // 0 - url
-                // 1 - bus name
-                // 2 - pfm
-
                 List<Linia> val = new List<Linia>();
+
+                // skanuje po liczbie linii
 
                 for (int i = 0; i < list2.Count; i++)
                 {

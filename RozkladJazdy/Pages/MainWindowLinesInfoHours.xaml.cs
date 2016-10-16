@@ -55,6 +55,8 @@ namespace RozkladJazdy.Pages
         {
             if (selected_line != null)
                 MainPage.gui.setPageTitle = "Rozkład jazdy -> Linia: " + selected_line.name;
+
+            MainPage.gui.setStopButtonVisibility = Visibility.Visible;
         }
 
         public MainWindowLinesInfoHours()
@@ -99,7 +101,6 @@ namespace RozkladJazdy.Pages
                 MainPage.gui.setFavouriteButtonColor = Colors.LightGray;
 
             MainPage.gui.setFavouriteButtonVisibility = Visibility.Visible;
-
 
             BackgroundWorker worker = new BackgroundWorker();
             worker.WorkerReportsProgress = true;
@@ -178,6 +179,8 @@ namespace RozkladJazdy.Pages
 
                 worker1.RunWorkerCompleted += (se, fe) =>
                 {
+                    if(selected_stop == null)
+                        return;
                     if (selected_stop.literki_info != null && selected_stop.literki_info.Count() > 0)
                         selected_stop.literki_info.ForEach(p => letters_info.Add(p));
 
@@ -211,8 +214,11 @@ namespace RozkladJazdy.Pages
 
         private void MainWindowLinesInfoHours_Unloaded(object sender, RoutedEventArgs e) => clear();
 
-        protected override void OnNavigatedFrom(NavigationEventArgs e) => clear();
-
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            clear();
+            MainPage.gui.setStopButtonVisibility = Visibility.Collapsed;
+        }
         private void clear()
         {
             selected_line = null; ;
