@@ -15,3 +15,5 @@ Zawiera podstawowe funkcje takie jak:
 
 
 W programie nie jest dostepna jeszcze funkcja wyszukiwania tras
+
+Jest to mój pierwszy projekt pisany w C#, więc zdaje sobie sprawe, że kod nei wygląda najlepiej. Projekt nauczyl mnie i wprowadzil w technologie UWP oraz ubogacił znajomość C#
